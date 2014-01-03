@@ -13,6 +13,8 @@
 // Following test_runner.cpp, we'll define some basic fully-specified
 // tree types here:
 typedef forest::tree< int > itree;
+RCPP_EXPOSED_CLASS_NODECL(itree)
+
 // typedef forest::subtree<int> isubtree;
 
 #ifdef __clang__
@@ -41,7 +43,9 @@ RCPP_MODULE(forest) {
 
     .method("insert_at_node", &itree::insert_at_node)
     .method("insert_root",    &itree::insert_root)
+
+    .method("clone",       &itree::clone)
+
+    .method("is_equal_to",     &itree::is_equal_to)
     ;
 }
-
-// RCPP_EXPORTED_CLASS(forest::itree)

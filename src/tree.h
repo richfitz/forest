@@ -2,6 +2,8 @@
 #ifndef _FOREST_TREE_H_
 #define _FOREST_TREE_H_
 
+#include <Rcpp.h>
+
 #ifdef __clang__
 #pragma clang diagnostic push
 // These I have no control over because they're treetree issues.
@@ -27,6 +29,13 @@ public:
     node ret(data_, index_);
     return ret;
   }
+
+  // Basic comparisons -- basically passed down to underlying type,
+  // skipping the index.
+  bool operator==(const node<T>& rhs) const { return data == rhs.data; }
+  bool operator<(const node<T>& rhs) const { return data < rhs.data; }
+  bool operator>(const node<T>& rhs) const { return data > rhs.data; }
+
   const size_t index;
   T data;
 };
@@ -59,6 +68,13 @@ public:
   void insert_at_node(size_t i, const T& t);
   // Insert a root node
   void insert_root(const T& t);
+
+  tree<T> clone() const {return *this;}
+
+  // Comparison operator -- using '*this == rhs' is not working
+  // because we've hit issues with the wrapping I believe (so we're
+  // dispatching incorrectly).
+  bool is_equal_to(const tree<T>& rhs) const;
 
 private:
   // This takes care of the actual inserts, updating the index as
@@ -108,6 +124,11 @@ void tree<T>::insert_at_node(size_t i, const T& t) {
 template <typename T>
 void tree<T>::insert_root(const T& t) {
   insert(tree_.end(), t);
+}
+
+template <typename T>
+bool tree<T>::is_equal_to(const tree<T>& rhs) const {
+  return this->tree_ == rhs.tree_;
 }
 
 template<typename T>
