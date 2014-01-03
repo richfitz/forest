@@ -1,0 +1,3 @@
+## -*- makefile -*-
+RCPP_LDFLAGS=$(shell R --slave -e 'Rcpp:::LdFlags()')
+PKG_LIBS=$(RCPP_LDFLAGS)

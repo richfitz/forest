@@ -1,0 +1,5 @@
+import(Rcpp)
+import(methods)
+useDynLib(forest)
+
+export(itree)
