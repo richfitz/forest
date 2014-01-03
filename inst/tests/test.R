@@ -64,4 +64,7 @@ test_that("Can construct a tree via insertion", {
   tr$insert_at_node(1, 5) # looks like node '2'
   expect_that(tr, is_expected_tree(5, "1(2(4 5) 3)"))
   expect_that(sort(tr$indices), equals(0:4))
+
+  ## Extra -- out of bounds check should fail:
+  expect_that(tr$insert_at_node(10, 5), throws_error())
 })
