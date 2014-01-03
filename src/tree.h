@@ -2,8 +2,6 @@
 #ifndef _FOREST_TREE_H_
 #define _FOREST_TREE_H_
 
-// #define TREE_TREE_NAMESPACE treetree
-
 #ifdef __clang__
 #pragma clang diagnostic push
 // These I have no control over because they're treetree issues.
@@ -19,19 +17,6 @@
 #endif
 
 namespace forest {
-
-// I've chosen to wrap around the::tree, rather than extend, because
-// this way should be easier to expose just a controlled subset, add
-// R-specific checks, etc.
-
-// This is going to be particularly important when we need to do
-// something like "insert at a particular node", because generating
-// safe subtrees is going to be hard.
-
-// A way of thinking about this is to think about what the "type" that
-// .end() and end_child() should return.  At the moment, they are set
-// up as iterators, but that is going to take some serious care not to
-// invalidate.
 
 template <typename T>
 struct node {
@@ -79,17 +64,9 @@ private:
   // This takes care of the actual inserts, updating the index as
   // needed.
   template<typename Iterator>
-  void insert(Iterator i, const T& v) {
-    tree_.insert(i, node<T>::create(v, index_++));
-  }
+  void insert(Iterator i, const T& v);
   template<typename Iterator>
-  Iterator find_node(size_t i, Iterator first, Iterator last) {
-    while (first != last && first->begin()->index != i)
-      ++first;
-    if (first == tree_.end())
-      ::Rf_error("Did not find index %d", i);
-    return first;
-  }
+  Iterator find_node(size_t i, Iterator first, Iterator last);
 
   typedef TREE_TREE_NAMESPACE::tree< node<T> > tree_type;
   typedef typename tree_type::pre_iterator           pre_iterator;
@@ -131,6 +108,22 @@ void tree<T>::insert_at_node(size_t i, const T& t) {
 template <typename T>
 void tree<T>::insert_root(const T& t) {
   insert(tree_.end(), t);
+}
+
+template<typename T>
+template<typename Iterator>
+void tree<T>::insert(Iterator i, const T& v) {
+  tree_.insert(i, node<T>::create(v, index_++));
+}
+
+template<typename T>
+template<typename Iterator>
+Iterator tree<T>::find_node(size_t i, Iterator first, Iterator last) {
+  while (first != last && first->begin()->index != i)
+    ++first;
+  if (first == tree_.end())
+    ::Rf_error("Did not find index %d", i);
+  return first;
 }
 
 }
