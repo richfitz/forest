@@ -44,7 +44,7 @@ test_that("Can construct a tree via insertion", {
   expect_that(tr, is_expected_tree(0, ""))
   expect_that(tr$arity, equals(0))
 
-  tr$insert_end(1) # really is append()?
+  tr$insert_root(1) # really is append()?
   expect_that(tr, is_expected_tree(1, "1"))
   expect_that(tr$arity, equals(0))
 

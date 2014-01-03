@@ -63,42 +63,17 @@ public:
   size_t size() const {return tree_.size();}
   size_t arity() const {return tree_.arity();}
   bool childless() const {return tree_.childless();}
-  std::string representation() const {
-    return boost::lexical_cast<std::string>(tree_);
-  }
+  std::string representation() const;
 
-  // I don't think that this is the best way to do this, but it will
-  // work for now, until we work out how subtrees will go.
-  size_t index() const {
-    if (empty())
-      ::Rf_error("Can't get index of empty tree");
-    return tree_.root().index;
-  }
+  // Index of current (root) node
+  size_t index() const;
+  // All indices within the tree
+  std::vector<size_t> indices() const;
 
-  // This is all indices within the tree:
-  std::vector<size_t> indices() const {
-    std::vector<size_t> ret;
-    const_pre_iterator it = tree_.begin();
-    while (it != tree_.end())
-      ret.push_back((it++)->index);
-    return ret;
-  }
-
-  // We'd also benefit for same to get the child indices.  But that
-  // would be much more useful if we also had a decent way of jumping
-  // straight to nodes (which I'll probably do in the way that lookup
-  // works, using the set of indices and pointers to the different
-  // nodes, in a map).
-  void insert_at_node(size_t i, const T& t) {
-    sub_pre_iterator it = find_node(i, tree_.begin_sub(), tree_.end_sub());
-    insert(it->end_child(), t);
-  }
-
-  // These are horribly inflexible, but will come in useful for
-  // testing.  We'll need some other way of indexing nodes that works
-  // with R soon enough.
-  void insert_end(const T& t) { insert(tree_.end(), t);}
-  void insert_end_child(const T& t) { insert(tree_.end_child(), t);}
+  // Insert a node as a child of node with index 'i'.
+  void insert_at_node(size_t i, const T& t);
+  // Insert a root node
+  void insert_root(const T& t);
 
 private:
   // This takes care of the actual inserts, updating the index as
@@ -125,6 +100,38 @@ private:
   tree_type tree_;
   size_t index_;
 };
+
+template <typename T>
+std::string tree<T>::representation() const {
+  return boost::lexical_cast<std::string>(tree_);
+}
+
+template <typename T>
+size_t tree<T>::index() const {
+  if (empty())
+    ::Rf_error("Can't get index of empty tree");
+  return tree_.root().index;
+}
+
+template <typename T>
+std::vector<size_t> tree<T>::indices() const {
+  std::vector<size_t> ret;
+  const_pre_iterator it = tree_.begin();
+  while (it != tree_.end())
+    ret.push_back((it++)->index);
+  return ret;
+}
+
+template <typename T>
+void tree<T>::insert_at_node(size_t i, const T& t) {
+  sub_pre_iterator it = find_node(i, tree_.begin_sub(), tree_.end_sub());
+  insert(it->end_child(), t);
+}
+
+template <typename T>
+void tree<T>::insert_root(const T& t) {
+  insert(tree_.end(), t);
+}
 
 }
 
