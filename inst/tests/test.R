@@ -3,12 +3,18 @@ source("helper-forest.R")
 # These tests will slowly duplicate those in
 # src/treetree/test_runner.cpp
 
+context("Basic tree operations")
+
 test_that("Tree built with empty constructor is empty", {
   tr <- new(itree)
   expect_that(tr$empty, is_true())
   expect_that(tr$size, equals(0))
   expect_that(tr$childless, is_true())
   expect_that(tr$representation, is_identical_to(""))
+  expect_that(tr$index, throws_error())
+
+  ## Additional to test_runner:
+  expect_that(tr$indices, equals(integer(0)))
 })
 
 test_that("Tree with root only is valid", {
@@ -17,11 +23,12 @@ test_that("Tree with root only is valid", {
   expect_that(tr$size, equals(1))
   expect_that(tr$childless, is_true())
   expect_that(tr$representation, is_identical_to("42"))
+  expect_that(tr$index, equals(0))
+
+  ## Additional to test_runner:
+  expect_that(tr$indices, equals(0))
 })
 
-## These are going to have to get improved later; there's not
-## currently a good way of accessing the nodes to get the proper
-## insertion operators working.
 is_expected_tree <- function(n, representation) {
   function(tr) {
     ok <- (isTRUE(all.equal(tr$size, n))           &&
@@ -31,17 +38,30 @@ is_expected_tree <- function(n, representation) {
     expectation(ok, "Tree does not have expected contents")
   }
 }
+
 test_that("Can construct a tree via insertion", {
   tr <- new(itree)
-
   expect_that(tr, is_expected_tree(0, ""))
+  expect_that(tr$arity, equals(0))
 
-  tr$insert_end(1)
+  tr$insert_end(1) # really is append()?
   expect_that(tr, is_expected_tree(1, "1"))
-  
-  tr$insert_end_child(2)
-  expect_that(tr, is_expected_tree(2, "1(2)"))
+  expect_that(tr$arity, equals(0))
 
-  tr$insert_end_child(3)
+  tr$insert_at_node(0, 2)
+  expect_that(tr, is_expected_tree(2, "1(2)"))
+  expect_that(tr$arity, equals(1))
+
+  tr$insert_at_node(0, 3)
   expect_that(tr, is_expected_tree(3, "1(2 3)"))
+  expect_that(tr$arity, equals(2))  
+
+  expect_that(tr$indices, equals(0:2))
+  
+  tr$insert_at_node(1, 4) # looks like node '2'
+  expect_that(tr, is_expected_tree(4, "1(2(4) 3)"))
+
+  tr$insert_at_node(1, 5) # looks like node '2'
+  expect_that(tr, is_expected_tree(5, "1(2(4 5) 3)"))
+  expect_that(sort(tr$indices), equals(0:4))
 })
