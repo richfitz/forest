@@ -3,7 +3,6 @@
 #define _FOREST_TREE_H_
 
 #include <Rcpp.h>
-#include "iterator_wrapper.h"
 
 #ifdef __clang__
 #pragma clang diagnostic push
@@ -63,11 +62,6 @@ public:
   typedef typename tree_type::sub_pre_iterator       sub_pre_iterator;
   typedef typename tree_type::const_sub_pre_iterator const_sub_pre_iterator;
 
-  // Extra helpers:
-  typedef iterator_wrapper<pre_iterator>   wrapped_pre_iterator;
-  typedef iterator_wrapper<post_iterator>  wrapped_post_iterator;
-  typedef iterator_wrapper<child_iterator> wrapped_child_iterator;
-
   tree() : index_(0) {}
   tree(const T& t) : tree_(node_type::create(t, 0)), index_(1) {}
 
@@ -87,35 +81,22 @@ public:
   void insert_at_node(size_t i, const T& t);
   // Insert a root node
   void insert_root(const T& t);
-  void insert_at_iterator(wrapped_pre_iterator i, const T& t);
+  // In theory, this is all that is needed, but we need to be able to
+  // deal with all the different iterator types, as they will silently
+  // convert from one to the other (this is instantiated in the module
+  // code as a pre_iterator).
+  void insert_at_iterator(pre_iterator i, const T& t) {insert(i, t);}
 
   tree<T> clone() const {return *this;}
 
-  // Comparison operator -- using '*this == rhs' is not working
-  // because we've hit issues with the wrapping I believe (so we're
-  // dispatching incorrectly).
   bool is_equal_to(const tree<T>& rhs) const;
 
-  wrapped_pre_iterator begin() {
-    return wrapped_pre_iterator::create(tree_.begin());
-  }
-  wrapped_pre_iterator end() {
-    return wrapped_pre_iterator::create(tree_.end());
-  }
-
-  wrapped_post_iterator begin_post() {
-    return wrapped_post_iterator::create(tree_.begin_post());
-  }
-  wrapped_post_iterator end_post() {
-    return wrapped_post_iterator::create(tree_.end_post());
-  }
-
-  wrapped_child_iterator begin_child() {
-    return wrapped_child_iterator::create(tree_.begin_child());
-  }
-  wrapped_child_iterator end_child() {
-    return wrapped_child_iterator::create(tree_.end_child());
-  }
+  pre_iterator   begin()       { return tree_.begin();       }
+  pre_iterator   end()         { return tree_.end();         }
+  post_iterator  begin_post()  { return tree_.begin_post();  }
+  post_iterator  end_post()    { return tree_.end_post();    }
+  child_iterator begin_child() { return tree_.begin_child(); }
+  child_iterator end_child()   { return tree_.end_child();   }
 
 private:
   // This takes care of the actual inserts, updating the index as
@@ -161,14 +142,6 @@ void tree<T>::insert_root(const T& t) {
   insert(tree_.end(), t);
 }
 
-// In theory, this is all that is needed, but we need to be able to
-// deal with all the different iterator types, as they will silently
-// convert from one to the other (this is instantiated in the module
-// code as a pre_iterator).
-template<typename T>
-void tree<T>::insert_at_iterator(wrapped_pre_iterator i, const T& t) {
-  insert(i.iterator(), t);
-}
 
 template <typename T>
 bool tree<T>::is_equal_to(const tree<T>& rhs) const {
