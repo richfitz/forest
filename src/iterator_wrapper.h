@@ -45,14 +45,14 @@ namespace forest {
 template <typename Iterator>
 class iterator_wrapper {
 public:
-  typedef typename Iterator::value_type T;
+  typedef typename Iterator::value_type value_type;
   iterator_wrapper(Iterator it_) : it(it_) {}
   iterator_wrapper copy() const {
     iterator_wrapper ret = *this;
     return ret;
   }
-  T value() const { return *it; }
-  void assign(T x) { *it = x; } // -- but not for const_iterators
+  value_type value() const { return *it; }
+  void assign(value_type x) { *it = x; } // -- but not for const_iterators
   bool equals(const iterator_wrapper<Iterator>& rhs) const {
     return it == rhs.it;
   }
@@ -64,6 +64,8 @@ public:
   void decrement() {--it;}
   void advance(int n) {std::advance(it, n);}
 
+  Iterator iterator() const {return it;}
+
   static iterator_wrapper create(Iterator it_) {
     iterator_wrapper ret(it_);
     return ret;
@@ -71,6 +73,15 @@ public:
 private:
   Iterator it;
 };
+
+// Wrappers to get things to work with STL wrappers.
+template <typename Iterator>
+iterator_wrapper<Iterator> find(iterator_wrapper<Iterator> first,
+				iterator_wrapper<Iterator> last,
+				const typename Iterator::value_type& val) {
+  Iterator it1 = first.iterator(), it2 = last.iterator();
+  return iterator_wrapper<Iterator>::create(std::find(it1, it2, val));
+}
 
 // Not sure if a macro here can be avoided but may help.  The other
 // way around would be to define a generic type and then have Rcpp do

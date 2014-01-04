@@ -84,6 +84,18 @@ test_that("Dereferencing iterators works", {
 ## out as methods that dispatch appropriately; it's possible that a
 ## module function would work here.
 
+test_that("std::find works", {
+  ## Pardon the ugly name for now:
+  it <- forest:::find_vector_double_iterator(v$begin(), v$end(), 5)
+  expect_that(it$equals(v$end()), is_false())
+  expect_that(it$value, equals(5))
+
+  ## Now, try and find something not in the vector:
+  it <- forest:::find_vector_double_iterator(v$begin(), v$end(), 5.5)
+  expect_that(it$equals(v$end()), is_true())
+})
+
+
 ## It's easy to invalidate iterators by changing the underlying data.
 ## For example, run this under valgrind:
 ##

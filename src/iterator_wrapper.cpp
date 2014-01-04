@@ -77,4 +77,8 @@ RCPP_MODULE(mod_test) {
 
   FOREST_ITERATOR_MODULE(forest::test::vector_double::iterator,
     "vector_double_iterator")
+    ;
+
+  Rcpp::function("find_vector_double_iterator",
+    &forest::find<forest::test::vector_double::iterator>);
 }
