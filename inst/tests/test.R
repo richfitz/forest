@@ -29,16 +29,6 @@ test_that("Tree with root only is valid", {
   expect_that(tr$indices, equals(0))
 })
 
-is_expected_tree <- function(n, representation) {
-  function(tr) {
-    ok <- (isTRUE(all.equal(tr$size, n))           &&
-           isTRUE(all.equal(tr$empty, n == 0))     &&
-           isTRUE(all.equal(tr$childless, n <= 1)) &&
-           isTRUE(all.equal(tr$representation, representation)))
-    expectation(ok, "Tree does not have expected contents")
-  }
-}
-
 test_that("Can construct a tree via insertion", {
   tr <- new(itree)
   expect_that(tr, is_expected_tree(0, ""))
@@ -69,9 +59,10 @@ test_that("Can construct a tree via insertion", {
   expect_that(tr$insert_at_node(10, 5), throws_error())
 })
 
-## This is not actually the same test as tree_copy_ctor in
-## test_runner.cpp, because we're not going to test the copy
-## constructor there.  Instead here we test the ability to clone.
+## This is not actually the same test as tree_copy_ctor or
+## tree_assignment in test_runner.cpp, because we're not going to test
+## the copy constructor there.  Instead here we test the ability to
+## clone.
 test_that("Can copy trees", {
   tr <- new(itree)
   tr1 <- tr$clone()
@@ -92,3 +83,48 @@ test_that("Can copy trees", {
   expect_that(tr$is_equal_to(tr2), is_false())
   expect_that(tr$is_equal_to(tr3), is_true())
 })
+
+## tree_subtr_assignment looks like fun, but need to get a bit better
+## with subtrees to get this to work...
+
+test_that("Arity calculations are correct", {
+  tr <- new(itree, 1)
+  tr$insert_at_node(0, 2)
+  tr$insert_at_node(0, 3)
+  tr$insert_at_node(0, 4)
+  tr$insert_at_node(3, 5)
+
+  expect_that(tr, is_expected_tree(5, "1(2 3 4(5))"))
+
+  expect_that(tr$arity, equals(3))
+  ## then for tr$front_sub (tr[0]), tr[1], tr[2], tr[2][0], once we
+  ## can get subtrees out.
+})
+
+## tree_append1
+## tree_prepend1
+
+## tree_append2
+## tree_prepend2
+
+## tree_inplace_init; not directly applicable, but we will need
+##   something similar.
+
+## tree_equaility; probably more focussed on general trees than
+##   something that we will need here.
+
+## tree_less; already decided not to implement (as not relevant to
+## phylogenetic work)
+
+## tree_const_iters; get this working in the style of itertools,
+##   perhaps?  Depends what we need to be able to reach from each
+##   iteration.  However, because we can do things like it->index() to
+##   get the index out, this could be a base for (somewhat
+##   inefficient) persistent write-able iterators in R.
+
+## tree_const_iters_backwards (same as above)
+
+## tree_mutable_iters; these are trickier.
+
+## tree_accessors; this is possibly the next in line, as we'll get the
+## subtree issues sorted out.
