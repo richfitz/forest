@@ -74,15 +74,6 @@ private:
   Iterator it;
 };
 
-// Wrappers to get things to work with STL wrappers.
-template <typename Iterator>
-iterator_wrapper<Iterator> find(iterator_wrapper<Iterator> first,
-				iterator_wrapper<Iterator> last,
-				const typename Iterator::value_type& val) {
-  Iterator it1 = first.iterator(), it2 = last.iterator();
-  return iterator_wrapper<Iterator>::create(std::find(it1, it2, val));
-}
-
 // Not sure if a macro here can be avoided but may help.  The other
 // way around would be to define a generic type and then have Rcpp do
 // it's inheritance thing.  But that won't work well with `$value`,
@@ -99,6 +90,7 @@ iterator_wrapper<Iterator> find(iterator_wrapper<Iterator> first,
   .method("advance",   &wrapped_type::advance)	 \
   ;
 
+// This organises building the big export string:
 #define FOREST_ITERATOR_MODULE(type, name) \
   FOREST_ITERATOR_MODULE_WRAPPED(forest::iterator_wrapper<type>, name)
 

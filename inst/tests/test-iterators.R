@@ -94,7 +94,7 @@ test_that("std::find works", {
   ## I'll try and get some more definitions written up.
   setGeneric("locate", function(begin, end, value) {
     standardGeneric("locate")
-  })
+  }, where=.GlobalEnv)
   setMethod("locate",
             c(begin=forest:::vector_double_iterator,
               end=forest:::vector_double_iterator),
