@@ -31,6 +31,8 @@ vector_double_iterator vector_double_end(vector_double* obj) {
 }
 }
 
+FOREST_ITERATOR_EXPORT(forest::test::vector_double::iterator)
+
 #ifdef __clang__
 #pragma clang diagnostic push
 // These I have no control over because they're Rcpp issues.
@@ -73,15 +75,6 @@ RCPP_MODULE(mod_test) {
     .method("end",         &forest::test::vector_double_end)
     ;
 
-  // The actual iterator support:
-  Rcpp::class_<forest::test::vector_double_iterator>("forest::test::vector_double_iterator")
-    .method("copy",      &forest::test::vector_double_iterator::copy)
-    .property("value",   &forest::test::vector_double_iterator::value)
-    .method("assign",    &forest::test::vector_double_iterator::assign)
-    .method("equals",    &forest::test::vector_double_iterator::equals)
-    .method("differs",   &forest::test::vector_double_iterator::differs)
-    .method("increment", &forest::test::vector_double_iterator::increment)
-    .method("decrement", &forest::test::vector_double_iterator::decrement)
-    .method("advance",   &forest::test::vector_double_iterator::advance)
-    ;
+  FOREST_ITERATOR_MODULE(forest::test::vector_double::iterator,
+    "vector_double_iterator")
 }

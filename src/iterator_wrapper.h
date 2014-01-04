@@ -72,6 +72,28 @@ private:
   Iterator it;
 };
 
+// Not sure if a macro here can be avoided but may help.  The other
+// way around would be to define a generic type and then have Rcpp do
+// it's inheritance thing.  But that won't work well with `$value`,
+// for which we need to define the correct type.
+#define FOREST_ITERATOR_MODULE_WRAPPED(wrapped_type, name) \
+  Rcpp::class_<wrapped_type>(name)	         \
+  .method("copy",      &wrapped_type::copy)      \
+  .property("value",   &wrapped_type::value)     \
+  .method("assign",    &wrapped_type::assign)    \
+  .method("equals",    &wrapped_type::equals)    \
+  .method("differs",   &wrapped_type::differs)	 \
+  .method("increment", &wrapped_type::increment) \
+  .method("decrement", &wrapped_type::decrement) \
+  .method("advance",   &wrapped_type::advance)	 \
+  ;
+
+#define FOREST_ITERATOR_MODULE(type, name) \
+  FOREST_ITERATOR_MODULE_WRAPPED(forest::iterator_wrapper<type>, name)
+
+#define FOREST_ITERATOR_EXPORT(type) \
+  RCPP_EXPOSED_CLASS_NODECL(forest::iterator_wrapper<type>)
+
 // To test this, let's wrap up the vector class, following
 // Rcpp-modules example.  The only difference is that we'll take care
 // of the indexing so that it appears 1-based from R.
@@ -92,7 +114,5 @@ vector_double_iterator vector_double_end(vector_double* obj);
 }
 
 }
-
-RCPP_EXPOSED_CLASS_NODECL(forest::test::vector_double_iterator)
 
 #endif
