@@ -1,6 +1,8 @@
 #include "iterator_wrapper.h"
 #include "iterator_wrapper_algorithm.h"
 
+#include "iterator_wrapper_test.h"
+
 namespace forest {
 namespace test {
 
