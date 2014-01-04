@@ -79,4 +79,32 @@ test_that("Dereferencing iterators works", {
   expect_that(it$equals(v$begin()), is_true())
 })
 
-## Still to do: some of the stl algorithms such as find.
+## Still to do: some of the stl algorithms such as find.  Not sure
+## what the best way of exporting these would be; they really need go
+## out as methods that dispatch appropriately; it's possible that a
+## module function would work here.
+
+## Next step - see if we can invalidate an iterator and test if it is
+## invalid somehow.  Otherwise lots of onus on people - with a crash
+## if it all fails.
+##
+## I've checked the code below and can see the invalid read from
+## valgrind.  So this is nicely going to cause an error.
+test_that("Iterator invalidation causes memory issues", {
+  v <- new(vector_double)
+  v$assign(1:10)
+
+  it <- v$begin()
+  expect_that(it$value, equals(1))
+
+  v$reserve(20)
+  expect_that(isTRUE(all.equal(it$value, 1)), is_false())
+
+  it2 <- v$begin()
+  rm(v)
+  gc()
+  it2$value # this surprisingly still works - no valgrind warning
+  it2$increment()
+  it2$value
+
+})

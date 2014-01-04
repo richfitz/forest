@@ -97,7 +97,6 @@ private:
 // To test this, let's wrap up the vector class, following
 // Rcpp-modules example.  The only difference is that we'll take care
 // of the indexing so that it appears 1-based from R.
-
 namespace test {
 
 // Convenience typedefs:
