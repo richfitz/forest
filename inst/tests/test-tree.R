@@ -29,7 +29,7 @@ test_that("Tree with root only is valid", {
   expect_that(tr$indices, equals(0))
 })
 
-test_that("Can construct a tree via insertion", {
+test_that("Can construct a tree via insertion (indices)", {
   tr <- new(itree)
   expect_that(tr, is_expected_tree(0, ""))
   expect_that(tr$arity, equals(0))
@@ -57,6 +57,34 @@ test_that("Can construct a tree via insertion", {
 
   ## Extra -- out of bounds check should fail:
   expect_that(tr$insert_at_node(10, 5), throws_error())
+})
+
+test_that("Can construct a tree via insertion (iterators)", {
+  tr <- new(itree)
+
+  tr$insert_at_iterator(tr$end(), 1)
+  expect_that(tr, is_expected_tree(1, "1"))
+  expect_that(tr$arity, equals(0))
+
+  tr$insert_at_iterator(tr$end_child(), 2)
+  expect_that(tr, is_expected_tree(2, "1(2)"))
+  expect_that(tr$arity, equals(1))
+
+  tr$insert_at_iterator(tr$end_child(), 3)
+  expect_that(tr, is_expected_tree(3, "1(2 3)"))
+  expect_that(tr$arity, equals(2))
+
+  ## These ones need the subtree iterators, and also the subtree
+  ## export!
+
+  ## tr$insert_at_iterator(tr$begin_sub_child()$value$end_child(), 4)
+  ## expect_that(tr, is_expected_tree(4, "1(2(4) 3)"))
+
+  ## tr$insert_at_iterator(tr$end_child(), 5)
+  ## expect_that(tr, is_expected_tree(4, "1(2(4) 3 5)"))
+
+  ## tr$insert_at_iterator(tr$begin_sub_child()$value$begin_child(), 6)
+  ## expect_that(tr, is_expected_tree(4, "1(2(6 4) 3 5)"))
 })
 
 ## This is not actually the same test as tree_copy_ctor or

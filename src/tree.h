@@ -3,6 +3,7 @@
 #define _FOREST_TREE_H_
 
 #include <Rcpp.h>
+#include "iterator_wrapper.h"
 
 #ifdef __clang__
 #pragma clang diagnostic push
@@ -23,12 +24,13 @@ namespace forest {
 template <typename T>
 struct node {
 public:
-  node(const T& data_, size_t index_) : index(index_), data(data_) {}
+  node(const T& data_, size_t index_) : data(data_), _index(index_) {}
   // This is just to make the actual creation a little easier.
   static node create(const T& data_, size_t index_) {
     node ret(data_, index_);
     return ret;
   }
+  size_t index() const {return _index;}
 
   // Basic comparisons -- basically passed down to underlying type,
   // skipping the index.
@@ -36,8 +38,10 @@ public:
   bool operator<(const node<T>& rhs) const { return data < rhs.data; }
   bool operator>(const node<T>& rhs) const { return data > rhs.data; }
 
-  const size_t index;
   T data;
+
+private:
+  size_t _index;
 };
 
 template<typename T>
@@ -49,8 +53,23 @@ std::ostream& operator<<(std::ostream& out, const forest::node<T>& nd) {
 template <typename T>
 class tree {
 public:
+  typedef node<T>                                    node_type;
+  typedef TREE_TREE_NAMESPACE::tree<node_type>       tree_type;
+  typedef typename tree_type::pre_iterator           pre_iterator;
+  typedef typename tree_type::post_iterator          post_iterator;
+  typedef typename tree_type::child_iterator         child_iterator;
+
+  typedef typename tree_type::const_pre_iterator     const_pre_iterator;
+  typedef typename tree_type::sub_pre_iterator       sub_pre_iterator;
+  typedef typename tree_type::const_sub_pre_iterator const_sub_pre_iterator;
+
+  // Extra helpers:
+  typedef iterator_wrapper<pre_iterator>   wrapped_pre_iterator;
+  typedef iterator_wrapper<post_iterator>  wrapped_post_iterator;
+  typedef iterator_wrapper<child_iterator> wrapped_child_iterator;
+
   tree() : index_(0) {}
-  tree(const T& t) : tree_(node<T>::create(t, 0)), index_(1) {}
+  tree(const T& t) : tree_(node_type::create(t, 0)), index_(1) {}
 
   // Basic interrogation methods; pass through to the tree:
   bool empty() const {return tree_.empty();}
@@ -68,6 +87,7 @@ public:
   void insert_at_node(size_t i, const T& t);
   // Insert a root node
   void insert_root(const T& t);
+  void insert_at_iterator(wrapped_pre_iterator i, const T& t);
 
   tree<T> clone() const {return *this;}
 
@@ -76,6 +96,27 @@ public:
   // dispatching incorrectly).
   bool is_equal_to(const tree<T>& rhs) const;
 
+  wrapped_pre_iterator begin() {
+    return wrapped_pre_iterator::create(tree_.begin());
+  }
+  wrapped_pre_iterator end() {
+    return wrapped_pre_iterator::create(tree_.end());
+  }
+
+  wrapped_post_iterator begin_post() {
+    return wrapped_post_iterator::create(tree_.begin_post());
+  }
+  wrapped_post_iterator end_post() {
+    return wrapped_post_iterator::create(tree_.end_post());
+  }
+
+  wrapped_child_iterator begin_child() {
+    return wrapped_child_iterator::create(tree_.begin_child());
+  }
+  wrapped_child_iterator end_child() {
+    return wrapped_child_iterator::create(tree_.end_child());
+  }
+
 private:
   // This takes care of the actual inserts, updating the index as
   // needed.
@@ -83,12 +124,6 @@ private:
   void insert(Iterator i, const T& v);
   template<typename Iterator>
   Iterator find_node(size_t i, Iterator first, Iterator last);
-
-  typedef TREE_TREE_NAMESPACE::tree< node<T> > tree_type;
-  typedef typename tree_type::pre_iterator           pre_iterator;
-  typedef typename tree_type::const_pre_iterator     const_pre_iterator;
-  typedef typename tree_type::sub_pre_iterator       sub_pre_iterator;
-  typedef typename tree_type::const_sub_pre_iterator const_sub_pre_iterator;
 
   tree_type tree_;
   size_t index_;
@@ -103,7 +138,7 @@ template <typename T>
 size_t tree<T>::index() const {
   if (empty())
     ::Rf_error("Can't get index of empty tree");
-  return tree_.root().index;
+  return tree_.root().index();
 }
 
 template <typename T>
@@ -111,7 +146,7 @@ std::vector<size_t> tree<T>::indices() const {
   std::vector<size_t> ret;
   const_pre_iterator it = tree_.begin();
   while (it != tree_.end())
-    ret.push_back((it++)->index);
+    ret.push_back((it++)->index());
   return ret;
 }
 
@@ -126,6 +161,15 @@ void tree<T>::insert_root(const T& t) {
   insert(tree_.end(), t);
 }
 
+// In theory, this is all that is needed, but we need to be able to
+// deal with all the different iterator types, as they will silently
+// convert from one to the other (this is instantiated in the module
+// code as a pre_iterator).
+template<typename T>
+void tree<T>::insert_at_iterator(wrapped_pre_iterator i, const T& t) {
+  insert(i.iterator(), t);
+}
+
 template <typename T>
 bool tree<T>::is_equal_to(const tree<T>& rhs) const {
   return this->tree_ == rhs.tree_;
@@ -134,13 +178,13 @@ bool tree<T>::is_equal_to(const tree<T>& rhs) const {
 template<typename T>
 template<typename Iterator>
 void tree<T>::insert(Iterator i, const T& v) {
-  tree_.insert(i, node<T>::create(v, index_++));
+  tree_.insert(i, node_type::create(v, index_++));
 }
 
 template<typename T>
 template<typename Iterator>
 Iterator tree<T>::find_node(size_t i, Iterator first, Iterator last) {
-  while (first != last && first->begin()->index != i)
+  while (first != last && first->begin()->index() != i)
     ++first;
   if (first == tree_.end())
     ::Rf_error("Did not find index %d", i);
