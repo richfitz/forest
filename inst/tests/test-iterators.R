@@ -33,9 +33,13 @@ test_that("Empty vector is empty", {
   expect_that(v$size, equals(0))
 })
 
+# avoiding a Rcpp weirdness about "no function to return from, jumping
+# to top level" that seems to be triggered when 'v' is cleaned up
+# automatically?
+gc()
+
 # Should be able to test failure by reserving enough space so that the
 # iterator reallocates -- end() will have changed.
-
 v <- new(vector_double)
 v$assign(1:10)
 
