@@ -96,12 +96,20 @@ private:
 // (iterator_wrapper<type>) can be passed in and out of R (using
 // external pointers).  Then we arrange that if an iterator is passed
 // back to R it should first be wrapped up with iterator_wrapper.
+//
+// The as() wrapper does exactly the inverse.
 #define FOREST_ITERATOR_EXPORT(type)				   \
   RCPP_EXPOSED_CLASS_NODECL(forest::iterator_wrapper<type>)	   \
   namespace Rcpp {						   \
   template<> SEXP wrap(const type& it);				   \
   template<> SEXP wrap(const type& it) {			   \
     return Rcpp::wrap(forest::iterator_wrapper<type>::create(it)); \
+  }								   \
+  template<> type as(SEXP obj);					   \
+  template<> type as(SEXP obj) {				   \
+    forest::iterator_wrapper<type> it =				   \
+      Rcpp::as< forest::iterator_wrapper<type> >(obj);		   \
+    return it.iterator();					   \
   }								   \
   }
 

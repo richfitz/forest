@@ -39,6 +39,9 @@ vector_double::iterator vector_double_end(vector_double* obj) {
 }
 }
 
+// This line is required to make the iterators available to R --
+// though that will pretty much always be the idea when creating a
+// wrapped iterator!
 FOREST_ITERATOR_EXPORT(forest::test::vector_double::iterator)
 
 #ifdef __clang__
@@ -86,7 +89,7 @@ RCPP_MODULE(mod_test) {
   FOREST_ITERATOR_MODULE(forest::test::vector_double::iterator,
     "vector_double_iterator")
     ;
-  // Make algorithms available:
+  // Make algorithms available (currently only std::find()):
   FOREST_ITERATOR_MODULE_ALGORITHM(forest::test::vector_double::iterator,
     "vector_double_iterator")
     ;
