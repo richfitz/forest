@@ -24,13 +24,18 @@ Rcpp::NumericVector vector_double_asR(vector_double* obj) {
 void vector_double_set(vector_double* obj, size_t i, double value) {
   obj->at(i - 1) = value;
 }
-vector_double_iterator vector_double_begin(vector_double* obj) {
-  return vector_double_iterator::create(obj->begin());
+// These incredibly simple functions (methods for proper classes) do
+// seem to be needed to avoid an ambiguity in method resolution
+// (possibly const vs non-const templates?).  I think it's around the
+// return type of begin(), which can't be inferred if you set this up
+// directly in the module with
+//   .method("begin", &vector_double::begin)
+vector_double::iterator vector_double_begin(vector_double* obj) {
+  return obj->begin();
 }
-vector_double_iterator vector_double_end(vector_double* obj) {
-  return vector_double_iterator::create(obj->end());
+vector_double::iterator vector_double_end(vector_double* obj) {
+  return obj->end();
 }
-
 }
 }
 

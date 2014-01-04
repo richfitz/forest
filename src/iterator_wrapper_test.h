@@ -13,16 +13,14 @@ namespace test {
 
 // Convenience typedefs:
 typedef std::vector<double> vector_double;
-typedef iterator_wrapper<vector_double::iterator> vector_double_iterator;
 
 void vector_double_assign(vector_double* obj, Rcpp::NumericVector data);
 double vector_double_at(vector_double* obj, size_t position);
 void vector_double_insert(vector_double* obj, size_t position, Rcpp::NumericVector data);
 Rcpp::NumericVector vector_double_asR(vector_double* obj);
 void vector_double_set(vector_double* obj, size_t i, double value);
-vector_double_iterator vector_double_begin(vector_double* obj);
-vector_double_iterator vector_double_end(vector_double* obj);
-
+vector_double::iterator vector_double_begin(vector_double* obj);
+vector_double::iterator vector_double_end(vector_double* obj);
 }
 }
 

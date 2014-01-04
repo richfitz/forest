@@ -38,8 +38,6 @@ test_that("Empty vector is empty", {
 # automatically?
 gc()
 
-# Should be able to test failure by reserving enough space so that the
-# iterator reallocates -- end() will have changed.
 v <- new(vector_double)
 v$assign(1:10)
 

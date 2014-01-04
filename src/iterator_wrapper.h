@@ -68,29 +68,41 @@ private:
   Iterator it;
 };
 
-// Not sure if a macro here can be avoided but may help.  The other
-// way around would be to define a generic type and then have Rcpp do
-// it's inheritance thing.  But that won't work well with `$value`,
-// for which we need to define the correct type.
-#define FOREST_ITERATOR_MODULE_WRAPPED(wrapped_type, name) \
-  Rcpp::class_<wrapped_type>(name)	         \
-  .method("copy",      &wrapped_type::copy)      \
-  .property("value",   &wrapped_type::value)     \
-  .method("assign",    &wrapped_type::assign)    \
-  .method("equals",    &wrapped_type::equals)    \
-  .method("differs",   &wrapped_type::differs)	 \
-  .method("increment", &wrapped_type::increment) \
-  .method("decrement", &wrapped_type::decrement) \
-  .method("advance",   &wrapped_type::advance)	 \
+}
+
+// This builds into the module support for accessing methods of an
+// iterator.
+//
+// Not sure if a macro here can be avoided but may help; here we
+// simply do just want to generate lots of code for the compiler to
+// work on.  The other way around would might be to define a generic
+// type and then have Rcpp do it's inheritance thing.  But that won't
+// work well with `$value`, for which we need to define the correct
+// type.
+#define FOREST_ITERATOR_MODULE(type, name)			    \
+  Rcpp::class_< forest::iterator_wrapper<type> >(name)		    \
+  .method("copy",      & forest::iterator_wrapper<type>::copy)      \
+  .property("value",   & forest::iterator_wrapper<type>::value)     \
+  .method("assign",    & forest::iterator_wrapper<type>::assign)    \
+  .method("equals",    & forest::iterator_wrapper<type>::equals)    \
+  .method("differs",   & forest::iterator_wrapper<type>::differs)   \
+  .method("increment", & forest::iterator_wrapper<type>::increment) \
+  .method("decrement", & forest::iterator_wrapper<type>::decrement) \
+  .method("advance",   & forest::iterator_wrapper<type>::advance)   \
   ;
 
-// This organises building the big export string:
-#define FOREST_ITERATOR_MODULE(type, name) \
-  FOREST_ITERATOR_MODULE_WRAPPED(forest::iterator_wrapper<type>, name)
-
-#define FOREST_ITERATOR_EXPORT(type) \
-  RCPP_EXPOSED_CLASS_NODECL(forest::iterator_wrapper<type>)
-
-}
+// This organises the wrapped type to be allowed to be exported from
+// R.  First, we set up that a wrapped iterator
+// (iterator_wrapper<type>) can be passed in and out of R (using
+// external pointers).  Then we arrange that if an iterator is passed
+// back to R it should first be wrapped up with iterator_wrapper.
+#define FOREST_ITERATOR_EXPORT(type)				   \
+  RCPP_EXPOSED_CLASS_NODECL(forest::iterator_wrapper<type>)	   \
+  namespace Rcpp {						   \
+  template<> SEXP wrap(const type& it);				   \
+  template<> SEXP wrap(const type& it) {			   \
+    return Rcpp::wrap(forest::iterator_wrapper<type>::create(it)); \
+  }								   \
+  }
 
 #endif

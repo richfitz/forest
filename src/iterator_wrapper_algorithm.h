@@ -112,8 +112,7 @@ template <typename Iterator>
 iterator_wrapper<Iterator> find(iterator_wrapper<Iterator> first,
 				iterator_wrapper<Iterator> last,
 				const typename Iterator::value_type& val) {
-  Iterator it1 = first.iterator(), it2 = last.iterator();
-  return iterator_wrapper<Iterator>::create(std::find(it1, it2, val));
+  return std::find(first.iterator(), last.iterator(), val);
 }
 
 }
