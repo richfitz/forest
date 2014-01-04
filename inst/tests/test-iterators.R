@@ -79,11 +79,6 @@ test_that("Dereferencing iterators works", {
   expect_that(it$equals(v$begin()), is_true())
 })
 
-## Still to do: some of the stl algorithms such as find.  Not sure
-## what the best way of exporting these would be; they really need go
-## out as methods that dispatch appropriately; it's possible that a
-## module function would work here.
-
 test_that("std::find works", {
   ## Pardon the ugly name for now:
   it <- forest:::find_vector_double_iterator(v$begin(), v$end(), 5)
@@ -93,8 +88,23 @@ test_that("std::find works", {
   ## Now, try and find something not in the vector:
   it <- forest:::find_vector_double_iterator(v$begin(), v$end(), 5.5)
   expect_that(it$equals(v$end()), is_true())
-})
 
+  ## Try getting this done a bit more nicely; I'm using "locate" here,
+  ## because "find" is already used.  If these turn out to be useful,
+  ## I'll try and get some more definitions written up.
+  setGeneric("locate", function(begin, end, value) {
+    standardGeneric("locate")
+  })
+  setMethod("locate",
+            c(begin=forest:::vector_double_iterator,
+              end=forest:::vector_double_iterator),
+            function(begin, end, value)
+            forest:::find_vector_double_iterator(begin, end, value))
+
+  it1 <- forest:::find_vector_double_iterator(v$begin(), v$end(), 5)
+  it2 <- locate(v$begin(), v$end(), 5)
+  expect_that(it1$equals(it2), is_true())
+})
 
 ## It's easy to invalidate iterators by changing the underlying data.
 ## For example, run this under valgrind:
