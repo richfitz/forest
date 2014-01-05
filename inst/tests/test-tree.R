@@ -159,20 +159,40 @@ test_that("Can build tree using append_node", {
   tr$append_node(1)
   tr$append_node(1)
   expect_that(tr, is_expected_tree(3, "42(1 1)"))
+
+  tr1 <- new(itree)
+  tr1$insert_at_iterator(tr1$end(), 1)
+  tr1$append_node(2)
+  tr1[[1]]$append_node(3)
+  tr1$append_node(4)
+  expect_that(tr1, is_expected_tree(4, "1(2(3) 4)"))
 })
 
 test_that("Can build tree using prepend_node", {
   tr <- new(itree, -1)
   tr$prepend_node(42)
-
   expect_that(tr, is_expected_tree(2, "-1(42)"))
 
-  ## TODO: Check what the rest of tree_prepend1 is doing...
+  front <- "-1("
+  back <- "42)"
+  for (i in seq_len(10)) {
+    back <- paste0(i, " ", back)
+    tr$prepend_node(i)
+    expect_that(tr, is_expected_tree(i + 2, paste0(front, back)))
+  }
+
+  tr1 <- new(itree, -1)
+  front <- "-1"
+  back <- ""
+  it <- tr1$begin_sub()
+  for (i in 1:10) {
+    front <- paste0(front, "(", i)
+    back <- paste0(")", back)
+    it$value$prepend_node(i)
+    it$increment()
+    expect_that(tr1, is_expected_tree(i + 1, paste0(front, back)))
+  }
 })
-
-
-## tree_append1
-## tree_prepend1
 
 ## tree_append2
 ## tree_prepend2

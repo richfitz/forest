@@ -118,6 +118,9 @@ RCPP_MODULE(forest) {
     .property("index",          &isubtree_wrapped::index)
     .property("indices",        &isubtree_wrapped::indices)
 
+    .method("append_node",      &isubtree_wrapped::append_node)
+    .method("prepend_node",     &isubtree_wrapped::prepend_node)
+
     .method("begin",            &isubtree_wrapped::begin)
     .method("end",              &isubtree_wrapped::end)
     .method("begin_post",       &isubtree_wrapped::begin_post)

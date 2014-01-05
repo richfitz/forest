@@ -220,6 +220,14 @@ struct subtree_wrapped {
   // like loop over and get the largest index in any part of the tree,
   // but that's a different algorithm than what I'm using elsewhere.
   // Something to think about...
+  //
+  // I suspect that the solution here is just to drop the entire index
+  // thing entirely?  Or have the tree able to generate them at some
+  // point?  Now that iterators work, it doesn't seem so useful...
+  void append_node(const T& v) {
+    subtree_.append(node_type::create(v, 0));}
+  void prepend_node(const T& v) {
+    subtree_.prepend(node_type::create(v, 0));}
 
   // NOTE: these can be tree_type:: or subtree_type:: -- but we do all
   // of the wrapping based on the tree_type iterators, so for some
