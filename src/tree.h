@@ -91,7 +91,7 @@ public:
   // code as a pre_iterator).
   void insert_at_iterator(pre_iterator i, const T& t) {insert(i, t);}
 
-  tree<T> clone() const {return *this;}
+  tree<T> copy() const {return *this;}
 
   bool is_equal_to(const tree<T>& rhs) const;
 

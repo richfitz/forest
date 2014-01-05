@@ -87,23 +87,23 @@ test_that("Can construct a tree via insertion (iterators)", {
 ## This is not actually the same test as tree_copy_ctor or
 ## tree_assignment in test_runner.cpp, because we're not going to test
 ## the copy constructor there.  Instead here we test the ability to
-## clone.
+## copy.
 test_that("Can copy trees", {
   tr <- new(itree)
-  tr1 <- tr$clone()
+  tr1 <- tr$copy()
 
   ## TODO: Find out how to overload the S4 '==' method, perhaps just
   ## pointing at this method.
   expect_that(tr$is_equal_to(tr1), is_true())
 
   tr$insert_root(1)
-  tr2 <- tr$clone()
+  tr2 <- tr$copy()
   expect_that(tr$is_equal_to(tr1), is_false())
   expect_that(tr$is_equal_to(tr2), is_true())
 
   tr$insert_at_node(0, 2)
   tr$insert_at_node(0, 3)
-  tr3 <- tr$clone()
+  tr3 <- tr$copy()
   expect_that(tr$is_equal_to(tr1), is_false())
   expect_that(tr$is_equal_to(tr2), is_false())
   expect_that(tr$is_equal_to(tr3), is_true())

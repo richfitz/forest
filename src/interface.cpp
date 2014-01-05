@@ -80,7 +80,7 @@ RCPP_MODULE(forest) {
     .method("insert_root",        &itree::insert_root)
     .method("insert_at_iterator", &itree::insert_at_iterator)
 
-    .method("clone",       &itree::clone)
+    .method("copy",       &itree::copy)
 
     .method("is_equal_to",     &itree::is_equal_to)
 
