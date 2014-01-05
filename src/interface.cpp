@@ -4,12 +4,15 @@
 
 // Iterators
 
-// [const_]pre_iterator       -- over *data*, in preorder
-// [const_]sub_pre_iterator   -- over *subtrees* in preorder
-// [const_]child_iterator     -- over *data*, over daughters of a node
-// [const_]sub_child_iterator -- over *subtrees*, over daughters of a node
-// [const_]post_iterator      -- over *data*, in preorder
-// [const_]sub_post_iterator  -- over *subtrees*, in preorder
+// Pointing at nodes (node iterators)
+//   [const_]pre_iterator       -- in preorder
+//   [const_]post_iterator      -- in preorder
+//   [const_]child_iterator     -- over daughters of a node
+//
+// Pointing  at subtrees (subtree iterators)
+//   [const_]sub_pre_iterator   -- in preorder
+//   [const_]sub_post_iterator  -- in preorder
+//   [const_]sub_child_iterator -- over daughters of a node
 
 // Following test_runner.cpp, we'll define some basic fully-specified
 // tree types here:
@@ -21,7 +24,21 @@ FOREST_ITERATOR_EXPORT(itree::pre_iterator)
 FOREST_ITERATOR_EXPORT(itree::post_iterator)
 FOREST_ITERATOR_EXPORT(itree::child_iterator)
 
-// typedef forest::subtree<int> isubtree;
+typedef forest::subtree_wrapped<int> isubtree_wrapped;
+typedef itree::subtree_type isubtree;
+RCPP_EXPOSED_CLASS_NODECL(isubtree_wrapped)
+
+namespace Rcpp {
+template<> SEXP wrap(const isubtree& obj);
+template<> SEXP wrap(const isubtree& obj) {
+  return Rcpp::wrap(isubtree_wrapped::create(obj));
+}
+template<> isubtree as(SEXP obj);
+template<> isubtree as(SEXP obj) {
+  isubtree_wrapped st = Rcpp::as<isubtree_wrapped>(obj);
+  return st.subtree;
+}
+}
 
 #ifdef __clang__
 #pragma clang diagnostic push
@@ -66,6 +83,10 @@ RCPP_MODULE(forest) {
     .method("end_post",        &itree::end_post)
     .method("begin_child",     &itree::begin_child)
     .method("end_child",       &itree::end_child)
+    ;
+
+  Rcpp::class_<isubtree_wrapped>("isubtree_wrapped")
+    .property("size", &isubtree_wrapped::size)
     ;
 
   FOREST_ITERATOR_MODULE(itree::pre_iterator, "itree_pre_iterator")

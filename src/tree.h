@@ -54,6 +54,7 @@ class tree {
 public:
   typedef node<T>                                    node_type;
   typedef TREE_TREE_NAMESPACE::tree<node_type>       tree_type;
+  typedef TREE_TREE_NAMESPACE::subtree<node_type>    subtree_type;
   typedef typename tree_type::pre_iterator           pre_iterator;
   typedef typename tree_type::post_iterator          post_iterator;
   typedef typename tree_type::child_iterator         child_iterator;
@@ -163,6 +164,27 @@ Iterator tree<T>::find_node(size_t i, Iterator first, Iterator last) {
     ::Rf_error("Did not find index %d", i);
   return first;
 }
+
+// Need to wrap these up on return.  There will be two levels of
+// wrapping though, which is pretty terrible.  It's possible that we
+// can avoid wrapping up with iterator_wrapper though?  Or, if this
+// exists purely for communication with R we could have two sorts of
+// begin/end access?  Or, we could use this with as/wrap functions.
+// Options!
+template <typename T>
+struct subtree_wrapped {
+  typedef node<T> node_type;
+  typedef TREE_TREE_NAMESPACE::subtree<node_type> subtree_type;
+  subtree_type subtree;
+  subtree_wrapped(const subtree_type& subtree_) : subtree(subtree_) {}
+  static subtree_wrapped create(const subtree_type& subtree_) {
+    subtree_wrapped ret(subtree_);
+    return ret;
+  }
+  size_t size() const {return subtree.size();}
+  typename subtree_type::pre_iterator begin() {return subtree.begin();}
+  typename subtree_type::pre_iterator end()   {return subtree.end();}
+};
 
 }
 
