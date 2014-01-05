@@ -58,9 +58,9 @@ public:
   typedef typename tree_type::pre_iterator           pre_iterator;
   typedef typename tree_type::post_iterator          post_iterator;
   typedef typename tree_type::child_iterator         child_iterator;
+  typedef typename tree_type::sub_pre_iterator       sub_pre_iterator;
 
   typedef typename tree_type::const_pre_iterator     const_pre_iterator;
-  typedef typename tree_type::sub_pre_iterator       sub_pre_iterator;
   typedef typename tree_type::const_sub_pre_iterator const_sub_pre_iterator;
 
   tree() : index_(0) {}
@@ -98,6 +98,9 @@ public:
   post_iterator  end_post()    { return tree_.end_post();    }
   child_iterator begin_child() { return tree_.begin_child(); }
   child_iterator end_child()   { return tree_.end_child();   }
+
+  sub_pre_iterator begin_sub() { return tree_.begin_sub();   }
+  sub_pre_iterator end_sub()   { return tree_.end_sub();     }
 
 private:
   // This takes care of the actual inserts, updating the index as
@@ -174,17 +177,55 @@ Iterator tree<T>::find_node(size_t i, Iterator first, Iterator last) {
 template <typename T>
 struct subtree_wrapped {
   typedef node<T> node_type;
+  typedef TREE_TREE_NAMESPACE::tree<node_type>    tree_type;
   typedef TREE_TREE_NAMESPACE::subtree<node_type> subtree_type;
-  subtree_type subtree;
-  subtree_wrapped(const subtree_type& subtree_) : subtree(subtree_) {}
-  static subtree_wrapped create(const subtree_type& subtree_) {
-    subtree_wrapped ret(subtree_);
+  subtree_type subtree_;
+  subtree_wrapped(const subtree_type& subtree) : subtree_(subtree) {}
+  static subtree_wrapped create(const subtree_type& subtree) {
+    subtree_wrapped ret(subtree);
     return ret;
   }
-  size_t size() const {return subtree.size();}
-  typename subtree_type::pre_iterator begin() {return subtree.begin();}
-  typename subtree_type::pre_iterator end()   {return subtree.end();}
+  bool   empty()     const {return subtree_.empty();}
+  size_t size()      const {return subtree_.size();}
+  size_t arity()     const {return subtree_.arity();}
+  bool   childless() const {return subtree_.childless();}
+  std::string representation() const;
+
+  size_t index() const;
+  std::vector<size_t> indices() const;
+
+  // Can't do insert_* without knowing what the next index would be;
+  // and we can't access the container either.  We could do something
+  // like loop over and get the largest index in any part of the tree,
+  // but that's a different algorithm than what I'm using elsewhere.
+  // Something to think about...
+
+  // NOTE: should this be tree_type::, perhaps?
+  typename subtree_type::pre_iterator begin() {return subtree_.begin();}
+  typename subtree_type::pre_iterator end()   {return subtree_.end();}
 };
+
+template <typename T>
+std::string subtree_wrapped<T>::representation() const {
+  return boost::lexical_cast<std::string>(subtree_);
+}
+
+template <typename T>
+size_t subtree_wrapped<T>::index() const {
+  if (empty())
+    ::Rf_error("Can't get index of empty subtree");
+  return subtree_.begin()->index();
+}
+
+template <typename T>
+std::vector<size_t> subtree_wrapped<T>::indices() const {
+  std::vector<size_t> ret;
+  typename subtree_type::const_pre_iterator it = subtree_.begin();
+  while (it != subtree_.end())
+    ret.push_back((it++)->index());
+  return ret;
+}
+
 
 }
 
