@@ -109,23 +109,6 @@ test_that("Can copy trees", {
   expect_that(tr$is_equal_to(tr3), is_true())
 })
 
-## tree_subtr_assignment looks like fun, but need to get a bit better
-## with subtrees to get this to work...
-
-test_that("Arity calculations are correct", {
-  tr <- new(itree, 1)
-  tr$insert_at_node(0, 2)
-  tr$insert_at_node(0, 3)
-  tr$insert_at_node(0, 4)
-  tr$insert_at_node(3, 5)
-
-  expect_that(tr, is_expected_tree(5, "1(2 3 4(5))"))
-
-  expect_that(tr$arity, equals(3))
-  ## then for tr$front_sub (tr[0]), tr[1], tr[2], tr[2][0], once we
-  ## can get subtrees out.
-})
-
 test_that("Tree subtree assignment works", {
   # NOTE: This will be easier when we get nicer constructors.
   tr <- new(itree, 5)
@@ -156,6 +139,21 @@ test_that("Tree subtree assignment works", {
   tr[[2]] <- tr2
   expect_that(tr, is_expected_tree(6, "5(7(8) 1(2 3))"))
 })
+
+test_that("Arity calculations are correct", {
+  tr <- new(itree, 1)
+  tr$insert_at_node(0, 2)
+  tr$insert_at_node(0, 3)
+  tr$insert_at_node(0, 4)
+  tr$insert_at_node(3, 5)
+
+  expect_that(tr, is_expected_tree(5, "1(2 3 4(5))"))
+
+  expect_that(tr$arity, equals(3))
+  ## then for tr$front_sub (tr[0]), tr[1], tr[2], tr[2][0], once we
+  ## can get subtrees out.
+})
+
 
 ## tree_append1
 ## tree_prepend1
