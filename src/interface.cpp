@@ -29,9 +29,12 @@ typedef itree::subtree_type isubtree;
 RCPP_EXPOSED_CLASS_NODECL(isubtree_wrapped)
 
 FOREST_ITERATOR_EXPORT(itree::sub_pre_iterator)
+FOREST_ITERATOR_EXPORT(itree::sub_post_iterator)
+FOREST_ITERATOR_EXPORT(itree::sub_child_iterator)
 
-// In contrast to the iterator versions, these should be easy to
-// template once and for all.  Which is good.
+// In contrast to the iterator versions, these may be possible to
+// template for all subtree types.  However, I did try doing this with
+// little success (see nodes.md)
 namespace Rcpp {
 template<> SEXP wrap(const isubtree& obj);
 template<> SEXP wrap(const isubtree& obj) {
@@ -90,6 +93,10 @@ RCPP_MODULE(forest) {
 
     .method("begin_sub",       &itree::begin_sub)
     .method("end_sub",         &itree::end_sub)
+    .method("begin_sub_post",  &itree::begin_sub_post)
+    .method("end_sub_post",    &itree::end_sub_post)
+    .method("begin_sub_child", &itree::begin_sub_child)
+    .method("end_sub_child",   &itree::end_sub_child)
     ;
 
   Rcpp::class_<isubtree_wrapped>("isubtree_wrapped")
@@ -104,10 +111,16 @@ RCPP_MODULE(forest) {
 
     .method("begin",            &isubtree_wrapped::begin)
     .method("end",              &isubtree_wrapped::end)
+    .method("begin_post",       &isubtree_wrapped::begin_post)
+    .method("end_post",         &isubtree_wrapped::end_post)
+    .method("begin_child",      &isubtree_wrapped::begin_child)
+    .method("end_child",        &isubtree_wrapped::end_child)
     ;
 
   FOREST_ITERATOR_MODULE(itree::pre_iterator, "itree_pre_iterator")
   FOREST_ITERATOR_MODULE(itree::post_iterator, "itree_post_iterator")
   FOREST_ITERATOR_MODULE(itree::child_iterator, "itree_child_iterator")
   FOREST_ITERATOR_MODULE(itree::sub_pre_iterator, "itree_sub_pre_iterator")
+  FOREST_ITERATOR_MODULE(itree::sub_post_iterator, "itree_sub_post_iterator")
+  FOREST_ITERATOR_MODULE(itree::sub_child_iterator, "itree_sub_child_iterator")
 }

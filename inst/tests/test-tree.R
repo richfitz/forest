@@ -74,17 +74,14 @@ test_that("Can construct a tree via insertion (iterators)", {
   expect_that(tr, is_expected_tree(3, "1(2 3)"))
   expect_that(tr$arity, equals(2))
 
-  ## These ones need the subtree iterators, and also the subtree
-  ## export!
+  tr$insert_at_iterator(tr$begin_sub_child()$value$end_child(), 4)
+  expect_that(tr, is_expected_tree(4, "1(2(4) 3)"))
 
-  ## tr$insert_at_iterator(tr$begin_sub_child()$value$end_child(), 4)
-  ## expect_that(tr, is_expected_tree(4, "1(2(4) 3)"))
+  tr$insert_at_iterator(tr$end_child(), 5)
+  expect_that(tr, is_expected_tree(5, "1(2(4) 3 5)"))
 
-  ## tr$insert_at_iterator(tr$end_child(), 5)
-  ## expect_that(tr, is_expected_tree(4, "1(2(4) 3 5)"))
-
-  ## tr$insert_at_iterator(tr$begin_sub_child()$value$begin_child(), 6)
-  ## expect_that(tr, is_expected_tree(4, "1(2(6 4) 3 5)"))
+  tr$insert_at_iterator(tr$begin_sub_child()$value$begin_child(), 6)
+  expect_that(tr, is_expected_tree(6, "1(2(6 4) 3 5)"))
 })
 
 ## This is not actually the same test as tree_copy_ctor or

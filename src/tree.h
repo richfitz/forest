@@ -58,7 +58,10 @@ public:
   typedef typename tree_type::pre_iterator           pre_iterator;
   typedef typename tree_type::post_iterator          post_iterator;
   typedef typename tree_type::child_iterator         child_iterator;
+
   typedef typename tree_type::sub_pre_iterator       sub_pre_iterator;
+  typedef typename tree_type::sub_post_iterator      sub_post_iterator;
+  typedef typename tree_type::sub_child_iterator     sub_child_iterator;
 
   typedef typename tree_type::const_pre_iterator     const_pre_iterator;
   typedef typename tree_type::const_sub_pre_iterator const_sub_pre_iterator;
@@ -99,8 +102,12 @@ public:
   child_iterator begin_child() { return tree_.begin_child(); }
   child_iterator end_child()   { return tree_.end_child();   }
 
-  sub_pre_iterator begin_sub() { return tree_.begin_sub();   }
-  sub_pre_iterator end_sub()   { return tree_.end_sub();     }
+  sub_pre_iterator   begin_sub()       { return tree_.begin_sub();       }
+  sub_pre_iterator   end_sub()         { return tree_.end_sub();         }
+  sub_post_iterator  begin_sub_post()  { return tree_.begin_sub_post();  }
+  sub_post_iterator  end_sub_post()    { return tree_.end_sub_post();    }
+  sub_child_iterator begin_sub_child() { return tree_.begin_sub_child(); }
+  sub_child_iterator end_sub_child()   { return tree_.end_sub_child();   }
 
 private:
   // This takes care of the actual inserts, updating the index as
@@ -200,9 +207,19 @@ struct subtree_wrapped {
   // but that's a different algorithm than what I'm using elsewhere.
   // Something to think about...
 
-  // NOTE: should this be tree_type::, perhaps?
-  typename subtree_type::pre_iterator begin() {return subtree_.begin();}
-  typename subtree_type::pre_iterator end()   {return subtree_.end();}
+  // NOTE: these can be tree_type:: or subtree_type:: -- but we do all
+  // of the wrapping based on the tree_type iterators, so for some
+  // sort of clarity I'm favouring tree_type:: here.
+  typename tree_type::pre_iterator begin() {return subtree_.begin();}
+  typename tree_type::pre_iterator end()   {return subtree_.end();}
+  typename tree_type::post_iterator begin_post() {
+    return subtree_.begin_post();}
+  typename tree_type::post_iterator end_post()   {
+    return subtree_.end_post();}
+  typename tree_type::child_iterator begin_child() {
+    return subtree_.begin_child();}
+  typename tree_type::child_iterator end_child()   {
+    return subtree_.end_child();}
 };
 
 template <typename T>
@@ -225,7 +242,6 @@ std::vector<size_t> subtree_wrapped<T>::indices() const {
     ret.push_back((it++)->index());
   return ret;
 }
-
 
 }
 
