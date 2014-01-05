@@ -91,6 +91,11 @@ public:
   // code as a pre_iterator).
   void insert_at_iterator(pre_iterator i, const T& t) {insert(i, t);}
 
+  void append_node(const T& v) {
+    tree_.append(node_type::create(v, index_++));}
+  void prepend_node(const T& v) {
+    tree_.prepend(node_type::create(v, index_++));}
+
   tree<T> copy() const {return *this;}
 
   bool is_equal_to(const tree<T>& rhs) const;

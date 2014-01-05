@@ -154,6 +154,22 @@ test_that("Arity calculations are correct", {
   ## can get subtrees out.
 })
 
+test_that("Can build tree using append_node", {
+  tr <- new(itree, 42)
+  tr$append_node(1)
+  tr$append_node(1)
+  expect_that(tr, is_expected_tree(3, "42(1 1)"))
+})
+
+test_that("Can build tree using prepend_node", {
+  tr <- new(itree, -1)
+  tr$prepend_node(42)
+
+  expect_that(tr, is_expected_tree(2, "-1(42)"))
+
+  ## TODO: Check what the rest of tree_prepend1 is doing...
+})
+
 
 ## tree_append1
 ## tree_prepend1
