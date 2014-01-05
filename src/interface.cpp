@@ -97,6 +97,12 @@ RCPP_MODULE(forest) {
     .method("end_sub_post",    &itree::end_sub_post)
     .method("begin_sub_child", &itree::begin_sub_child)
     .method("end_sub_child",   &itree::end_sub_child)
+
+    // NOTE: using base-1 accessor/setter here.
+    .method("at",              &itree::r_at)
+    .method("[[",              &itree::r_at)
+    .method("insert_at",       &itree::r_insert_at)
+    .method("[[<-",            &itree::r_insert_at)
     ;
 
   Rcpp::class_<isubtree_wrapped>("isubtree_wrapped")

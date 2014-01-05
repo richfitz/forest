@@ -109,6 +109,15 @@ public:
   sub_child_iterator begin_sub_child() { return tree_.begin_sub_child(); }
   sub_child_iterator end_sub_child()   { return tree_.end_sub_child();   }
 
+  subtree_type at(size_t idx) { return tree_[idx]; }
+  void insert_at(size_t idx, const subtree_type& value) {
+    tree_[idx] = value; }
+  // TODO: Need range checks here -- will crash R if out-of-bounds
+  // iterators are used.
+  subtree_type r_at(size_t idx) { return at(idx-1); }
+  void r_insert_at(size_t idx, const subtree_type& value) {
+    insert_at(idx-1, value); }
+
 private:
   // This takes care of the actual inserts, updating the index as
   // needed.

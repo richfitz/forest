@@ -126,6 +126,37 @@ test_that("Arity calculations are correct", {
   ## can get subtrees out.
 })
 
+test_that("Tree subtree assignment works", {
+  # NOTE: This will be easier when we get nicer constructors.
+  tr <- new(itree, 5)
+  tr$insert_at_node(0, 6)
+  tr$insert_at_node(0, 7)
+  tr$insert_at_node(2, 8)
+  .tr <- tr$copy() # save for later
+
+  ## Note that this is going to require on insert that the indices are
+  ## updated in the *recieving* tree.  That should be easy enough to
+  ## do...
+  tr2 <- new(itree, 1)
+  tr2$insert_at_node(0, 2)
+  tr2$insert_at_node(0, 3)
+
+  tr$insert_at(1L, tr$at(2L))
+  expect_that(tr, is_expected_tree(5, "5(7(8) 7(8))"))
+
+  tr$insert_at(2L, tr2)
+  expect_that(tr, is_expected_tree(6, "5(7(8) 1(2 3))"))
+
+  ## And again with the nice syntactic sugar:
+  tr <- .tr
+
+  tr[[1]] <- tr[[2]]
+  expect_that(tr, is_expected_tree(5, "5(7(8) 7(8))"))
+
+  tr[[2]] <- tr2
+  expect_that(tr, is_expected_tree(6, "5(7(8) 1(2 3))"))
+})
+
 ## tree_append1
 ## tree_prepend1
 
