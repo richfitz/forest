@@ -97,6 +97,8 @@ RCPP_MODULE(forest) {
 
     .method("erase",           &itree::erase)
     .method("erase_pair",      &itree::erase_pair)
+    .method("prune",           &itree::prune)
+    .method("clear",           &itree::clear)
 
     .method("is_equal_to",     &itree::is_equal_to)
 
@@ -138,6 +140,7 @@ RCPP_MODULE(forest) {
 
     .method("erase",            &isubtree_wrapped::erase)
     .method("erase_pair",       &isubtree_wrapped::erase_pair)
+    .method("prune",            &isubtree_wrapped::prune)
 
     .method("is_equal_to",      &isubtree_wrapped::is_equal_to)
 

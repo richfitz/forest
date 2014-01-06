@@ -432,9 +432,44 @@ test_that("tree_erase2", {
   expect_that(tr, is_expected_tree(1, "1"))
 })
 
-## tree_prune
+test_that("tree_prune", {
+  tr <- tree_of(1)(tree_of(2)(3,4),
+                   tree_of(5)(tree_of(6)(7,8)),
+                   tree_of(9)(tree_of(10)(11),12))()
+  str <- "1(2(3 4) 5(6(7 8)) 9(10(11) 12))"
+  expect_that(tr, is_expected_tree(12, str))
 
-## tree_clear
+  tr[[1]]$prune()
+  expect_that(tr, is_expected_tree(10,"1(2 5(6(7 8)) 9(10(11) 12))"))
+
+  tr[[3]][[1]]$prune()
+  expect_that(tr, is_expected_tree(9, "1(2 5(6(7 8)) 9(10 12))"))
+
+  tr$prune()
+  expect_that(tr, is_expected_tree(1, "1"))
+})
+
+test_that("tree_clear", {
+  tr <- new(itree, 42)
+  ci <- tr$begin_child()
+
+  tr$clear()
+  expect_that(tr, is_expected_tree(0, ""))
+
+  tr$clear()
+  expect_that(tr, is_expected_tree(0, ""))
+
+  tr$insert_at_iterator(tr$end(), 1)
+  tr$clear()
+  expect_that(tr, is_expected_tree(0, ""))
+
+  tr$insert_at_iterator(tr$end(),1)
+  # TODO: Needs these append methods still:
+  # tr$append(20,tree_of(1)(2,3,tree_of(4)(5))())
+  # tr[[1]]$append(5, tr$copy())
+  tr$clear()
+  expect_that(tr, is_expected_tree(0, ""))
+})
 
 ## tree_splice1, tree_splice2
 

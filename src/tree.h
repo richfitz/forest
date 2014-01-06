@@ -115,6 +115,8 @@ public:
   void erase_pair(child_iterator f, child_iterator l) {
     tree_.erase(f, l);
   }
+  void prune() {tree_.prune();}
+  void clear() {tree_.clear();}
 
   tree<T> copy() const {return *this;}
 
@@ -257,6 +259,7 @@ struct subtree_wrapped {
 		  typename tree_type::child_iterator l) {
     subtree_.erase(f, l);
   }
+  void prune() {subtree_.prune();}
 
   bool is_equal_to(const subtree_wrapped& rhs) const {
     return this->subtree_ == rhs.subtree_; }
