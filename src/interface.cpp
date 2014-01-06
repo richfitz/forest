@@ -191,4 +191,7 @@ RCPP_MODULE(forest) {
 				   "itree_sub_post_iterator")
   FOREST_ITERATOR_MODULE_ALGORITHM(itree::sub_child_iterator,
 				   "itree_sub_child_iterator")
+
+  Rcpp::function("parent",
+		 &TREE_TREE_NAMESPACE::parent<itree::pre_iterator>);
 }

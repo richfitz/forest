@@ -580,9 +580,22 @@ test_that("tree_splice2",  {
   expect_that(tr3, is_expected_tree(3, "5(3 6)"))
 })
 
-## tree_swap
+## tree_swap: Is implementation for std::swap, so not useful in R.
 
-## tree_parent
+test_that("tree_parent", {
+  tr <- tree_of(1)(2,3,tree_of(4)(5,6))()
+
+  parent <- forest:::parent
+
+  expect_that(parent(tr$begin())$equals(tr$end()), is_true())
+
+  expect_that(parent(tr[[1]]$begin())$equals(tr$begin()), is_true())
+  expect_that(parent(tr[[2]]$begin())$equals(tr$begin()), is_true())
+  expect_that(parent(tr[[3]]$begin())$equals(tr$begin()), is_true())
+
+  expect_that(parent(tr[[3]][[1]]$begin())$equals(tr[[3]]$begin()), is_true())
+  expect_that(parent(tr[[3]][[2]]$begin())$equals(tr[[3]]$begin()), is_true())
+})
 
 ## tree_io, tree_io_empty, tree_out_sexpr, tree_in_sexpr
 
