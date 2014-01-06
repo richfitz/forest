@@ -366,8 +366,67 @@ test_that("tree_accessors", {
   expect_that(tr[[4]],           is_same_tree_as(tree_of(8)()))
 })
 
-## tree_insert2; not checked what is different here to tree_insert
-##   yet.
+test_case("tree_insert2", {
+  tr <- new(itree)
+
+  tr$insert_subtree(tr$end(), tree_of(1)(2,3)())
+  expect_that(tr, is_same_tree_as(tree_of(1)(2,3)()))
+
+  tr$insert_subtree(tr[[2]]$begin_child(), tree_of(4)(5,6)())
+  cmp <- tree_of(1)(2,tree_of(3)(tree_of(4)(5,6)))()
+  expect_that(tr, is_same_tree_as(cmp))
+
+  # TODO: These don't work with a naive implementation of insert_pair
+  # (passing along signature (pre_iterator, pre_iterator,
+  # pre_iterator) -- the first hangs, the second returns a different
+  # tree as the sub iterator is silently converted into a pre iterator
+  # (as you'd expect).
+  #
+  # NOTE: As a result, be careful here in how other methods that
+  # silently change iterator type behave.
+  ## tr$insert_pair(tr[[1]]$begin_child(),
+  ##                tr$begin_child(), tr$end_child())
+  ## expect_that(tr,tree_of(1)(tree_of(2)(2,3),tree_of(3)(tree_of(4)(5,6))))
+
+  tr1 <- new(itree, 42)
+  tr2 <- tree_of(1)(2,3)()
+  ## tr1$insert_pair(tr1$begin_child(),
+  ##                 tr2$begin_sub(), tr2$end_sub())
+  ## cmp <- tree_of(42)(tree_of(1)(2,3),
+  ##                    tree_of(2),
+  ##                    tree_of(3))()
+  ## expect_that(tr1, is_same_tree_as(cmp))
+
+  tr3 <- new(itree, 42)
+  tr3$insert_n(tr3$begin_child(), 100, 3)
+
+  expect_that(tr3$size,        equals(101))
+  expect_that(tr3$root()$data, equals(42))
+  it <- tr3$begin()
+  ok <- TRUE
+  for (i in seq_len(100)) {
+    it$increment()
+    ok <- ok && it$value$data == 3
+  }
+  expect_that(ok, is_true())
+
+  tr3$insert_n(tr3[[1]]$begin_child(), 10, 4)
+  it <- tr3[[1]]$begin()
+  ok <- TRUE
+  for (j in seq_len(10)) {
+    it$increment()
+    ok <- ok && it$value$data == 4
+  }
+  expect_that(ok, is_true())
+
+  tr4 <- new(itree, 42)
+  tr4$insert_subtree_n(tr4$begin_child(), 8, tr2)
+  expect_that(tr4$size, equals(25))
+  ok <- TRUE
+  for (i in seq_len(8))
+    ok <- ok && tr4[[i]]$is_equal_to(tr2)
+  expect_that(ok, is_true())
+})
 
 ## tree_append3, tree_prepend3: Iterator pair versions of append,
 ##   prepend -- should not be too hard.

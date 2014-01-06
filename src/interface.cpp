@@ -81,10 +81,10 @@ RCPP_MODULE(forest) {
     .method("front_sub",   &itree::front_sub)
     .method("back_sub",    &itree::back_sub)
 
-    .property("index",     &itree::index)
-    .property("indices",   &itree::indices)
-
-    .method("insert",          &itree::insert)
+    .method("insert",           &itree::insert)
+    .method("insert_subtree",   &itree::insert_subtree)
+    .method("insert_n",         &itree::insert_n)
+    .method("insert_subtree_n", &itree::insert_subtree_n)
 
     .method("append_node",     &itree::append_node)
     .method("prepend_node",    &itree::prepend_node)
@@ -136,8 +136,10 @@ RCPP_MODULE(forest) {
     .property("childless",      &isubtree_wrapped::childless)
     .property("representation", &isubtree_wrapped::representation)
 
-    .property("index",          &isubtree_wrapped::index)
-    .property("indices",        &isubtree_wrapped::indices)
+    .method("insert",           &isubtree_wrapped::insert)
+    .method("insert_subtree",   &isubtree_wrapped::insert_subtree)
+    .method("insert_n",         &isubtree_wrapped::insert_n)
+    .method("insert_subtree_n", &isubtree_wrapped::insert_subtree_n)
 
     .method("append_node",      &isubtree_wrapped::append_node)
     .method("prepend_node",     &isubtree_wrapped::prepend_node)
