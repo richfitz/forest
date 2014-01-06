@@ -39,7 +39,7 @@ FOREST_ITERATOR_EXPORT(itree::sub_child_iterator)
 namespace Rcpp {
 template<> SEXP wrap(const isubtree& obj);
 template<> SEXP wrap(const isubtree& obj) {
-  return Rcpp::wrap(isubtree_wrapped::create(obj));
+  return Rcpp::wrap(isubtree_wrapped(obj));
 }
 template<> isubtree as(SEXP obj);
 template<> isubtree as(SEXP obj) {
@@ -60,7 +60,6 @@ RCPP_MODULE(forest) {
 #pragma clang diagnostic pop
 #endif
   Rcpp::class_<inode>("inode")
-    .property("index", &inode::index)
     .field("data",     &inode::data)
     ;
 

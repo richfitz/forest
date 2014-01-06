@@ -366,7 +366,7 @@ test_that("tree_accessors", {
   expect_that(tr[[4]],           is_same_tree_as(tree_of(8)()))
 })
 
-test_case("tree_insert2", {
+test_that("tree_insert2", {
   tr <- new(itree)
 
   tr$insert_subtree(tr$end(), tree_of(1)(2,3)())

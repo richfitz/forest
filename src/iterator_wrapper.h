@@ -60,10 +60,6 @@ public:
 
   Iterator iterator() const {return it;}
 
-  static iterator_wrapper create(Iterator it_) {
-    iterator_wrapper ret(it_);
-    return ret;
-  }
 private:
   Iterator it;
 };
@@ -103,7 +99,7 @@ private:
   namespace Rcpp {						   \
   template<> SEXP wrap(const type& it);				   \
   template<> SEXP wrap(const type& it) {			   \
-    return Rcpp::wrap(forest::iterator_wrapper<type>::create(it)); \
+    return Rcpp::wrap(forest::iterator_wrapper<type>(it));         \
   }								   \
   template<> type as(SEXP obj);					   \
   template<> type as(SEXP obj) {				   \

@@ -23,24 +23,9 @@ namespace forest {
 template <typename T>
 struct node {
 public:
-  node(const T& data_, size_t index_) : data(data_), _index(index_) {}
-  // This is just to make the actual creation a little easier.
-  static node create(const T& data_, size_t index_) {
-    node ret(data_, index_);
-    return ret;
-  }
-  size_t index() const {return _index;}
-
-  // Basic comparisons -- basically passed down to underlying type,
-  // skipping the index.
+  node(const T& data_) : data(data_) {}
   bool operator==(const node<T>& rhs) const { return data == rhs.data; }
-  bool operator<(const node<T>& rhs) const { return data < rhs.data; }
-  bool operator>(const node<T>& rhs) const { return data > rhs.data; }
-
   T data;
-
-private:
-  size_t _index;
 };
 
 template<typename T>
@@ -66,15 +51,16 @@ public:
   typedef typename tree_type::const_pre_iterator     const_pre_iterator;
   typedef typename tree_type::const_sub_pre_iterator const_sub_pre_iterator;
 
-  tree() : index_(0) {}
-  tree(const T& t) : tree_(node_type::create(t, 0)), index_(0) {}
+  tree() {}
+  tree(const T& t) : tree_(node_type(t)) {}
 
   // Basic interrogation methods; pass through to the tree:
   bool empty() const {return tree_.empty();}
   size_t size() const {return tree_.size();}
   size_t arity() const {return tree_.arity();}
   bool childless() const {return tree_.childless();}
-  std::string representation() const;
+  std::string representation() const {
+    return boost::lexical_cast<std::string>(tree_);}
 
   // Given nature of iterators, etc, this could either return the node
   // or the node contents.  Returning the contents is more like
@@ -93,7 +79,7 @@ public:
   // convert from one to the other (this is instantiated in the module
   // code as a pre_iterator).
   void insert(pre_iterator i, const T& t) {
-    tree_.insert(i, node_type::create(t, index_));}
+    tree_.insert(i, node_type(t));}
   void insert_subtree(pre_iterator i, const subtree_type& s) {
     tree_.insert(i, s);}
   // TODO: Won't work - see test-tree.R
@@ -101,14 +87,12 @@ public:
   // tree_.insert(i, f, l);}
 
   void insert_n(pre_iterator i, size_t n, const T& v) {
-    tree_.insert(i, n, node_type::create(v, index_));}
+    tree_.insert(i, n, node_type(v));}
   void insert_subtree_n(pre_iterator i, size_t n, const subtree_type& s) {
     tree_.insert(i, n, s);}
 
-  void append_node(const T& v) {
-    tree_.append(node_type::create(v, index_));}
-  void prepend_node(const T& v) {
-    tree_.prepend(node_type::create(v, index_));}
+  void append_node(const T& v)  { tree_.append(node_type(v)); }
+  void prepend_node(const T& v) { tree_.prepend(node_type(v)); }
   void append_subtree(const subtree_type s)  { tree_.append(s);  }
   void prepend_subtree(const subtree_type s) { tree_.prepend(s); }
   // TODO: append_iterator and prepend_iterator, using iterator pairs.
@@ -116,9 +100,9 @@ public:
   // TODO: insert_above and insert_below should return iterators.  But
   // getting the correct type beack out may be tricky.
   void insert_above(pre_iterator i, const T& t) {
-    tree_.insert_above(i, node_type::create(t, 0));}
+    tree_.insert_above(i, node_type(t));}
   void insert_below(pre_iterator i, const T& t) {
-    tree_.insert_below(i, node_type::create(t, 0));}
+    tree_.insert_below(i, node_type(t));}
 
   // TODO: As with insert_above, flatten should return iterator, but
   // does not.
@@ -127,8 +111,7 @@ public:
   // NOTE: not implementing the erase-and-return version yet.
   void erase(pre_iterator i) {tree_.erase(i);}
   void erase_pair(child_iterator f, child_iterator l) {
-    tree_.erase(f, l);
-  }
+    tree_.erase(f, l); }
   void prune() {tree_.prune();}
   void clear() {tree_.clear();}
 
@@ -136,12 +119,12 @@ public:
     tree_.splice(i, s);}
   void splice_pair(pre_iterator i,
 		   sub_child_iterator fi, sub_child_iterator li) {
-    tree_.splice(i, fi, li);
-  }
+    tree_.splice(i, fi, li); }
 
   tree<T> copy() const {return *this;}
 
-  bool is_equal_to(const tree<T>& rhs) const;
+  bool is_equal_to(const tree<T>& rhs) const {
+    return this->tree_ == rhs.tree_;}
 
   pre_iterator   begin()       { return tree_.begin();       }
   pre_iterator   end()         { return tree_.end();         }
@@ -168,18 +151,7 @@ public:
 
 private:
   tree_type tree_;
-  size_t index_;
 };
-
-template <typename T>
-std::string tree<T>::representation() const {
-  return boost::lexical_cast<std::string>(tree_);
-}
-
-template <typename T>
-bool tree<T>::is_equal_to(const tree<T>& rhs) const {
-  return this->tree_ == rhs.tree_;
-}
 
 // Need to wrap these up on return.  There will be two levels of
 // wrapping though, which is pretty terrible.  It's possible that we
@@ -194,40 +166,36 @@ struct subtree_wrapped {
   typedef TREE_TREE_NAMESPACE::subtree<node_type> subtree_type;
   subtree_type subtree_;
   subtree_wrapped(const subtree_type& subtree) : subtree_(subtree) {}
-  static subtree_wrapped create(const subtree_type& subtree) {
-    subtree_wrapped ret(subtree);
-    return ret;
-  }
+
   bool   empty()     const {return subtree_.empty();}
   size_t size()      const {return subtree_.size();}
   size_t arity()     const {return subtree_.arity();}
   bool   childless() const {return subtree_.childless();}
-  std::string representation() const;
+  std::string representation() const {
+    return boost::lexical_cast<std::string>(subtree_); }
 
   // NOTE: insert and insert_subtree not tested?
   typedef typename tree_type::pre_iterator pre_iterator;
   void insert(pre_iterator i, const T& t) {
-    subtree_.insert(i, node_type::create(t, 0));}
+    subtree_.insert(i, node_type(t));}
   void insert_subtree(pre_iterator i, const subtree_type& s) {
     subtree_.insert(i, s);}
   void insert_n(pre_iterator i, size_t n, const T& v) {
-    subtree_.insert(i, n, node_type::create(v, 0));}
+    subtree_.insert(i, n, node_type(v));}
   void insert_subtree_n(pre_iterator i, size_t n, const subtree_type& s) {
     subtree_.insert(i, n, s);}
 
-  void append_node(const T& v) {
-    subtree_.append(node_type::create(v, 0));}
-  void prepend_node(const T& v) {
-    subtree_.prepend(node_type::create(v, 0));}
+  void append_node(const T& v)  { subtree_.append(node_type(v));}
+  void prepend_node(const T& v) { subtree_.prepend(node_type(v));}
   void append_subtree(const subtree_type s)  { subtree_.append(s);  }
   void prepend_subtree(const subtree_type s) { subtree_.prepend(s); }
 
   // TODO: insert_above and insert_below should return iterators.  But
   // getting the correct type beack out may be tricky.
   void insert_above(pre_iterator i, const T& t) {
-    subtree_.insert_above(i, node_type::create(t, 0));}
+    subtree_.insert_above(i, node_type(t));}
   void insert_below(pre_iterator i, const T& t) {
-    subtree_.insert_below(i, node_type::create(t, 0));}
+    subtree_.insert_below(i, node_type(t));}
 
   // TODO: As with insert_above, flatten should return iterator, but
   // does not.
@@ -237,8 +205,7 @@ struct subtree_wrapped {
   void erase(typename tree_type::pre_iterator i) {subtree_.erase(i);}
   void erase_pair(typename tree_type::child_iterator f,
 		  typename tree_type::child_iterator l) {
-    subtree_.erase(f, l);
-  }
+    subtree_.erase(f, l); }
   void prune() {subtree_.prune();}
 
   void splice(pre_iterator i, subtree_type s) {
@@ -246,9 +213,7 @@ struct subtree_wrapped {
   typedef typename tree_type::sub_child_iterator sub_child_iterator;
   void splice_pair(pre_iterator i,
 		   sub_child_iterator fi, sub_child_iterator li) {
-    subtree_.splice(i, fi, li);
-  }
-
+    subtree_.splice(i, fi, li); }
 
   bool is_equal_to(const subtree_wrapped& rhs) const {
     return this->subtree_ == rhs.subtree_; }
@@ -272,15 +237,11 @@ struct subtree_wrapped {
     subtree_[idx] = value; }
   // TODO: Need range checks here -- will crash R if out-of-bounds
   // iterators are used.
+  // TODO: These are unexported and untested.
   subtree_type r_at(size_t idx) { return at(idx-1); }
   void r_insert_at(size_t idx, const subtree_type& value) {
     insert_at(idx-1, value); }
 };
-
-template <typename T>
-std::string subtree_wrapped<T>::representation() const {
-  return boost::lexical_cast<std::string>(subtree_);
-}
 
 }
 
