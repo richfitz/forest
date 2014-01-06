@@ -5,7 +5,7 @@ source("helper-forest.R")
 
 context("Basic tree operations")
 
-test_that("Tree built with empty constructor is empty", {
+test_that("tree_empty_ctor", {
   tr <- new(itree)
   expect_that(tr, is_expected_tree(0, ""))
 
@@ -16,13 +16,13 @@ test_that("Tree built with empty constructor is empty", {
   it1 <- tr$begin()
 })
 
-test_that("Tree with root only is valid", {
+test_that("tree_root_ctor", {
   tr <- new(itree, 42)
   expect_that(tr, is_expected_tree(1, "42"))
   expect_that(tr$root()$data, equals(42))
 })
 
-test_that("Can construct a tree via insertion (iterators)", {
+test_that("tree_insert1", {
   tr <- new(itree)
 
   tr$insert_at_iterator(tr$end(), 1)
@@ -44,11 +44,11 @@ test_that("Can construct a tree via insertion (iterators)", {
   expect_that(tr, is_expected_tree(6, "1(2(6 4) 3 5)"))
 })
 
-## This is not actually the same test as tree_copy_ctor or
-## tree_assignment in test_runner.cpp, because we're not going to test
-## the copy constructor there.  Instead here we test the ability to
-## copy.
-test_that("Can copy trees", {
+# This is not actually the same test as tree_copy_ctor or
+# tree_assignment in test_runner.cpp, because we're not going to test
+# the copy constructor there.  Instead here we test the ability to
+# copy.
+test_that("tree_copy_ctor", {
   tr <- new(itree)
 
   tr1 <- tr$copy()
@@ -69,7 +69,7 @@ test_that("Can copy trees", {
 
 # tree_assignment -- not done because not how R works
 
-test_that("Tree subtree assignment works", {
+test_that("tree_subtr_assignment", {
   tr <- tree_of(5)(6,tree_of(7)(8))()
   tr2 <- tree_of(1)(2,3)()
 
@@ -80,7 +80,7 @@ test_that("Tree subtree assignment works", {
   expect_that(tr, is_expected_tree(6, "5(7(8) 1(2 3))"))
 })
 
-test_that("Arity calculations are correct", {
+test_that("tree_arity", {
   tr <- tree_of(1)(2,3,tree_of(4)(5))()
   expect_that(tr, is_expected_tree(5, "1(2 3 4(5))"))
 
@@ -91,7 +91,7 @@ test_that("Arity calculations are correct", {
   expect_that(tr[[3]][[1]]$arity, equals(0))
 })
 
-test_that("Can build tree using append_node", {
+test_that("tree_append1", { # appending nodes
   tr <- new(itree, 42)
   tr$append_node(1)
   tr$append_node(1)
@@ -105,7 +105,7 @@ test_that("Can build tree using append_node", {
   expect_that(tr1, is_expected_tree(4, "1(2(3) 4)"))
 })
 
-test_that("Can build tree using prepend_node", {
+test_that("tree_prepend1", { # prepending nodes
   tr <- new(itree, -1)
   tr$prepend_node(42)
   expect_that(tr, is_expected_tree(2, "-1(42)"))
@@ -131,7 +131,7 @@ test_that("Can build tree using prepend_node", {
   }
 })
 
-test_that("Can build tree using append_subtree", {
+test_that("tree_append2", { # appending subtrees
   tr <- new(itree, 42)
   tr$append_subtree(tr$copy()) # need to copy to avoid infinite regress
   expect_that(tr, is_expected_tree(2, "42(42)"))
@@ -151,7 +151,7 @@ test_that("Can build tree using append_subtree", {
   expect_that(tr, is_expected_tree(15, str))
 })
 
-test_that("Can build tree using prepend_subtree", {
+test_that("tree_prepend2", { # prepending subtrees
   tr <- new(itree, 42)
   tr$prepend_subtree(tr$copy())
   expect_that(tr, is_expected_tree(2, "42(42)"))
@@ -171,7 +171,7 @@ test_that("Can build tree using prepend_subtree", {
   expect_that(tr, is_expected_tree(15, str))
 })
 
-test_that("In-place initialisation of integer trees possible", {
+test_that("tree_inplace_init", {
   tr1 <- tree_of(1)()
   expect_that(tr1, is_same_tree_as(new(itree, 1)))
   expect_that(tr1, is_expected_tree(1, "1"))
@@ -192,8 +192,7 @@ test_that("In-place initialisation of integer trees possible", {
   expect_that(tr6, is_expected_tree(11, "1(2 3 4 5 6 7 8 9 10 11)"))
 })
 
-# This is extra, but uses an alternative tree initialiser:
-test_that("In-place initialisation of integer trees possible (alt)", {
+test_that("tree_inplace_init (tree.of)", { # alternative version
   tr1 <- tree.of(1)
   expect_that(tr1, is_same_tree_as(new(itree, 1)))
   expect_that(tr1, is_expected_tree(1, "1"))
@@ -214,7 +213,7 @@ test_that("In-place initialisation of integer trees possible (alt)", {
   expect_that(tr6, is_expected_tree(11, "1(2 3 4 5 6 7 8 9 10 11)"))
 })
 
-test_that("Can compare trees for equality", {
+test_that("tree_equality", {
   tr <- list(
     tree_of(1)(2,tree_of(3)(tree_of(4)(5)),6)(),
     tree_of(1)(2,tree_of(3)(tree_of(0)(5)),6)(),
@@ -249,10 +248,10 @@ test_that("Can compare trees for equality", {
   expect_that(a[[1]][[1]], is_different_tree_to(b[[1]][[1]]))
 })
 
-## tree_less; already decided not to implement (as not relevant to
-##   phylogenetic work)
+# tree_less; already decided not to implement (as not relevant to
+#   phylogenetic work)
 
-test_that("Tree constant iterators", {
+test_that("tree_const_iters", {
   tr <- tree_of(1)(2,tree_of(3)(tree_of(4)(5),6),7,8)()
 
   pre.contents <- seq(1, 8)
@@ -282,10 +281,10 @@ test_that("Tree constant iterators", {
       tree_of(8)(),
       tree_of(1)(2,tree_of(3)(tree_of(4)(5),6),7,8)())
 
-  ## This is uglier than needed because iterators are not generic yet,
-  ## and we don't have iterators over vectors (could get that working
-  ## later with package iterators).  Plus the wrapped node causes
-  ## problems here, still.
+  # TODO: This is uglier than needed because iterators are not generic
+  # yet, and we don't have iterators over vectors (could get that
+  # working later with package iterators).  Plus the wrapped node
+  # causes problems here, still.
   check_range <- function(f1, l1, cmp) {
     if (distance(f1, l1) != length(cmp))
       return(FALSE)
@@ -333,13 +332,13 @@ test_that("Tree constant iterators", {
               is_true())
 })
 
-## tree_const_iters_backwards; not really needed -- this is just a
-##   boost reversable iterator wrapper around iterators.  Do this if
-##   we get nice iterators support, perhaps?
+# tree_const_iters_backwards; not really needed -- this is just a
+#   boost reversable iterator wrapper around iterators.  Do this if
+#   we get nice iterators support, perhaps?
 
 ## tree_mutable_iters; needs considerably more support.
 
-test_that("Tree accessors work", {
+test_that("tree_accessors", {
   tr <- tree_of(1)(2,
                    tree_of(3)(
                      tree_of(
@@ -349,7 +348,6 @@ test_that("Tree accessors work", {
                    7,
                    8)()
 
-  ## TODO: None of these are written yet:
   expect_that(tr$root()$data,  equals(1))
   expect_that(tr$front()$data, equals(2))
   expect_that(tr$back()$data,  equals(8))
@@ -580,7 +578,7 @@ test_that("tree_splice2",  {
   expect_that(tr3, is_expected_tree(3, "5(3 6)"))
 })
 
-## tree_swap: Is implementation for std::swap, so not useful in R.
+# tree_swap: Is implementation for std::swap, so not useful in R.
 
 test_that("tree_parent", {
   tr <- tree_of(1)(2,3,tree_of(4)(5,6))()
@@ -597,6 +595,7 @@ test_that("tree_parent", {
   expect_that(parent(tr[[3]][[2]]$begin())$equals(tr[[3]]$begin()), is_true())
 })
 
-## tree_io, tree_io_empty, tree_out_sexpr, tree_in_sexpr
-
-## tree_node_destructor
+# None of these look like we should try too hard for them, so not
+# implemented:
+#   tree_io, tree_io_empty, tree_out_sexpr, tree_in_sexpr
+#   tree_node_destructor
