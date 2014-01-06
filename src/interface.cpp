@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 #include "tree.h"
 #include "iterator_wrapper.h"
+#include "iterator_wrapper_algorithm.h"
 
 // Iterators
 
@@ -139,4 +140,17 @@ RCPP_MODULE(forest) {
   FOREST_ITERATOR_MODULE(itree::sub_pre_iterator, "itree_sub_pre_iterator")
   FOREST_ITERATOR_MODULE(itree::sub_post_iterator, "itree_sub_post_iterator")
   FOREST_ITERATOR_MODULE(itree::sub_child_iterator, "itree_sub_child_iterator")
+
+  FOREST_ITERATOR_MODULE_ALGORITHM(itree::pre_iterator,
+				   "itree_pre_iterator")
+  FOREST_ITERATOR_MODULE_ALGORITHM(itree::post_iterator,
+				   "itree_post_iterator")
+  FOREST_ITERATOR_MODULE_ALGORITHM(itree::child_iterator,
+				   "itree_child_iterator")
+  FOREST_ITERATOR_MODULE_ALGORITHM(itree::sub_pre_iterator,
+				   "itree_sub_pre_iterator")
+  FOREST_ITERATOR_MODULE_ALGORITHM(itree::sub_post_iterator,
+				   "itree_sub_post_iterator")
+  FOREST_ITERATOR_MODULE_ALGORITHM(itree::sub_child_iterator,
+				   "itree_sub_child_iterator")
 }

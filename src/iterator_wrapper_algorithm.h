@@ -121,8 +121,8 @@ Iterator find(Iterator first, Iterator last,
 }
 
 // Helper to export with standard names:
-#define FOREST_ITERATOR_MODULE_ALGORITHM(type, name)     \
-  Rcpp::function("find_" name, &forest::find<type>);     \
-  Rcpp::function("distance_" name, &std::distance<type>) \
+#define FOREST_ITERATOR_MODULE_ALGORITHM(type, name)      \
+  Rcpp::function("find_" name, &forest::find<type>);      \
+  Rcpp::function("distance_" name, &std::distance<type>); \
 
 #endif

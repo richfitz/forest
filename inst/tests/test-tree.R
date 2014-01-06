@@ -276,21 +276,138 @@ test_that("In-place initialisation of integer trees possible (alt)", {
   expect_that(tr6, is_expected_tree(11, "1(2 3 4 5 6 7 8 9 10 11)"))
 })
 
-## tree_equaility; probably more focussed on general trees than
-##   something that we will need here.
+## tree_equaility; This will help tidy up tree_const_iterators.
 
 ## tree_less; already decided not to implement (as not relevant to
-## phylogenetic work)
+##   phylogenetic work)
 
-## tree_const_iters; get this working in the style of itertools,
-##   perhaps?  Depends what we need to be able to reach from each
-##   iteration.  However, because we can do things like it->index() to
-##   get the index out, this could be a base for (somewhat
-##   inefficient) persistent write-able iterators in R.
+test_that("Tree constant iterators", {
+  tr <- tree_of(1)(2,tree_of(3)(tree_of(4)(5),6),7,8)()
 
-## tree_const_iters_backwards (same as above)
+  pre.contents <- seq(1, 8)
+  pre.subtr <-
+    list(tree_of(1)(2,tree_of(3)(tree_of(4)(5),6),7,8)(),
+         tree_of(2)(),
+         tree_of(3)(tree_of(4)(5),6)(),
+         tree_of(4)(5)(),
+         tree_of(5)(),
+         tree_of(6)(),
+         tree_of(7)(),
+         tree_of(8)())
+  child.contents <- list(2, 3, 7, 8)
+  child.subtr <-
+    list(tree_of(2)(),
+         tree_of(3)(tree_of(4)(5),6)(),
+         tree_of(7)(),
+         tree_of(8)())
+  post.contents <- list(2, 5, 4, 6, 3, 7, 8, 1)
+  post.subtr <- list(
+      tree_of(2)(),
+      tree_of(5)(),
+      tree_of(4)(5)(),
+      tree_of(6)(),
+      tree_of(3)(tree_of(4)(5),6)(),
+      tree_of(7)(),
+      tree_of(8)(),
+      tree_of(1)(2,tree_of(3)(tree_of(4)(5),6),7,8)())
 
-## tree_mutable_iters; these are trickier.
+
+  ## This is uglier than needed because iterators are not generic yet,
+  ## and we don't have iterators over vectors (could get that working
+  ## later with package iterators).
+  check_range <- function(f1, l1, cmp) {
+    if (distance(f1, l1) != length(cmp))
+      return(FALSE)
+    i <- 1
+    while (f1$differs(l1)) {
+      ## This really needs nodes to export their '==' operator to do
+      ## more nicely; this it will be
+      ##   f1$value$equals(cmp[[i]])
+      ## or
+      ##   f1$value == cmp[[i]]
+      ## with appropriate generic signatures.
+      if (inherits(f1$value, "Rcpp_inode")) {
+        if (f1$value$data != cmp[[i]])
+          return(FALSE)
+      } else {
+        ## TODO: this is better, but need subtree == operator
+        ## if (!f1$value$equals(cmp[[i]]))
+        ##   return(FALSE)
+        if (f1$value$representation != cmp[[i]]$representation)
+          return(FALSE)
+      }
+      f1$increment()
+      i <- i + 1
+    }
+    TRUE
+  }
+
+  distance <- forest:::distance_itree_pre_iterator
+  expect_that(check_range(tr$begin(), tr$end(), pre.contents),
+              is_true())
+
+  distance <- forest:::distance_itree_sub_pre_iterator
+  expect_that(check_range(tr$begin_sub(), tr$end_sub(), pre.subtr),
+              is_true())
+
+  distance <- forest:::distance_itree_child_iterator
+  expect_that(check_range(tr$begin_child(), tr$end_child(),
+                          child.contents),
+              is_true())
+
+  distance <- forest:::distance_itree_sub_child_iterator
+  expect_that(check_range(tr$begin_sub_child(), tr$end_sub_child(),
+                          child.subtr),
+              is_true())
+
+  distance <- forest:::distance_itree_post_iterator
+  check_range(tr$begin_post(), tr$end_post(), post.contents)
+
+  distance <- forest:::distance_itree_sub_post_iterator
+  expect_that(check_range(tr$begin_sub_post(), tr$end_sub_post(),
+                          post.subtr),
+              is_true())
+})
+
+## tree_const_iters_backwards; not really needed -- this is just a
+##   boost reversable iterator wrapper around iterators.  Do this if
+##   we get nice iterators support, perhaps?
+
+## tree_mutable_iters
+
+
 
 ## tree_accessors; this is possibly the next in line, as we'll get the
-## subtree issues sorted out.
+##   subtree issues sorted out.
+
+## tree_insert2; not checked what is different here to tree_insert
+##   yet.
+
+## tree_append3, tree_prepend3: Iterator pair versions of append,
+##   prepend -- should not be too hard.
+
+## tree_append4, tree_prepend4: multiply append trees -- not sure if
+##   that makes any sense for us.
+
+## tree_append5, tree_prepend5: append vectors of trees -- could be
+##   useful.
+
+## tree_insert_above, tree_insert_below: Totally useful.
+
+## tree_insert_flatten
+
+## tree_erase1, tree_erase2
+
+## tree_prune
+
+## tree_clear
+
+## tree_splice1, tree_splice2
+
+## tree_swap
+
+## tree_parent
+
+## tree_io, tree_io_empty, tree_out_sexpr, tree_in_sexpr
+
+## tree_node_destructor
