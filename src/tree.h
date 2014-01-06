@@ -110,6 +110,12 @@ public:
   void append_subtree(const subtree_type s)  { tree_.append(s);  }
   void prepend_subtree(const subtree_type s) { tree_.prepend(s); }
 
+  // NOTE: not implementing the erase-and-return version yet.
+  void erase(pre_iterator i) {tree_.erase(i);}
+  void erase_pair(child_iterator f, child_iterator l) {
+    tree_.erase(f, l);
+  }
+
   tree<T> copy() const {return *this;}
 
   bool is_equal_to(const tree<T>& rhs) const;
@@ -244,6 +250,13 @@ struct subtree_wrapped {
     subtree_.prepend(node_type::create(v, 0));}
   void append_subtree(const subtree_type s)  { subtree_.append(s);  }
   void prepend_subtree(const subtree_type s) { subtree_.prepend(s); }
+
+  // NOTE: not implementing the erase-and-return version yet.
+  void erase(typename tree_type::pre_iterator i) {subtree_.erase(i);}
+  void erase_pair(typename tree_type::child_iterator f,
+		  typename tree_type::child_iterator l) {
+    subtree_.erase(f, l);
+  }
 
   bool is_equal_to(const subtree_wrapped& rhs) const {
     return this->subtree_ == rhs.subtree_; }

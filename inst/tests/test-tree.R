@@ -227,11 +227,10 @@ test_that("Can compare trees for equality", {
     new(itree),
     tree_of(1)())
 
-  ## TODO: Once erase() is implemented, run this:
-  ## tr[[1]]$append_node(42)
-  ## it <- tr[[1]]$end_child()
-  ## it$decrement()
-  ## tr[[1]]$erase(it)
+  tr[[1]]$append_node(42)
+  it <- tr[[1]]$end_child()
+  it$decrement()
+  tr[[1]]$erase(it)
 
   for (i in seq_along(tr)) {
     for (j in seq_along(tr)) {
@@ -385,7 +384,53 @@ test_that("Tree accessors work", {
 
 ## tree_insert_flatten
 
-## tree_erase1, tree_erase2
+test_that("tree_erase1", {
+  tr <- tree_of(1)(tree_of(2)(3,4,42),
+                   tree_of(5)(tree_of(6)(7,8)),
+                   tree_of(9)(tree_of(10)(11),12))()
+  str <- "1(2(3 4 42) 5(6(7 8)) 9(10(11) 12))"
+  expect_that(tr, is_expected_tree(13, str))
+
+  tr$erase(tr[[2]][[1]])
+  expect_that(tr, is_expected_tree(10, "1(2(3 4 42) 5 9(10(11) 12))"))
+
+  tr$erase(tr[[3]][[2]])
+  expect_that(tr, is_expected_tree(9, "1(2(3 4 42) 5 9(10(11)))"))
+
+  tr$erase(tr[[3]][[1]][[1]])
+  expect_that(tr, is_expected_tree(8, "1(2(3 4 42) 5 9(10))"))
+
+  tr$erase(tr[[1]][[2]])
+  expect_that(tr, is_expected_tree(7, "1(2(3 42) 5 9(10))"))
+
+  tr$erase(tr[[1]][[1]])
+  expect_that(tr, is_expected_tree(6, "1(2(42) 5 9(10))"))
+
+  tr$erase(tr$begin())
+  expect_that(tr, is_expected_tree(0, ""))
+})
+
+test_that("tree_erase2", {
+  tr <- tree_of(1)(tree_of(5)(tree_of(6)(7,8)),
+                   tree_of(9)(tree_of(10)(11),12),
+                   tree_of(2)(3,4,42))()
+  str <- "1(5(6(7 8)) 9(10(11) 12) 2(3 4 42))"
+  expect_that(tr, is_expected_tree(13, str))
+
+  tr$erase_pair(tr[[1]]$begin_child(), tr[[1]]$end_child())
+  expect_that(tr, is_expected_tree(10,"1(5 9(10(11) 12) 2(3 4 42))"))
+
+  tr$erase_pair(tr[[1]]$begin_child(), tr[[1]]$end_child())
+  expect_that(tr, is_expected_tree(10,"1(5 9(10(11) 12) 2(3 4 42))"))
+
+  it <- tr$begin_child()
+  it$increment()
+  tr$erase_pair(it, tr$end_child())
+  expect_that(tr, is_expected_tree(2, "1(5)"))
+
+  tr$erase_pair(tr$begin_child(), tr$end_child())
+  expect_that(tr, is_expected_tree(1, "1"))
+})
 
 ## tree_prune
 
