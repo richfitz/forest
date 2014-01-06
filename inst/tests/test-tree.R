@@ -234,36 +234,6 @@ test_that("Can build tree using prepend_subtree", {
   expect_that(tr, is_expected_tree(15, str))
 })
 
-## This version is more like the C++ version, but needs to be
-## terminated by () to return the tree.
-tree_of <- function(v, ...) {
-  tr <- new(itree, v)
-
-  ## TODO: Write a method of a tree that determines if something is
-  ## node like -- we could do this by trying to insert it as a tree
-  ## wrapped with try/catch, perhaps...
-  x <- function(c) {
-    if (is.integer(c) || is.numeric(c))
-      tr$prepend_node(c)
-    else if (inherits(c, "tree.generator"))
-      tr$prepend_subtree(c())
-    else
-      tr$prepend_subtree(c)
-  }
-
-  rec <- function(...) {
-    tail <- list(...)
-    if (length(tail) == 0)
-      return(tr)
-    for (i in rev(tail))
-      x(i)
-    rec
-  }
-
-  class(rec) <- "tree.generator"
-  rec
-}
-
 test_that("In-place initialisation of integer trees possible", {
   tr1 <- tree_of(1)()
   expect_that(tr1$is_equal_to(new(itree, 1)), is_true())
@@ -284,24 +254,6 @@ test_that("In-place initialisation of integer trees possible", {
   tr6 <- tree_of(1)(2,3,4,5,6,7,8,9,10,11)()
   expect_that(tr6, is_expected_tree(11, "1(2 3 4 5 6 7 8 9 10 11)"))
 })
-
-## This version does not require the terminating parenthesis, but
-## lends itself to more awkward syntax.
-tree.of <- function(head, ...) {
-  tr <- new(itree, head)
-
-  x <- function(c) {
-    if (is.integer(c) || is.numeric(c))
-      tr$prepend_node(c)
-    else
-      tr$prepend_subtree(c)
-  }
-
-  for (i in rev(list(...)))
-    x(i)
-
-  tr
-}
 
 test_that("In-place initialisation of integer trees possible (alt)", {
   tr1 <- tree.of(1)
