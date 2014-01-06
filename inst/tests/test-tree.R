@@ -194,8 +194,45 @@ test_that("Can build tree using prepend_node", {
   }
 })
 
-## tree_append2
-## tree_prepend2
+test_that("Can build tree using append_subtree", {
+  tr <- new(itree, 42)
+  tr$append_subtree(tr$copy()) # need to copy to avoid infinite regress
+  expect_that(tr, is_expected_tree(2, "42(42)"))
+
+  tr$append_subtree(new(itree, 42))
+  expect_that(tr, is_expected_tree(3, "42(42 42)"))
+
+  tr$append_subtree(tr$copy())
+  expect_that(tr, is_expected_tree(6, "42(42 42 42(42 42))"))
+
+  tr$append_subtree(tr$copy())
+  str <- "42(42 42 42(42 42) 42(42 42 42(42 42)))"
+  expect_that(tr, is_expected_tree(12, str))
+
+  tr[[1]]$append_subtree(tr[[3]])
+  str <- "42(42(42(42 42)) 42 42(42 42) 42(42 42 42(42 42)))"
+  expect_that(tr, is_expected_tree(15, str))
+})
+
+test_that("Can build tree using prepend_subtree", {
+  tr <- new(itree, 42)
+  tr$prepend_subtree(tr$copy())
+  expect_that(tr, is_expected_tree(2, "42(42)"))
+
+  tr$prepend_subtree(new(itree, 42))
+  expect_that(tr, is_expected_tree(3,"42(42 42)"))
+
+  tr$prepend_subtree(tr$copy())
+  expect_that(tr, is_expected_tree(6,"42(42(42 42) 42 42)"))
+
+  tr$prepend_subtree(tr$copy())
+  str <- "42(42(42(42 42) 42 42) 42(42 42) 42 42)"
+  expect_that(tr, is_expected_tree(12, str))
+
+  tr[[1]]$prepend_subtree(tr[[2]])
+  str <- "42(42(42(42 42) 42(42 42) 42 42) 42(42 42) 42 42)"
+  expect_that(tr, is_expected_tree(15, str))
+})
 
 ## tree_inplace_init; not directly applicable, but we will need
 ##   something similar.

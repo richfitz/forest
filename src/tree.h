@@ -95,6 +95,8 @@ public:
     tree_.append(node_type::create(v, index_++));}
   void prepend_node(const T& v) {
     tree_.prepend(node_type::create(v, index_++));}
+  void append_subtree(const subtree_type s)  { tree_.append(s);  }
+  void prepend_subtree(const subtree_type s) { tree_.prepend(s); }
 
   tree<T> copy() const {return *this;}
 
@@ -228,6 +230,8 @@ struct subtree_wrapped {
     subtree_.append(node_type::create(v, 0));}
   void prepend_node(const T& v) {
     subtree_.prepend(node_type::create(v, 0));}
+  void append_subtree(const subtree_type s)  { subtree_.append(s);  }
+  void prepend_subtree(const subtree_type s) { subtree_.prepend(s); }
 
   // NOTE: these can be tree_type:: or subtree_type:: -- but we do all
   // of the wrapping based on the tree_type iterators, so for some

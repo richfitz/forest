@@ -80,8 +80,10 @@ RCPP_MODULE(forest) {
     .method("insert_root",        &itree::insert_root)
     .method("insert_at_iterator", &itree::insert_at_iterator)
 
-    .method("append_node",   &itree::append_node)
-    .method("prepend_node",  &itree::prepend_node)
+    .method("append_node",     &itree::append_node)
+    .method("prepend_node",    &itree::prepend_node)
+    .method("append_subtree",  &itree::append_subtree)
+    .method("prepend_subtree", &itree::prepend_subtree)
 
     .method("copy",       &itree::copy)
 
@@ -120,6 +122,8 @@ RCPP_MODULE(forest) {
 
     .method("append_node",      &isubtree_wrapped::append_node)
     .method("prepend_node",     &isubtree_wrapped::prepend_node)
+    .method("append_subtree",   &isubtree_wrapped::append_subtree)
+    .method("prepend_subtree",  &isubtree_wrapped::prepend_subtree)
 
     .method("begin",            &isubtree_wrapped::begin)
     .method("end",              &isubtree_wrapped::end)
