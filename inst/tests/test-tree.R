@@ -380,7 +380,32 @@ test_that("Tree accessors work", {
 ## tree_append5, tree_prepend5: append vectors of trees -- could be
 ##   useful.
 
-## tree_insert_above, tree_insert_below: Totally useful.
+test_that("tree_insert_above", {
+  tr <- new(itree, 42)
+  tr$insert_above(tr$begin(), 41)
+  expect_that(tr, is_expected_tree(2, "41(42)"))
+
+  tr$insert_above(tr[[1]]$begin(), 40)
+  expect_that(tr, is_expected_tree(3, "41(40(42))"))
+
+  tr[[1]]$append_node(43)
+  tr$insert_above(tr[[1]]$begin_child(), 39)
+  expect_that(tr, is_expected_tree(5, "41(40(39(42) 43))"))
+})
+
+test_that("tree_insert_below", {
+  tr <- new(itree, 42)
+
+  tr$insert_below(tr$begin(),41)
+  expect_that(tr, is_expected_tree(2, "42(41)"))
+
+  tr$insert_below(tr$begin(),40)
+  expect_that(tr, is_expected_tree(3, "42(40(41))"))
+
+  tr[[1]]$append_node(43)
+  tr$insert_below(tr[[1]]$begin(), 39)
+  expect_that(tr, is_expected_tree(5, "42(40(39(41 43)))"))
+})
 
 ## tree_insert_flatten
 

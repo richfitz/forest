@@ -110,6 +110,13 @@ public:
   void append_subtree(const subtree_type s)  { tree_.append(s);  }
   void prepend_subtree(const subtree_type s) { tree_.prepend(s); }
 
+  // TODO: insert_above and insert_below should return iterators.  But
+  // getting the correct type beack out may be tricky.
+  void insert_above(pre_iterator i, const T& t) {
+    tree_.insert_above(i, node_type::create(t, 0));}
+  void insert_below(pre_iterator i, const T& t) {
+    tree_.insert_below(i, node_type::create(t, 0));}
+
   // NOTE: not implementing the erase-and-return version yet.
   void erase(pre_iterator i) {tree_.erase(i);}
   void erase_pair(child_iterator f, child_iterator l) {
@@ -252,6 +259,14 @@ struct subtree_wrapped {
     subtree_.prepend(node_type::create(v, 0));}
   void append_subtree(const subtree_type s)  { subtree_.append(s);  }
   void prepend_subtree(const subtree_type s) { subtree_.prepend(s); }
+
+  // TODO: insert_above and insert_below should return iterators.  But
+  // getting the correct type beack out may be tricky.
+  typedef typename tree_type::pre_iterator pre_iterator;
+  void insert_above(pre_iterator i, const T& t) {
+    subtree_.insert_above(i, node_type::create(t, 0));}
+  void insert_below(pre_iterator i, const T& t) {
+    subtree_.insert_below(i, node_type::create(t, 0));}
 
   // NOTE: not implementing the erase-and-return version yet.
   void erase(typename tree_type::pre_iterator i) {subtree_.erase(i);}

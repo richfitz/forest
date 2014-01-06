@@ -93,6 +93,9 @@ RCPP_MODULE(forest) {
     .method("append_subtree",  &itree::append_subtree)
     .method("prepend_subtree", &itree::prepend_subtree)
 
+    .method("insert_above",    &itree::insert_above)
+    .method("insert_below",    &itree::insert_below)
+
     .method("copy",       &itree::copy)
 
     .method("erase",           &itree::erase)
@@ -137,6 +140,9 @@ RCPP_MODULE(forest) {
     .method("prepend_node",     &isubtree_wrapped::prepend_node)
     .method("append_subtree",   &isubtree_wrapped::append_subtree)
     .method("prepend_subtree",  &isubtree_wrapped::prepend_subtree)
+
+    .method("insert_above",     &isubtree_wrapped::insert_above)
+    .method("insert_below",     &isubtree_wrapped::insert_below)
 
     .method("erase",            &isubtree_wrapped::erase)
     .method("erase_pair",       &isubtree_wrapped::erase_pair)
