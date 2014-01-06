@@ -114,10 +114,15 @@ Iterator find(Iterator first, Iterator last,
   return std::find(first, last, val);
 }
 
+// "distance" comes from <iterator>, not <algorithm>, but it seems to
+// belong here.  It is potentially dangerous for users to use on
+// arbitrary iterators.
+
 }
 
 // Helper to export with standard names:
-#define FOREST_ITERATOR_MODULE_ALGORITHM(type, name) \
-  Rcpp::function("find_" name, &forest::find<type>);
+#define FOREST_ITERATOR_MODULE_ALGORITHM(type, name)     \
+  Rcpp::function("find_" name, &forest::find<type>);     \
+  Rcpp::function("distance_" name, &std::distance<type>) \
 
 #endif

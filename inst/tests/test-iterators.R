@@ -108,6 +108,21 @@ test_that("std::find works", {
   expect_that(it1$equals(it2), is_true())
 })
 
+test_that("std::distance works", {
+  distance <- forest:::distance_vector_double_iterator
+  expect_that(distance(v$begin(), v$end()),
+              equals(v$size))
+
+  it1 <- v$begin()
+  it2 <- v$end()
+  n1 <- 2
+  n2 <- 1
+  it1$advance(n1)
+  it2$advance(-n2)
+  expect_that(distance(it1, it2), equals(v$size - (n1 + n2)))
+  expect_that(distance(it2, it1), equals(-distance(it1, it2)))
+})
+
 ## It's easy to invalidate iterators by changing the underlying data.
 ## For example, run this under valgrind:
 ##
