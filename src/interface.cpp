@@ -84,9 +84,7 @@ RCPP_MODULE(forest) {
     .property("index",     &itree::index)
     .property("indices",   &itree::indices)
 
-    .method("insert_at_node",     &itree::insert_at_node)
-    .method("insert_root",        &itree::insert_root)
-    .method("insert_at_iterator", &itree::insert_at_iterator)
+    .method("insert",          &itree::insert)
 
     .method("append_node",     &itree::append_node)
     .method("prepend_node",    &itree::prepend_node)

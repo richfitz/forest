@@ -25,22 +25,22 @@ test_that("tree_root_ctor", {
 test_that("tree_insert1", {
   tr <- new(itree)
 
-  tr$insert_at_iterator(tr$end(), 1)
+  tr$insert(tr$end(), 1)
   expect_that(tr, is_expected_tree(1, "1"))
 
-  tr$insert_at_iterator(tr$end_child(), 2)
+  tr$insert(tr$end_child(), 2)
   expect_that(tr, is_expected_tree(2, "1(2)"))
 
-  tr$insert_at_iterator(tr$end_child(), 3)
+  tr$insert(tr$end_child(), 3)
   expect_that(tr, is_expected_tree(3, "1(2 3)"))
 
-  tr$insert_at_iterator(tr$begin_sub_child()$value$end_child(), 4)
+  tr$insert(tr$begin_sub_child()$value$end_child(), 4)
   expect_that(tr, is_expected_tree(4, "1(2(4) 3)"))
 
-  tr$insert_at_iterator(tr$end_child(), 5)
+  tr$insert(tr$end_child(), 5)
   expect_that(tr, is_expected_tree(5, "1(2(4) 3 5)"))
 
-  tr$insert_at_iterator(tr$begin_sub_child()$value$begin_child(), 6)
+  tr$insert(tr$begin_sub_child()$value$begin_child(), 6)
   expect_that(tr, is_expected_tree(6, "1(2(6 4) 3 5)"))
 })
 
@@ -54,13 +54,13 @@ test_that("tree_copy_ctor", {
   tr1 <- tr$copy()
   expect_that(tr, is_same_tree_as(tr1))
 
-  tr$insert_at_iterator(tr$end(), 1)
+  tr$insert(tr$end(), 1)
   tr2 <- tr$copy()
   expect_that(tr, is_same_tree_as(tr2))
   expect_that(tr, is_different_tree_to(tr1)) # (extra)
 
-  tr$insert_at_iterator(tr$end_child(), 2)
-  tr$insert_at_iterator(tr$end_child(), 3)
+  tr$insert(tr$end_child(), 2)
+  tr$insert(tr$end_child(), 3)
   tr3 <- tr$copy()
   expect_that(tr, is_same_tree_as(tr3))
   expect_that(tr, is_different_tree_to(tr1)) # (extra)
@@ -98,7 +98,7 @@ test_that("tree_append1", { # appending nodes
   expect_that(tr, is_expected_tree(3, "42(1 1)"))
 
   tr1 <- new(itree)
-  tr1$insert_at_iterator(tr1$end(), 1)
+  tr1$insert(tr1$end(), 1)
   tr1$append_node(2)
   tr1[[1]]$append_node(3)
   tr1$append_node(4)
@@ -498,11 +498,11 @@ test_that("tree_clear", {
   tr$clear()
   expect_that(tr, is_expected_tree(0, ""))
 
-  tr$insert_at_iterator(tr$end(), 1)
+  tr$insert(tr$end(), 1)
   tr$clear()
   expect_that(tr, is_expected_tree(0, ""))
 
-  tr$insert_at_iterator(tr$end(),1)
+  tr$insert(tr$end(),1)
   # TODO: Needs these append methods still:
   # tr$append(20,tree_of(1)(2,3,tree_of(4)(5))())
   # tr[[1]]$append(5, tr$copy())

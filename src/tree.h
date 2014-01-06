@@ -67,7 +67,7 @@ public:
   typedef typename tree_type::const_sub_pre_iterator const_sub_pre_iterator;
 
   tree() : index_(0) {}
-  tree(const T& t) : tree_(node_type::create(t, 0)), index_(1) {}
+  tree(const T& t) : tree_(node_type::create(t, 0)), index_(0) {}
 
   // Basic interrogation methods; pass through to the tree:
   bool empty() const {return tree_.empty();}
@@ -93,22 +93,20 @@ public:
   // All indices within the tree
   std::vector<size_t> indices() const;
 
-  // Insert a node as a child of node with index 'i'.
-  void insert_at_node(size_t i, const T& t);
-  // Insert a root node
-  void insert_root(const T& t);
   // In theory, this is all that is needed, but we need to be able to
   // deal with all the different iterator types, as they will silently
   // convert from one to the other (this is instantiated in the module
   // code as a pre_iterator).
-  void insert_at_iterator(pre_iterator i, const T& t) {insert(i, t);}
+  void insert(pre_iterator i, const T& t) {
+    tree_.insert(i, node_type::create(t, index_));}
 
   void append_node(const T& v) {
-    tree_.append(node_type::create(v, index_++));}
+    tree_.append(node_type::create(v, index_));}
   void prepend_node(const T& v) {
-    tree_.prepend(node_type::create(v, index_++));}
+    tree_.prepend(node_type::create(v, index_));}
   void append_subtree(const subtree_type s)  { tree_.append(s);  }
   void prepend_subtree(const subtree_type s) { tree_.prepend(s); }
+  // TODO: append_iterator and prepend_iterator, using iterator pairs.
 
   // TODO: insert_above and insert_below should return iterators.  But
   // getting the correct type beack out may be tricky.
@@ -164,13 +162,6 @@ public:
     insert_at(idx-1, value); }
 
 private:
-  // This takes care of the actual inserts, updating the index as
-  // needed.
-  template<typename Iterator>
-  void insert(Iterator i, const T& v);
-  template<typename Iterator>
-  Iterator find_node(size_t i, Iterator first, Iterator last);
-
   tree_type tree_;
   size_t index_;
 };
@@ -197,36 +188,8 @@ std::vector<size_t> tree<T>::indices() const {
 }
 
 template <typename T>
-void tree<T>::insert_at_node(size_t i, const T& t) {
-  sub_pre_iterator it = find_node(i, tree_.begin_sub(), tree_.end_sub());
-  insert(it->end_child(), t);
-}
-
-template <typename T>
-void tree<T>::insert_root(const T& t) {
-  insert(tree_.end(), t);
-}
-
-
-template <typename T>
 bool tree<T>::is_equal_to(const tree<T>& rhs) const {
   return this->tree_ == rhs.tree_;
-}
-
-template<typename T>
-template<typename Iterator>
-void tree<T>::insert(Iterator i, const T& v) {
-  tree_.insert(i, node_type::create(v, index_++));
-}
-
-template<typename T>
-template<typename Iterator>
-Iterator tree<T>::find_node(size_t i, Iterator first, Iterator last) {
-  while (first != last && first->begin()->index() != i)
-    ++first;
-  if (first == tree_.end())
-    ::Rf_error("Did not find index %d", i);
-  return first;
 }
 
 // Need to wrap these up on return.  There will be two levels of
