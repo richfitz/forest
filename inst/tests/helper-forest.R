@@ -13,6 +13,16 @@ is_expected_tree <- function(n, representation) {
   }
 }
 
+is_same_tree_as <- function(cmp) {
+  function(tr)
+    expectation(tr$is_equal_to(cmp), "Trees differ")
+}
+
+is_different_tree_to <- function(cmp) {
+  function(tr)
+    expectation(!tr$is_equal_to(cmp), "Trees are the same")
+}
+
 
 ## This version is more like the C++ version, but needs to be
 ## terminated by () to return the tree.

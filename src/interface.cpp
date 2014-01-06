@@ -74,6 +74,13 @@ RCPP_MODULE(forest) {
     .property("childless", &itree::childless)
     .property("representation", &itree::representation)
 
+    .method("root",        &itree::root)
+    .method("front",       &itree::front)
+    .method("back",        &itree::back)
+    .method("root_sub",    &itree::root_sub)
+    .method("front_sub",   &itree::front_sub)
+    .method("back_sub",    &itree::back_sub)
+
     .property("index",     &itree::index)
     .property("indices",   &itree::indices)
 
@@ -126,12 +133,18 @@ RCPP_MODULE(forest) {
     .method("append_subtree",   &isubtree_wrapped::append_subtree)
     .method("prepend_subtree",  &isubtree_wrapped::prepend_subtree)
 
+    .method("is_equal_to",      &isubtree_wrapped::is_equal_to)
+
     .method("begin",            &isubtree_wrapped::begin)
     .method("end",              &isubtree_wrapped::end)
     .method("begin_post",       &isubtree_wrapped::begin_post)
     .method("end_post",         &isubtree_wrapped::end_post)
     .method("begin_child",      &isubtree_wrapped::begin_child)
     .method("end_child",        &isubtree_wrapped::end_child)
+
+    // NOTE: using base-1 accessor/setter here.
+    .method("at",               &isubtree_wrapped::r_at)
+    .method("[[",               &isubtree_wrapped::r_at)
     ;
 
   FOREST_ITERATOR_MODULE(itree::pre_iterator, "itree_pre_iterator")

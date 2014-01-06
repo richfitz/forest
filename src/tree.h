@@ -76,6 +76,18 @@ public:
   bool childless() const {return tree_.childless();}
   std::string representation() const;
 
+  // Given nature of iterators, etc, this could either return the node
+  // or the node contents.  Returning the contents is more like
+  // tree_runner, but returning the node is more like the iterator.
+  // If I scrap the node structure entirely (quite likely) then this
+  // problem goes away.
+  node_type root() {return tree_.root();}
+  node_type front() {return tree_.front();}
+  node_type back()  {return tree_.back();}
+  subtree_type root_sub()  {return tree_.root_sub(); }
+  subtree_type front_sub() {return tree_.front_sub();}
+  subtree_type back_sub()  {return tree_.back_sub(); }
+
   // Index of current (root) node
   size_t index() const;
   // All indices within the tree
@@ -233,6 +245,9 @@ struct subtree_wrapped {
   void append_subtree(const subtree_type s)  { subtree_.append(s);  }
   void prepend_subtree(const subtree_type s) { subtree_.prepend(s); }
 
+  bool is_equal_to(const subtree_wrapped& rhs) const {
+    return this->subtree_ == rhs.subtree_; }
+
   // NOTE: these can be tree_type:: or subtree_type:: -- but we do all
   // of the wrapping based on the tree_type iterators, so for some
   // sort of clarity I'm favouring tree_type:: here.
@@ -246,6 +261,15 @@ struct subtree_wrapped {
     return subtree_.begin_child();}
   typename tree_type::child_iterator end_child()   {
     return subtree_.end_child();}
+
+  subtree_type at(size_t idx) { return subtree_[idx]; }
+  void insert_at(size_t idx, const subtree_type& value) {
+    subtree_[idx] = value; }
+  // TODO: Need range checks here -- will crash R if out-of-bounds
+  // iterators are used.
+  subtree_type r_at(size_t idx) { return at(idx-1); }
+  void r_insert_at(size_t idx, const subtree_type& value) {
+    insert_at(idx-1, value); }
 };
 
 template <typename T>

@@ -36,6 +36,8 @@ test_that("Empty vector is empty", {
 # avoiding a Rcpp weirdness about "no function to return from, jumping
 # to top level" that seems to be triggered when 'v' is cleaned up
 # automatically?
+# possibly related to this:
+# https://stat.ethz.ch/pipermail/r-devel/2011-December/062917.html
 gc()
 
 v <- new(vector_double)
