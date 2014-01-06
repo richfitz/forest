@@ -96,6 +96,8 @@ RCPP_MODULE(forest) {
     .method("insert_above",    &itree::insert_above)
     .method("insert_below",    &itree::insert_below)
 
+    .method("flatten",         &itree::flatten)
+
     .method("copy",       &itree::copy)
 
     .method("erase",           &itree::erase)
@@ -143,6 +145,8 @@ RCPP_MODULE(forest) {
 
     .method("insert_above",     &isubtree_wrapped::insert_above)
     .method("insert_below",     &isubtree_wrapped::insert_below)
+
+    .method("flatten",          &isubtree_wrapped::flatten)
 
     .method("erase",            &isubtree_wrapped::erase)
     .method("erase_pair",       &isubtree_wrapped::erase_pair)

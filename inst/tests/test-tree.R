@@ -407,7 +407,23 @@ test_that("tree_insert_below", {
   expect_that(tr, is_expected_tree(5, "42(40(39(41 43)))"))
 })
 
-## tree_insert_flatten
+test_that("tree_insert_flatten", {
+  tr <- tree_of(0)(tree_of(1)(2,tree_of(3)(tree_of(4)(5,6))))()
+
+  tr$flatten(tr$begin_child())
+  expect_that(tr,is_expected_tree(7, "0(1 2 3(4(5 6)))"))
+
+  tmp <- tr$copy()
+
+  tr$flatten(tr[[3]]$begin())
+  expect_that(tr, is_expected_tree(7, "0(1 2 3 4(5 6))"))
+
+  tmp$flatten(tmp[[3]]$begin_child())
+  expect_that(tmp, is_expected_tree(7, "0(1 2 3(4 5 6))"))
+
+  tmp$flatten(tmp[[3]]$begin())
+  expect_that(tmp, is_expected_tree(7, "0(1 2 3 4 5 6)"))
+})
 
 test_that("tree_erase1", {
   tr <- tree_of(1)(tree_of(2)(3,4,42),

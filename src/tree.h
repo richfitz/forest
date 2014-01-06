@@ -117,6 +117,10 @@ public:
   void insert_below(pre_iterator i, const T& t) {
     tree_.insert_below(i, node_type::create(t, 0));}
 
+  // TODO: As with insert_above, flatten should return iterator, but
+  // does not.
+  void flatten(pre_iterator i) {tree_.flatten(i);}
+
   // NOTE: not implementing the erase-and-return version yet.
   void erase(pre_iterator i) {tree_.erase(i);}
   void erase_pair(child_iterator f, child_iterator l) {
@@ -267,6 +271,10 @@ struct subtree_wrapped {
     subtree_.insert_above(i, node_type::create(t, 0));}
   void insert_below(pre_iterator i, const T& t) {
     subtree_.insert_below(i, node_type::create(t, 0));}
+
+  // TODO: As with insert_above, flatten should return iterator, but
+  // does not.
+  void flatten(pre_iterator i) {subtree_.flatten(i);}
 
   // NOTE: not implementing the erase-and-return version yet.
   void erase(typename tree_type::pre_iterator i) {subtree_.erase(i);}
