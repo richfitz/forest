@@ -1,7 +1,11 @@
 source("helper-forest.R")
 
-# These tests will slowly duplicate those in
-# src/treetree/test_runner.cpp
+# These tests attempt to duplicate those in
+# src/treetree/test_runner.cpp, basically line by line.  Not all tests
+# are directly possible because of differences in the languages and
+# interfaces, and not all tests are implemented because I don't see
+# that I will use them.  But it is fairly complete.  Comments
+# highlight incomplete regions and reasons for incompleteness.
 
 context("Basic tree operations")
 
@@ -336,7 +340,33 @@ test_that("tree_const_iters", {
 #   boost reversable iterator wrapper around iterators.  Do this if
 #   we get nice iterators support, perhaps?
 
-## tree_mutable_iters; needs considerably more support.
+test_that("tree_mutable_iters", {
+  tr <- tree_of(1)(2,tree_of(3)(tree_of(4)(5),6),7,tree_of(8)(9,10),
+                   tree_of(11)(12))()
+  expect_that(tr, is_expected_tree(12,"1(2 3(4(5) 6) 7 8(9 10) 11(12))"))
+
+  # TODO: Have not implemented copy, or reversible iterators
+  # std::copy(reverse_it(count_it(13)),reverse_it(count_it(1)),tr.begin());
+  # check_tree(tr,12,"12(11 10(9(8) 7) 6 5(4 3) 2(1))");
+
+  # std::copy(count_it(1),count_it(13),tr.begin())
+  # check_tree(tr,12,"1(2 3(4(5) 6) 7 8(9 10) 11(12))")
+
+  tr2 <- new(itree, 42)
+  tr2$begin_sub()$assign(tr)
+  expect_that(tr2, is_expected_tree(tr$size, tr$representation))
+  expect_that(tr2$is_equal_to(tr), is_true())
+
+  # TODO: Have not implemented copy
+  # std::copy(count_it(100),count_it(105),tr2.begin_sub_child());
+  # check_tree(tr2,6,"1(100 101 102 103 104)");
+
+  # TODO: Have not implemented copy
+  # std::copy(repeat_it(tr),repeat_it(tr,5),tr2.begin_sub_child());
+  # check_eq(tr2.size(),61u);
+  # check_eq(distance(tr2.begin_sub_child(),tr2.end_sub_child()),5);
+  # check(equal(tr2.begin_sub_child(),tr2.end_sub_child(),repeat_it(tr)));
+})
 
 test_that("tree_accessors", {
   tr <- tree_of(1)(2,
