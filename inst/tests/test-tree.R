@@ -428,14 +428,82 @@ test_that("tree_insert2", {
   expect_that(ok, is_true())
 })
 
-## tree_append3, tree_prepend3: Iterator pair versions of append,
-##   prepend -- should not be too hard.
+test_that("tree_append3", { # iterator pairs
+  ## TODO: Not implemented.  Implementing this requires a pair of
+  ##   iterators to containers of nodes.  That is going to be very
+  ##   difficult to export from R because we don't have decent first
+  ##   class iterator support there yet.  If we did, and if that
+  ##   seemed actually useful, this support could be added.
+  ##
+  ## itree tr(42);
+  ## vector<int> toadd(count_it(1),count_it(101));
+  ## tr.append(toadd.begin(),toadd.end());
+  ## check_eq(tr.size(),101u);
+  ## check_eq(tr.root(),42);
+  ## check(equal(tr.begin_child(),tr.end_child(),toadd.begin()));
+
+  tr1 <- new(itree, 42)
+  tr1$append_node(-1)
+  tr1[[1]]$append_node_n(10, 99)
+  expect_that(tr1$size, equals(12))
+
+  i <- tr1$begin()
+  i$advance(2)
+  j <- tr1$begin_sub()
+  j$advance(2)
+
+  ok <- TRUE
+  while (i$differs(tr1$end())) {
+    ok <- ok && i$value$data == 99 &&
+      j$value$is_equal_to(tree_of(99)())
+    i$increment()
+    j$increment()
+  }
+  expect_that(ok, is_true())
+})
+
+test_that("tree_prepend3", {
+  ## TODO: Not implemented -- see tree_append3
+  ##
+  ## itree tr(42);
+  ## vector<int> toadd(count_it(1),count_it(101));
+  ## tr.prepend(toadd.begin(),toadd.end());
+  ## check_eq(tr.size(),101u);
+  ## check_eq(tr.root(),42);
+  ## check(equal(tr.begin_child(),tr.end_child(),toadd.begin()));
+
+  tr1 <- new(itree, 42)
+  tr1$prepend_node(-1)
+  tr1$prepend_node_n(10, 99)
+  expect_that(tr1$size, equals(12))
+
+  i <- tr1$begin()
+  i$increment()
+  j <- tr1$begin_sub()
+  j$increment()
+
+  end <- tr1$end()
+  end$decrement()
+
+  ok <- TRUE
+  while (i$differs(end)) {
+    ok <- ok && i$value$data == 99 &&
+      j$value$is_equal_to(tree_of(99)())
+    i$increment()
+    j$increment()
+  }
+  expect_that(ok, is_true())
+})
 
 ## tree_append4, tree_prepend4: multiply append trees -- not sure if
 ##   that makes any sense for us.
+## (TODO: not implemented)
 
 ## tree_append5, tree_prepend5: append vectors of trees -- could be
-##   useful.
+##   useful, but same issue as for tree_append3 applies: we don't have
+##   nice iterator objects, and the mix between runtime and compile
+##   type polymorphism here causes grief.
+## (TODO: not implemented)
 
 test_that("tree_insert_above", {
   tr <- new(itree, 42)
@@ -562,9 +630,8 @@ test_that("tree_clear", {
   expect_that(tr, is_expected_tree(0, ""))
 
   tr$insert(tr$end(),1)
-  # TODO: Needs these append methods still:
-  # tr$append(20,tree_of(1)(2,3,tree_of(4)(5))())
-  # tr[[1]]$append(5, tr$copy())
+  tr$append_subtree_n(20, tree_of(1)(2,3,tree_of(4)(5))())
+  tr[[1]]$append_subtree_n(5, tr$copy())
   tr$clear()
   expect_that(tr, is_expected_tree(0, ""))
 })

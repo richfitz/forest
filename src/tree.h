@@ -95,7 +95,15 @@ public:
   void prepend_node(const T& v) { tree_.prepend(node_type(v)); }
   void append_subtree(const subtree_type s)  { tree_.append(s);  }
   void prepend_subtree(const subtree_type s) { tree_.prepend(s); }
-  // TODO: append_iterator and prepend_iterator, using iterator pairs.
+
+  void append_node_n(size_t n, const T& v) {
+    tree_.append(n, node_type(v));}
+  void prepend_node_n(size_t n, const T& v) {
+    tree_.prepend(n, node_type(v));}
+  void append_subtree_n(size_t n, const subtree_type s) {
+    tree_.append(n, s);}
+  void prepend_subtree_n(size_t n, const subtree_type s) {
+    tree_.prepend(n, s);}
 
   // TODO: insert_above and insert_below should return iterators.  But
   // getting the correct type beack out may be tricky.
@@ -189,6 +197,15 @@ struct subtree_wrapped {
   void prepend_node(const T& v) { subtree_.prepend(node_type(v));}
   void append_subtree(const subtree_type s)  { subtree_.append(s);  }
   void prepend_subtree(const subtree_type s) { subtree_.prepend(s); }
+
+  void append_node_n(size_t n, const T& v) {
+    subtree_.append(n, node_type(v));}
+  void prepend_node_n(size_t n, const T& v) {
+    subtree_.prepend(n, node_type(v));}
+  void append_subtree_n(size_t n, const subtree_type s) {
+    subtree_.append(n, s);}
+  void prepend_subtree_n(size_t n, const subtree_type s) {
+    subtree_.prepend(n, s);}
 
   // TODO: insert_above and insert_below should return iterators.  But
   // getting the correct type beack out may be tricky.

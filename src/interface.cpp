@@ -90,6 +90,11 @@ RCPP_MODULE(forest) {
     .method("append_subtree",  &itree::append_subtree)
     .method("prepend_subtree", &itree::prepend_subtree)
 
+    .method("append_node_n",     &itree::append_node_n)
+    .method("prepend_node_n",    &itree::prepend_node_n)
+    .method("append_subtree_n",  &itree::append_subtree_n)
+    .method("prepend_subtree_n", &itree::prepend_subtree_n)
+
     .method("insert_above",    &itree::insert_above)
     .method("insert_below",    &itree::insert_below)
 
@@ -144,6 +149,11 @@ RCPP_MODULE(forest) {
     .method("prepend_node",     &isubtree_wrapped::prepend_node)
     .method("append_subtree",   &isubtree_wrapped::append_subtree)
     .method("prepend_subtree",  &isubtree_wrapped::prepend_subtree)
+
+    .method("append_node_n",     &isubtree_wrapped::append_node_n)
+    .method("prepend_node_n",    &isubtree_wrapped::prepend_node_n)
+    .method("append_subtree_n",  &isubtree_wrapped::append_subtree_n)
+    .method("prepend_subtree_n", &isubtree_wrapped::prepend_subtree_n)
 
     .method("insert_above",     &isubtree_wrapped::insert_above)
     .method("insert_below",     &isubtree_wrapped::insert_below)
