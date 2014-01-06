@@ -129,6 +129,13 @@ public:
   void prune() {tree_.prune();}
   void clear() {tree_.clear();}
 
+  void splice(pre_iterator i, subtree_type s) {
+    tree_.splice(i, s);}
+  void splice_pair(pre_iterator i,
+		   sub_child_iterator fi, sub_child_iterator li) {
+    tree_.splice(i, fi, li);
+  }
+
   tree<T> copy() const {return *this;}
 
   bool is_equal_to(const tree<T>& rhs) const;
@@ -283,6 +290,15 @@ struct subtree_wrapped {
     subtree_.erase(f, l);
   }
   void prune() {subtree_.prune();}
+
+  void splice(pre_iterator i, subtree_type s) {
+    subtree_.splice(i, s);}
+  typedef typename tree_type::sub_child_iterator sub_child_iterator;
+  void splice_pair(pre_iterator i,
+		   sub_child_iterator fi, sub_child_iterator li) {
+    subtree_.splice(i, fi, li);
+  }
+
 
   bool is_equal_to(const subtree_wrapped& rhs) const {
     return this->subtree_ == rhs.subtree_; }

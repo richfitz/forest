@@ -512,7 +512,73 @@ test_that("tree_clear", {
   expect_that(tr, is_expected_tree(0, ""))
 })
 
-## tree_splice1, tree_splice2
+test_that("tree_splice1", {
+  tr1 <- tree_of(1)(2,3)()
+  tr2 <- tree_of(4)()
+  tr3 <- tree_of(5)(6,tree_of(7)(8))()
+
+  tr1$splice(tr1[[1]]$begin(),tr2)
+  expect_that(tr2, is_expected_tree(0, ""))
+  expect_that(tr1, is_expected_tree(4, "1(4 2 3)"))
+
+  tr1$splice(tr1$end_child(), tr1[[1]])
+  expect_that(tr1, is_expected_tree(4, "1(2 3 4)"))
+
+  tr1$splice(tr1[[2]]$begin(), tr1$back_sub())
+  expect_that(tr1, is_expected_tree(4, "1(2 4 3)"))
+
+  tr1$splice(tr1$end_child(), tr1[[2]])
+  expect_that(tr1, is_expected_tree(4, "1(2 3 4)"))
+
+  it <- tr1$begin_child()
+  it$increment()
+  tr1$splice(it, tr3[[2]])
+  expect_that(tr1, is_expected_tree(6, "1(2 7(8) 3 4)"))
+  expect_that(tr3, is_expected_tree(2, "5(6)"))
+
+  tr1$splice(tr3$end_child(), tr1[[2]])
+  expect_that(tr1, is_expected_tree(4, "1(2 3 4)"))
+  expect_that(tr3, is_expected_tree(4, "5(6 7(8))"))
+
+  it <- tr1$end()
+  it$decrement()
+  tr1$splice(it, tr3)
+  expect_that(tr1, is_expected_tree(8, "1(2 3 5(6 7(8)) 4)"))
+  expect_that(tr3, is_expected_tree(0, ""))
+
+  tr4 <- tree_of(1)(2)()
+  tr1$splice(tr1$end_child(), tr4$begin_child())
+  expect_that(tr4, is_expected_tree(1, "1"))
+  expect_that(tr1, is_expected_tree(9, "1(2 3 5(6 7(8)) 4 2)"))
+
+  tr4$splice(tr4$end_child(), tr1)
+  expect_that(tr1, is_expected_tree(0, ""))
+  expect_that(tr4, is_expected_tree(10, "1(1(2 3 5(6 7(8)) 4 2))"))
+})
+
+test_that("tree_splice2",  {
+  tr1 <- tree_of(1)(2,3)()
+  tr2 <- tree_of(4)()
+  tr3 <- tree_of(5)(6,tree_of(7)(8))()
+
+  tr1$splice_pair(tr1[[1]]$begin(),
+                  tr2$begin_child(), tr2$end_child())
+  expect_that(tr1, is_expected_tree(3, "1(2 3)"))
+  expect_that(tr2, is_expected_tree(1, "4"))
+
+  tr1$splice_pair(tr1$end_child(),
+                  tr3$begin_child(), tr3$end_child())
+  expect_that(tr1, is_expected_tree(6, "1(2 3 6 7(8))"))
+  expect_that(tr3, is_expected_tree(1, "5"))
+
+  it1 <- tr1$begin_child()
+  it1$increment()
+  it2 <- tr1$end_child()
+  it2$decrement()
+  tr3$splice_pair(tr3$end_child(), it1, it2)
+  expect_that(tr1, is_expected_tree(4, "1(2 7(8))"))
+  expect_that(tr3, is_expected_tree(3, "5(3 6)"))
+})
 
 ## tree_swap
 
