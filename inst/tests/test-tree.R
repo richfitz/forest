@@ -506,10 +506,8 @@ test_that("tree_prepend3", {
   tr1$prepend_n(10, 99)
   expect_that(tr1$size, equals(12))
 
-  i <- tr1$begin()
-  i$increment()
-  j <- tr1$begin_sub()
-  j$increment()
+  i <- tr1$begin()$pre_increment()
+  j <- tr1$begin_sub()$pre_increment()
 
   end <- tr1$end()
   end$decrement()
@@ -617,9 +615,7 @@ test_that("tree_erase2", {
   tr$erase_pair(tr[[1]]$begin_child(), tr[[1]]$end_child())
   expect_that(tr, is_expected_tree(10,"1(5 9(10(11) 12) 2(3 4 42))"))
 
-  it <- tr$begin_child()
-  it$increment()
-  tr$erase_pair(it, tr$end_child())
+  tr$erase_pair(tr$begin_child()$pre_increment(), tr$end_child())
   expect_that(tr, is_expected_tree(2, "1(5)"))
 
   tr$erase_pair(tr$begin_child(), tr$end_child())
@@ -682,9 +678,7 @@ test_that("tree_splice1", {
   tr1$splice(tr1$end_child(), tr1[[2]])
   expect_that(tr1, is_expected_tree(4, "1(2 3 4)"))
 
-  it <- tr1$begin_child()
-  it$increment()
-  tr1$splice(it, tr3[[2]])
+  tr1$splice(tr1$begin_child()$pre_increment(), tr3[[2]])
   expect_that(tr1, is_expected_tree(6, "1(2 7(8) 3 4)"))
   expect_that(tr3, is_expected_tree(2, "5(6)"))
 
@@ -723,10 +717,8 @@ test_that("tree_splice2",  {
   expect_that(tr1, is_expected_tree(6, "1(2 3 6 7(8))"))
   expect_that(tr3, is_expected_tree(1, "5"))
 
-  it1 <- tr1$begin_child()
-  it1$increment()
-  it2 <- tr1$end_child()
-  it2$decrement()
+  it1 <- tr1$begin_child()$pre_increment()
+  it2 <- tr1$end_child()$pre_decrement()
   tr3$splice_pair(tr3$end_child(), it1, it2)
   expect_that(tr1, is_expected_tree(4, "1(2 7(8))"))
   expect_that(tr3, is_expected_tree(3, "5(3 6)"))
