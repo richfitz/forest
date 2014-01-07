@@ -18,12 +18,10 @@
 // For demo purposes, work with a tree where every node contains just
 // an integer.
 typedef forest::tree< int >         itree;
-typedef itree::node_type            inode;
 typedef itree::subtree_type         isubtree;
 typedef itree::subtree_wrapped_type isubtree_wrapped;
 
 RCPP_EXPOSED_CLASS_NODECL(itree)
-RCPP_EXPOSED_CLASS_NODECL(inode)
 RCPP_EXPOSED_CLASS_NODECL(isubtree_wrapped)
 
 FOREST_ITERATOR_EXPORT(itree::pre_iterator)
@@ -33,9 +31,6 @@ FOREST_ITERATOR_EXPORT(itree::sub_pre_iterator)
 FOREST_ITERATOR_EXPORT(itree::sub_post_iterator)
 FOREST_ITERATOR_EXPORT(itree::sub_child_iterator)
 
-// In contrast to the iterator versions, these may be possible to
-// template for all subtree types.  However, I did try doing this with
-// little success (see nodes.md)
 namespace Rcpp {
 template<> SEXP wrap(const isubtree& obj);
 template<> SEXP wrap(const isubtree& obj) {
@@ -59,10 +54,6 @@ RCPP_MODULE(forest) {
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
-  Rcpp::class_<inode>("inode")
-    .field("data",      &inode::data)
-    ;
-
   Rcpp::class_<itree>("itree")
     .constructor()
     .constructor<int>()

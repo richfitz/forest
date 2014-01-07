@@ -23,7 +23,7 @@ test_that("tree_empty_ctor", {
 test_that("tree_root_ctor", {
   tr <- new(itree, 42)
   expect_that(tr, is_expected_tree(1, "42"))
-  expect_that(tr$root()$data, equals(42))
+  expect_that(tr$root(), equals(42))
 })
 
 test_that("tree_insert1", {
@@ -294,8 +294,8 @@ test_that("tree_const_iters", {
       return(FALSE)
     i <- 1
     while (f1$differs(l1)) {
-      if (inherits(f1$value, "Rcpp_inode")) {
-        if (f1$value$data != cmp[[i]])
+      if (is.integer(f1$value)) {
+        if (f1$value != cmp[[i]])
           return(FALSE)
       } else {
         if (!f1$value$equals(cmp[[i]]))
@@ -378,9 +378,9 @@ test_that("tree_accessors", {
                    7,
                    8)()
 
-  expect_that(tr$root()$data,  equals(1))
-  expect_that(tr$front()$data, equals(2))
-  expect_that(tr$back()$data,  equals(8))
+  expect_that(tr$root(),      equals(1))
+  expect_that(tr$front(),     equals(2))
+  expect_that(tr$back(),      equals(8))
   expect_that(tr$front_sub(), is_same_tree_as(tree_of(2)()))
   expect_that(tr$back_sub(),  is_same_tree_as(tree_of(8)()))
 
@@ -430,13 +430,13 @@ test_that("tree_insert2", {
   tr3 <- new(itree, 42)
   tr3$insert_n(tr3$begin_child(), 100, 3)
 
-  expect_that(tr3$size,        equals(101))
-  expect_that(tr3$root()$data, equals(42))
+  expect_that(tr3$size,   equals(101))
+  expect_that(tr3$root(), equals(42))
   it <- tr3$begin()
   ok <- TRUE
   for (i in seq_len(100)) {
     it$increment()
-    ok <- ok && it$value$data == 3
+    ok <- ok && it$value == 3
   }
   expect_that(ok, is_true())
 
@@ -445,7 +445,7 @@ test_that("tree_insert2", {
   ok <- TRUE
   for (j in seq_len(10)) {
     it$increment()
-    ok <- ok && it$value$data == 4
+    ok <- ok && it$value == 4
   }
   expect_that(ok, is_true())
 
@@ -484,8 +484,7 @@ test_that("tree_append3", { # iterator pairs
 
   ok <- TRUE
   while (i$differs(tr1$end())) {
-    ok <- ok && i$value$data == 99 &&
-      j$value$equals(tree_of(99)())
+    ok <- ok && i$value == 99 && j$value$equals(tree_of(99)())
     i$increment()
     j$increment()
   }
@@ -517,8 +516,7 @@ test_that("tree_prepend3", {
 
   ok <- TRUE
   while (i$differs(end)) {
-    ok <- ok && i$value$data == 99 &&
-      j$value$equals(tree_of(99)())
+    ok <- ok && i$value == 99 && j$value$equals(tree_of(99)())
     i$increment()
     j$increment()
   }
