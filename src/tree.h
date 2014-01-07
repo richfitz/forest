@@ -116,8 +116,8 @@ public:
   // able to deal with all the different iterator types, as they will
   // silently convert from one to the other (this is instantiated in
   // the module code as a pre_iterator).
-  void insert(pre_iterator i, const T& t) {
-    tree_.insert(i, node_type(t));}
+  void insert(pre_iterator i, const T& v) {
+    tree_.insert(i, node_type(v));}
   void insert_subtree(pre_iterator i, const subtree_type& s) {
     tree_.insert(i, s);}
   void insert_n(pre_iterator i, size_t n, const T& v) {
@@ -128,10 +128,10 @@ public:
   // NOTE: insert_above and insert_below should return iterators.  But
   // getting the correct type back out may be tricky, so I'm skipping
   // this for now.
-  void insert_above(pre_iterator i, const T& t) {
-    tree_.insert_above(i, node_type(t));}
-  void insert_below(pre_iterator i, const T& t) {
-    tree_.insert_below(i, node_type(t));}
+  void insert_above(pre_iterator i, const T& v) {
+    tree_.insert_above(i, node_type(v));}
+  void insert_below(pre_iterator i, const T& v) {
+    tree_.insert_below(i, node_type(v));}
 
   // 5 Append + Prepend
   void append_node(const T& v)  {tree_.append(node_type(v)); }
@@ -222,8 +222,8 @@ public:
   // NOTE: (missing all _sub iterators?)
 
   // 4. Insert
-  void insert(pre_iterator i, const T& t) {
-    subtree_.insert(i, node_type(t));}
+  void insert(pre_iterator i, const T& v) {
+    subtree_.insert(i, node_type(v));}
   void insert_subtree(pre_iterator i, const subtree_type& s) {
     subtree_.insert(i, s);}
   void insert_n(pre_iterator i, size_t n, const T& v) {
@@ -232,10 +232,10 @@ public:
     subtree_.insert(i, n, s);}
 
   // NOTE: returning void -- see tree.insert_above().
-  void insert_above(pre_iterator i, const T& t) {
-    subtree_.insert_above(i, node_type(t));}
-  void insert_below(pre_iterator i, const T& t) {
-    subtree_.insert_below(i, node_type(t));}
+  void insert_above(pre_iterator i, const T& v) {
+    subtree_.insert_above(i, node_type(v));}
+  void insert_below(pre_iterator i, const T& v) {
+    subtree_.insert_below(i, node_type(v));}
 
   // 5 Append + Prepend
   void append_node(const T& v)  {subtree_.append(node_type(v));}
