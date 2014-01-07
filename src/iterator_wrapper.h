@@ -57,6 +57,10 @@ public:
   void increment() {++it;}
   void decrement() {--it;}
   void advance(int n) {std::advance(it, n);}
+  Iterator pre_increment()  {return ++it;}
+  Iterator pre_decrement()  {return --it;}
+  Iterator post_increment() {return it++;}
+  Iterator post_decrement() {return it--;}
 
   Iterator iterator() const {return it;}
 
@@ -75,16 +79,20 @@ private:
 // type and then have Rcpp do it's inheritance thing.  But that won't
 // work well with `$value`, for which we need to define the correct
 // type.
-#define FOREST_ITERATOR_MODULE(type, name)			    \
-  Rcpp::class_< forest::iterator_wrapper<type> >(name)		    \
-  .method("copy",      & forest::iterator_wrapper<type>::copy)      \
-  .property("value",   & forest::iterator_wrapper<type>::value)     \
-  .method("assign",    & forest::iterator_wrapper<type>::assign)    \
-  .method("equals",    & forest::iterator_wrapper<type>::equals)    \
-  .method("differs",   & forest::iterator_wrapper<type>::differs)   \
-  .method("increment", & forest::iterator_wrapper<type>::increment) \
-  .method("decrement", & forest::iterator_wrapper<type>::decrement) \
-  .method("advance",   & forest::iterator_wrapper<type>::advance)   \
+#define FOREST_ITERATOR_MODULE(type, name)                                   \
+  Rcpp::class_< forest::iterator_wrapper<type> >(name)                       \
+  .method("copy",           &forest::iterator_wrapper<type>::copy)           \
+  .property("value",        &forest::iterator_wrapper<type>::value)          \
+  .method("assign",         &forest::iterator_wrapper<type>::assign)         \
+  .method("equals",         &forest::iterator_wrapper<type>::equals)         \
+  .method("differs",        &forest::iterator_wrapper<type>::differs)        \
+  .method("increment",      &forest::iterator_wrapper<type>::increment)      \
+  .method("decrement",      &forest::iterator_wrapper<type>::decrement)      \
+  .method("pre_increment",  &forest::iterator_wrapper<type>::pre_increment)  \
+  .method("pre_decrement",  &forest::iterator_wrapper<type>::pre_decrement)  \
+  .method("post_increment", &forest::iterator_wrapper<type>::post_increment) \
+  .method("post_decrement", &forest::iterator_wrapper<type>::post_decrement) \
+  .method("advance",   & forest::iterator_wrapper<type>::advance)            \
   ;
 
 // This organises the wrapped type to be allowed to be exported from
@@ -94,19 +102,19 @@ private:
 // back to R it should first be wrapped up with iterator_wrapper.
 //
 // The as() wrapper does exactly the inverse.
-#define FOREST_ITERATOR_EXPORT(type)				   \
-  RCPP_EXPOSED_CLASS_NODECL(forest::iterator_wrapper<type>)	   \
-  namespace Rcpp {						   \
-  template<> SEXP wrap(const type& it);				   \
-  template<> SEXP wrap(const type& it) {			   \
-    return Rcpp::wrap(forest::iterator_wrapper<type>(it));         \
-  }								   \
-  template<> type as(SEXP obj);					   \
-  template<> type as(SEXP obj) {				   \
-    forest::iterator_wrapper<type> it =				   \
-      Rcpp::as< forest::iterator_wrapper<type> >(obj);		   \
-    return it.iterator();					   \
-  }								   \
+#define FOREST_ITERATOR_EXPORT(type)                         \
+  RCPP_EXPOSED_CLASS_NODECL(forest::iterator_wrapper<type>)  \
+  namespace Rcpp {                                           \
+  template<> SEXP wrap(const type& it);                      \
+  template<> SEXP wrap(const type& it) {                     \
+    return Rcpp::wrap(forest::iterator_wrapper<type>(it));   \
+  }                                                          \
+  template<> type as(SEXP obj);                              \
+  template<> type as(SEXP obj) {                             \
+    forest::iterator_wrapper<type> it =                      \
+      Rcpp::as< forest::iterator_wrapper<type> >(obj);       \
+    return it.iterator();                                    \
+  }                                                          \
   }
 
 #endif

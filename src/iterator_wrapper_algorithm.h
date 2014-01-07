@@ -110,7 +110,7 @@ namespace forest {
 
 template <typename Iterator>
 Iterator find(Iterator first, Iterator last,
-	      const typename Iterator::value_type& val) {
+              const typename Iterator::value_type& val) {
   return std::find(first, last, val);
 }
 

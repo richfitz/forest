@@ -83,6 +83,48 @@ test_that("Dereferencing iterators works", {
   expect_that(it$equals(v$begin()), is_true())
 })
 
+test_that("pre and post increment", {
+  v2 <- new(vector_double)
+  v2$assign(1:10)
+
+  it <- v2$begin()
+  tmp <- it$pre_increment()
+  expect_that(tmp$value, equals(2))
+  expect_that(it$value,  equals(2))
+
+  tmp <- it$post_increment()
+  expect_that(tmp$value, equals(2))
+  expect_that(it$value,  equals(3))
+
+  it$advance(3) # so, at "6"
+  tmp <- it$post_decrement()
+  expect_that(tmp$value, equals(6))
+  expect_that(it$value,  equals(5))
+
+  tmp <- it$pre_decrement()
+  expect_that(tmp$value, equals(4))
+  expect_that(it$value,  equals(4))
+
+  ## And again, but dereferencing
+  it <- v2$begin()
+  tmp <- it$pre_increment()$value
+  expect_that(tmp,       equals(2))
+  expect_that(it$value,  equals(2))
+
+  tmp <- it$post_increment()$value
+  expect_that(tmp,       equals(2))
+  expect_that(it$value,  equals(3))
+
+  it$advance(3) # so, at "6"
+  tmp <- it$post_decrement()$value
+  expect_that(tmp,       equals(6))
+  expect_that(it$value,  equals(5))
+
+  tmp <- it$pre_decrement()$value
+  expect_that(tmp,       equals(4))
+  expect_that(it$value,  equals(4))
+})
+
 test_that("std::find works", {
   ## Pardon the ugly name for now:
   it <- forest:::find_vector_double_iterator(v$begin(), v$end(), 5)
