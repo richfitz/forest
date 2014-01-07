@@ -185,7 +185,14 @@ public:
   std::string representation() const {
     return boost::lexical_cast<std::string>(subtree_);}
 
-  // 2. Accessors (NOTE: most missing)
+  // 2.
+  value_type root()        {return subtree_.root();     }
+  value_type front()       {return subtree_.front();    }
+  value_type back()        {return subtree_.back();     }
+  subtree_type root_sub()  {return subtree_.root_sub(); }
+  subtree_type front_sub() {return subtree_.front_sub();}
+  subtree_type back_sub()  {return subtree_.back_sub(); }
+
   subtree_type at(size_t idx) { return subtree_[idx]; }
   void insert_at(size_t idx, const subtree_type& value) {
     subtree_[idx] = value; }
@@ -198,14 +205,19 @@ public:
     insert_at(idx-1, value); }
 
   // 3. Iterators
-  pre_iterator   begin()       {return subtree_.begin();      }
-  pre_iterator   end()         {return subtree_.end();        }
-  post_iterator  begin_post()  {return subtree_.begin_post(); }
-  post_iterator  end_post()    {return subtree_.end_post();   }
-  child_iterator begin_child() {return subtree_.begin_child();}
-  child_iterator end_child()   {return subtree_.end_child();  }
+  pre_iterator       begin()           {return subtree_.begin();      }
+  pre_iterator       end()             {return subtree_.end();        }
+  post_iterator      begin_post()      {return subtree_.begin_post(); }
+  post_iterator      end_post()        {return subtree_.end_post();   }
+  child_iterator     begin_child()     {return subtree_.begin_child();}
+  child_iterator     end_child()       {return subtree_.end_child();  }
 
-  // NOTE: (missing all _sub iterators?)
+  sub_pre_iterator   begin_sub()       {return subtree_.begin_sub();      }
+  sub_pre_iterator   end_sub()         {return subtree_.end_sub();        }
+  sub_post_iterator  begin_sub_post()  {return subtree_.begin_sub_post(); }
+  sub_post_iterator  end_sub_post()    {return subtree_.end_sub_post();   }
+  sub_child_iterator begin_sub_child() {return subtree_.begin_sub_child();}
+  sub_child_iterator end_sub_child()   {return subtree_.end_sub_child();  }
 
   // 4. Insert
   void insert(pre_iterator i, const value_type& v) {

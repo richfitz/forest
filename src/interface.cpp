@@ -140,7 +140,14 @@ RCPP_MODULE(forest) {
     .property("childless",       &isubtree_wrapped::childless)
     .property("representation",  &isubtree_wrapped::representation)
 
-    // 2. Accessors (NOTE: most missing)
+    // 2. Accessors
+    .method("root",              &isubtree_wrapped::root)
+    .method("front",             &isubtree_wrapped::front)
+    .method("back",              &isubtree_wrapped::back)
+    .method("root_sub",          &isubtree_wrapped::root_sub)
+    .method("front_sub",         &isubtree_wrapped::front_sub)
+    .method("back_sub",          &isubtree_wrapped::back_sub)
+
     // NOTE: These are base-1
     .method("at",                &isubtree_wrapped::r_at)
     .method("[[",                &isubtree_wrapped::r_at)
@@ -153,7 +160,12 @@ RCPP_MODULE(forest) {
     .method("begin_child",       &isubtree_wrapped::begin_child)
     .method("end_child",         &isubtree_wrapped::end_child)
 
-    // NOTE: (missing all _sub iterators?)
+    .method("begin_sub",         &isubtree_wrapped::begin_sub)
+    .method("end_sub",           &isubtree_wrapped::end_sub)
+    .method("begin_sub_post",    &isubtree_wrapped::begin_sub_post)
+    .method("end_sub_post",      &isubtree_wrapped::end_sub_post)
+    .method("begin_sub_child",   &isubtree_wrapped::begin_sub_child)
+    .method("end_sub_child",     &isubtree_wrapped::end_sub_child)
 
     // 4. Insert
     .method("insert",            &isubtree_wrapped::insert)
