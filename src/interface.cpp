@@ -115,13 +115,13 @@ RCPP_MODULE(forest) {
     .method("insert_below",      &itree::insert_below)
 
     // 5. Append + Prepend
-    .method("append_node",       &itree::append_node)
-    .method("prepend_node",      &itree::prepend_node)
+    .method("append",            &itree::append)
+    .method("prepend",           &itree::prepend)
     .method("append_subtree",    &itree::append_subtree)
     .method("prepend_subtree",   &itree::prepend_subtree)
 
-    .method("append_node_n",     &itree::append_node_n)
-    .method("prepend_node_n",    &itree::prepend_node_n)
+    .method("append_n",          &itree::append_n)
+    .method("prepend_n",         &itree::prepend_n)
     .method("append_subtree_n",  &itree::append_subtree_n)
     .method("prepend_subtree_n", &itree::prepend_subtree_n)
 
@@ -136,7 +136,7 @@ RCPP_MODULE(forest) {
     .method("erase_pair",        &itree::erase_pair)
 
     // 8. Equality testing
-    .method("is_equal_to",       &itree::is_equal_to)
+    .method("equals",            &itree::operator==)
     ;
 
   Rcpp::class_<isubtree_wrapped>("isubtree_wrapped")
@@ -174,13 +174,13 @@ RCPP_MODULE(forest) {
     .method("insert_below",      &isubtree_wrapped::insert_below)
 
     // 5. Append + Prepend
-    .method("append_node",       &isubtree_wrapped::append_node)
-    .method("prepend_node",      &isubtree_wrapped::prepend_node)
+    .method("append",            &isubtree_wrapped::append)
+    .method("prepend",           &isubtree_wrapped::prepend)
     .method("append_subtree",    &isubtree_wrapped::append_subtree)
     .method("prepend_subtree",   &isubtree_wrapped::prepend_subtree)
 
-    .method("append_node_n",     &isubtree_wrapped::append_node_n)
-    .method("prepend_node_n",    &isubtree_wrapped::prepend_node_n)
+    .method("append_n",          &isubtree_wrapped::append_n)
+    .method("prepend_n",         &isubtree_wrapped::prepend_n)
     .method("append_subtree_n",  &isubtree_wrapped::append_subtree_n)
     .method("prepend_subtree_n", &isubtree_wrapped::prepend_subtree_n)
 
@@ -195,7 +195,7 @@ RCPP_MODULE(forest) {
     .method("erase_pair",        &isubtree_wrapped::erase_pair)
 
     // 8. Equality testing
-    .method("is_equal_to",       &isubtree_wrapped::is_equal_to)
+    .method("equals",            &isubtree_wrapped::operator==)
     ;
 
   // NOTE: We don't have to export the subtree iterators separately

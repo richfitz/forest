@@ -134,14 +134,14 @@ public:
     tree_.insert_below(i, node_type(v));}
 
   // 5 Append + Prepend
-  void append_node(const T& v)  {tree_.append(node_type(v)); }
-  void prepend_node(const T& v) {tree_.prepend(node_type(v));}
+  void append(const T& v)  {tree_.append(node_type(v)); }
+  void prepend(const T& v) {tree_.prepend(node_type(v));}
   void append_subtree(const subtree_type s)  {tree_.append(s); }
   void prepend_subtree(const subtree_type s) {tree_.prepend(s);}
 
-  void append_node_n(size_t n, const T& v) {
+  void append_n(size_t n, const T& v) {
     tree_.append(n, node_type(v));}
-  void prepend_node_n(size_t n, const T& v) {
+  void prepend_n(size_t n, const T& v) {
     tree_.prepend(n, node_type(v));}
   void append_subtree_n(size_t n, const subtree_type s) {
     tree_.append(n, s);}
@@ -165,7 +165,7 @@ public:
     tree_.erase(f, l);}
 
   // 8. Equality testing
-  bool is_equal_to(const tree<T>& rhs) const {
+  bool operator==(const tree<T>& rhs) const {
     return this->tree_ == rhs.tree_;}
 
 private:
@@ -238,14 +238,14 @@ public:
     subtree_.insert_below(i, node_type(v));}
 
   // 5 Append + Prepend
-  void append_node(const T& v)  {subtree_.append(node_type(v));}
-  void prepend_node(const T& v) {subtree_.prepend(node_type(v));}
+  void append(const T& v)  {subtree_.append(node_type(v)); }
+  void prepend(const T& v) {subtree_.prepend(node_type(v));}
   void append_subtree(const subtree_type s)  {subtree_.append(s); }
   void prepend_subtree(const subtree_type s) {subtree_.prepend(s);}
 
-  void append_node_n(size_t n, const T& v) {
+  void append_n(size_t n, const T& v) {
     subtree_.append(n, node_type(v));}
-  void prepend_node_n(size_t n, const T& v) {
+  void prepend_n(size_t n, const T& v) {
     subtree_.prepend(n, node_type(v));}
   void append_subtree_n(size_t n, const subtree_type s) {
     subtree_.append(n, s);}
@@ -268,7 +268,7 @@ public:
     subtree_.erase(f, l); }
 
   // 8. Equality testing
-  bool is_equal_to(const subtree_wrapped& rhs) const {
+  bool operator==(const subtree_wrapped& rhs) const {
     return this->subtree_ == rhs.subtree_; }
 
   // This could be private, if not for the as templated function.

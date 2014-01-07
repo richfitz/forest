@@ -15,12 +15,12 @@ is_expected_tree <- function(n, representation) {
 
 is_same_tree_as <- function(cmp) {
   function(tr)
-    expectation(tr$is_equal_to(cmp), "Trees differ")
+    expectation(tr$equals(cmp), "Trees differ")
 }
 
 is_different_tree_to <- function(cmp) {
   function(tr)
-    expectation(!tr$is_equal_to(cmp), "Trees are the same")
+    expectation(!tr$equals(cmp), "Trees are the same")
 }
 
 
@@ -34,7 +34,7 @@ tree_of <- function(v, ...) {
   ## wrapped with try/catch, perhaps...
   x <- function(c) {
     if (is.integer(c) || is.numeric(c))
-      tr$prepend_node(c)
+      tr$prepend(c)
     else if (inherits(c, "tree.generator"))
       tr$prepend_subtree(c())
     else
@@ -61,7 +61,7 @@ tree.of <- function(head, ...) {
 
   x <- function(c) {
     if (is.integer(c) || is.numeric(c))
-      tr$prepend_node(c)
+      tr$prepend(c)
     else
       tr$prepend_subtree(c)
   }

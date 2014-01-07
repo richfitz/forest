@@ -97,28 +97,28 @@ test_that("tree_arity", {
 
 test_that("tree_append1", { # appending nodes
   tr <- new(itree, 42)
-  tr$append_node(1)
-  tr$append_node(1)
+  tr$append(1)
+  tr$append(1)
   expect_that(tr, is_expected_tree(3, "42(1 1)"))
 
   tr1 <- new(itree)
   tr1$insert(tr1$end(), 1)
-  tr1$append_node(2)
-  tr1[[1]]$append_node(3)
-  tr1$append_node(4)
+  tr1$append(2)
+  tr1[[1]]$append(3)
+  tr1$append(4)
   expect_that(tr1, is_expected_tree(4, "1(2(3) 4)"))
 })
 
 test_that("tree_prepend1", { # prepending nodes
   tr <- new(itree, -1)
-  tr$prepend_node(42)
+  tr$prepend(42)
   expect_that(tr, is_expected_tree(2, "-1(42)"))
 
   front <- "-1("
   back <- "42)"
   for (i in seq_len(10)) {
     back <- paste0(i, " ", back)
-    tr$prepend_node(i)
+    tr$prepend(i)
     expect_that(tr, is_expected_tree(i + 2, paste0(front, back)))
   }
 
@@ -129,7 +129,7 @@ test_that("tree_prepend1", { # prepending nodes
   for (i in 1:10) {
     front <- paste0(front, "(", i)
     back <- paste0(")", back)
-    it$value$prepend_node(i)
+    it$value$prepend(i)
     it$increment()
     expect_that(tr1, is_expected_tree(i + 1, paste0(front, back)))
   }
@@ -230,7 +230,7 @@ test_that("tree_equality", {
     new(itree),
     tree_of(1)())
 
-  tr[[1]]$append_node(42)
+  tr[[1]]$append(42)
   it <- tr[[1]]$end_child()
   it$decrement()
   tr[[1]]$erase(it)
@@ -298,7 +298,7 @@ test_that("tree_const_iters", {
         if (f1$value$data != cmp[[i]])
           return(FALSE)
       } else {
-        if (!f1$value$is_equal_to(cmp[[i]]))
+        if (!f1$value$equals(cmp[[i]]))
           return(FALSE)
       }
       f1$increment()
@@ -355,7 +355,7 @@ test_that("tree_mutable_iters", {
   tr2 <- new(itree, 42)
   tr2$begin_sub()$assign(tr)
   expect_that(tr2, is_expected_tree(tr$size, tr$representation))
-  expect_that(tr2$is_equal_to(tr), is_true())
+  expect_that(tr2$equals(tr), is_true())
 
   # TODO: Have not implemented copy
   # std::copy(count_it(100),count_it(105),tr2.begin_sub_child());
@@ -454,7 +454,7 @@ test_that("tree_insert2", {
   expect_that(tr4$size, equals(25))
   ok <- TRUE
   for (i in seq_len(8))
-    ok <- ok && tr4[[i]]$is_equal_to(tr2)
+    ok <- ok && tr4[[i]]$equals(tr2)
   expect_that(ok, is_true())
 })
 
@@ -473,8 +473,8 @@ test_that("tree_append3", { # iterator pairs
   ## check(equal(tr.begin_child(),tr.end_child(),toadd.begin()));
 
   tr1 <- new(itree, 42)
-  tr1$append_node(-1)
-  tr1[[1]]$append_node_n(10, 99)
+  tr1$append(-1)
+  tr1[[1]]$append_n(10, 99)
   expect_that(tr1$size, equals(12))
 
   i <- tr1$begin()
@@ -485,7 +485,7 @@ test_that("tree_append3", { # iterator pairs
   ok <- TRUE
   while (i$differs(tr1$end())) {
     ok <- ok && i$value$data == 99 &&
-      j$value$is_equal_to(tree_of(99)())
+      j$value$equals(tree_of(99)())
     i$increment()
     j$increment()
   }
@@ -503,8 +503,8 @@ test_that("tree_prepend3", {
   ## check(equal(tr.begin_child(),tr.end_child(),toadd.begin()));
 
   tr1 <- new(itree, 42)
-  tr1$prepend_node(-1)
-  tr1$prepend_node_n(10, 99)
+  tr1$prepend(-1)
+  tr1$prepend_n(10, 99)
   expect_that(tr1$size, equals(12))
 
   i <- tr1$begin()
@@ -518,7 +518,7 @@ test_that("tree_prepend3", {
   ok <- TRUE
   while (i$differs(end)) {
     ok <- ok && i$value$data == 99 &&
-      j$value$is_equal_to(tree_of(99)())
+      j$value$equals(tree_of(99)())
     i$increment()
     j$increment()
   }
@@ -543,7 +543,7 @@ test_that("tree_insert_above", {
   tr$insert_above(tr[[1]]$begin(), 40)
   expect_that(tr, is_expected_tree(3, "41(40(42))"))
 
-  tr[[1]]$append_node(43)
+  tr[[1]]$append(43)
   tr$insert_above(tr[[1]]$begin_child(), 39)
   expect_that(tr, is_expected_tree(5, "41(40(39(42) 43))"))
 })
@@ -557,7 +557,7 @@ test_that("tree_insert_below", {
   tr$insert_below(tr$begin(),40)
   expect_that(tr, is_expected_tree(3, "42(40(41))"))
 
-  tr[[1]]$append_node(43)
+  tr[[1]]$append(43)
   tr$insert_below(tr[[1]]$begin(), 39)
   expect_that(tr, is_expected_tree(5, "42(40(39(41 43)))"))
 })
