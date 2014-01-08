@@ -236,5 +236,5 @@ RCPP_MODULE(forest) {
 
   // Useful utility function, but only exported for pre_iterators
   Rcpp::function("parent",
-		 &TREE_TREE_NAMESPACE::parent<itree::pre_iterator>);
+		 &treetree::parent<itree::pre_iterator>);
 }

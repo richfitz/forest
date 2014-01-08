@@ -2,19 +2,7 @@
 #ifndef _FOREST_TREE_H_
 #define _FOREST_TREE_H_
 
-#ifdef __clang__
-#pragma clang diagnostic push
-// These I have no control over because they're treetree issues.
-#pragma clang diagnostic ignored "-Wshadow"
-#pragma clang diagnostic ignored "-Wdocumentation"
-#pragma clang diagnostic ignored "-Wconversion"
-#pragma clang diagnostic ignored "-Wsign-conversion"
-#endif
-#include "treetree/tree.hpp"
-#include "treetree/tree_io.hpp"
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
+#include "treetree.h"
 
 namespace forest {
 
@@ -24,10 +12,10 @@ template <typename T> class subtree_wrapped;
 template <typename T>
 class tree_wrapped {
 public:
-  typedef T                                          value_type;
-  typedef TREE_TREE_NAMESPACE::tree<T>               tree_type;
-  typedef TREE_TREE_NAMESPACE::subtree<T>            subtree_type;
+  typedef treetree::tree<T>                          tree_type;
+  typedef treetree::subtree<T>                       subtree_type;
   typedef subtree_wrapped<T>                         subtree_wrapped_type;
+  typedef typename tree_type::value_type             value_type;
 
   // Iterator types:
   typedef typename tree_type::pre_iterator           pre_iterator;
