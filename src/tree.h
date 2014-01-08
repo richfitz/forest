@@ -22,7 +22,7 @@ namespace forest {
 template <typename T> class subtree_wrapped;
 
 template <typename T>
-class tree {
+class tree_wrapped {
 public:
   typedef T                                          value_type;
   typedef TREE_TREE_NAMESPACE::tree<T>               tree_type;
@@ -43,9 +43,13 @@ private:
   typedef typename tree_type::const_sub_pre_iterator const_sub_pre_iterator;
 
 public:
-  tree() {}
-  tree(const T& t) : tree_(t) {}
-  tree<T> copy() const {return *this;}
+  tree_wrapped() {}
+  tree_wrapped(const T& t) : tree_(t) {}
+
+  // Constructor for the wrapper code:
+  tree_wrapped(const tree_type& tree) : tree_(tree) {}
+
+  tree_wrapped<T> copy() const {return *this;}
   void clear() {tree_.clear();}
 
   // 1. Basic interrogation:
@@ -57,12 +61,6 @@ public:
     return boost::lexical_cast<std::string>(tree_);}
 
   // 2. Accessors
-  //
-  // NOTE: Given nature of iterators, etc, this could either return
-  // the node or the node contents.  Returning the contents is more
-  // like tree_runner, but returning the node is more like the
-  // iterator.  If I scrap the node structure entirely (quite likely)
-  // then this problem goes away.
   value_type root()        {return tree_.root();     }
   value_type front()       {return tree_.front();    }
   value_type back()        {return tree_.back();     }
@@ -151,30 +149,33 @@ public:
     tree_.erase(f, l);}
 
   // 8. Equality testing
-  bool operator==(const tree<T>& rhs) const {
+  bool operator==(const tree_wrapped<T>& rhs) const {
     return this->tree_ == rhs.tree_;}
 
-private:
+  // Public for the 'as' method
   tree_type tree_;
 };
 
 template <typename T>
 class subtree_wrapped {
 public:
-  typedef tree<T> tree_type;
+  // NOTE: Going through tree_wrapped_type here so that is the only
+  // place where the type relations are defined.
+  typedef tree_wrapped<T>                           tree_wrapped_type;
+  typedef typename tree_wrapped_type::tree_type     tree_type;
+  typedef typename tree_wrapped_type::value_type    value_type;
+  typedef typename tree_wrapped_type::subtree_type  subtree_type;
 
-  // Pull some typedefs in from the parent tree type:
-  typedef typename tree_type::value_type          value_type;
-  typedef typename tree_type::subtree_type        subtree_type;
-
-  typedef typename tree_type::pre_iterator        pre_iterator;
-  typedef typename tree_type::post_iterator       post_iterator;
-  typedef typename tree_type::child_iterator      child_iterator;
-  typedef typename tree_type::sub_pre_iterator    sub_pre_iterator;
-  typedef typename tree_type::sub_post_iterator   sub_post_iterator;
-  typedef typename tree_type::sub_child_iterator  sub_child_iterator;
+  typedef typename tree_type::pre_iterator          pre_iterator;
+  typedef typename tree_type::post_iterator         post_iterator;
+  typedef typename tree_type::child_iterator        child_iterator;
+  typedef typename tree_type::sub_pre_iterator      sub_pre_iterator;
+  typedef typename tree_type::sub_post_iterator     sub_post_iterator;
+  typedef typename tree_type::sub_child_iterator    sub_child_iterator;
 
   // NOTE: No exported constructor, copy, clear in interface.
+
+  // Constructor for the wrapper code:
   subtree_wrapped(const subtree_type& subtree) : subtree_(subtree) {}
 
   // 1. Basic interrogation
@@ -185,7 +186,7 @@ public:
   std::string representation() const {
     return boost::lexical_cast<std::string>(subtree_);}
 
-  // 2.
+  // 2. Accessors
   value_type root()        {return subtree_.root();     }
   value_type front()       {return subtree_.front();    }
   value_type back()        {return subtree_.back();     }
@@ -269,7 +270,7 @@ public:
   bool operator==(const subtree_wrapped& rhs) const {
     return this->subtree_ == rhs.subtree_; }
 
-  // This could be private, if not for the as templated function.
+  // Public for the 'as' method
   subtree_type subtree_;
 };
 

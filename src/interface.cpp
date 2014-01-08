@@ -17,11 +17,12 @@
 
 // For demo purposes, work with a tree where every node contains just
 // an integer.
-typedef forest::tree< int >         itree;
-typedef itree::subtree_type         isubtree;
-typedef itree::subtree_wrapped_type isubtree_wrapped;
+typedef forest::tree_wrapped<int>           itree_wrapped;
+typedef itree_wrapped::subtree_wrapped_type isubtree_wrapped;
+typedef itree_wrapped::tree_type            itree;
+typedef itree_wrapped::subtree_type         isubtree;
 
-RCPP_EXPOSED_CLASS_NODECL(itree)
+RCPP_EXPOSED_CLASS_NODECL(itree_wrapped)
 RCPP_EXPOSED_CLASS_NODECL(isubtree_wrapped)
 
 FOREST_ITERATOR_EXPORT(itree::pre_iterator)
@@ -32,6 +33,16 @@ FOREST_ITERATOR_EXPORT(itree::sub_post_iterator)
 FOREST_ITERATOR_EXPORT(itree::sub_child_iterator)
 
 namespace Rcpp {
+template<> SEXP wrap(const itree& obj);
+template<> SEXP wrap(const itree& obj) {
+  return Rcpp::wrap(itree_wrapped(obj));
+}
+template<> itree as(SEXP obj);
+template<> itree as(SEXP obj) {
+  itree_wrapped st = Rcpp::as<itree_wrapped>(obj);
+  return st.tree_;
+}
+
 template<> SEXP wrap(const isubtree& obj);
 template<> SEXP wrap(const isubtree& obj) {
   return Rcpp::wrap(isubtree_wrapped(obj));
@@ -54,83 +65,83 @@ RCPP_MODULE(forest) {
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
-  Rcpp::class_<itree>("itree")
+  Rcpp::class_<itree_wrapped>("itree")
     .constructor()
     .constructor<int>()
-    .method("copy",              &itree::copy)
-    .method("clear",             &itree::clear)
+    .method("copy",              &itree_wrapped::copy)
+    .method("clear",             &itree_wrapped::clear)
 
     // 1. Basic interrogation
-    .property("empty",           &itree::empty)
-    .property("size",            &itree::size)
-    .property("arity",           &itree::arity)
-    .property("childless",       &itree::childless)
-    .property("representation",  &itree::representation)
+    .property("empty",           &itree_wrapped::empty)
+    .property("size",            &itree_wrapped::size)
+    .property("arity",           &itree_wrapped::arity)
+    .property("childless",       &itree_wrapped::childless)
+    .property("representation",  &itree_wrapped::representation)
 
     // 2. Accessors
-    .method("root",              &itree::root)
-    .method("front",             &itree::front)
-    .method("back",              &itree::back)
-    .method("root_sub",          &itree::root_sub)
-    .method("front_sub",         &itree::front_sub)
-    .method("back_sub",          &itree::back_sub)
+    .method("root",              &itree_wrapped::root)
+    .method("front",             &itree_wrapped::front)
+    .method("back",              &itree_wrapped::back)
+    .method("root_sub",          &itree_wrapped::root_sub)
+    .method("front_sub",         &itree_wrapped::front_sub)
+    .method("back_sub",          &itree_wrapped::back_sub)
 
     // NOTE: These are base-1
-    .method("at",                &itree::r_at)
-    .method("[[",                &itree::r_at)
-    .method("insert_at",         &itree::r_insert_at)
-    .method("[[<-",              &itree::r_insert_at)
+    .method("at",                &itree_wrapped::r_at)
+    .method("[[",                &itree_wrapped::r_at)
+    .method("insert_at",         &itree_wrapped::r_insert_at)
+    .method("[[<-",              &itree_wrapped::r_insert_at)
 
     // 3. Iterators
-    .method("begin",             &itree::begin)
-    .method("end",               &itree::end)
-    .method("begin_post",        &itree::begin_post)
-    .method("end_post",          &itree::end_post)
-    .method("begin_child",       &itree::begin_child)
-    .method("end_child",         &itree::end_child)
+    .method("begin",             &itree_wrapped::begin)
+    .method("end",               &itree_wrapped::end)
+    .method("begin_post",        &itree_wrapped::begin_post)
+    .method("end_post",          &itree_wrapped::end_post)
+    .method("begin_child",       &itree_wrapped::begin_child)
+    .method("end_child",         &itree_wrapped::end_child)
 
-    .method("begin_sub",         &itree::begin_sub)
-    .method("end_sub",           &itree::end_sub)
-    .method("begin_sub_post",    &itree::begin_sub_post)
-    .method("end_sub_post",      &itree::end_sub_post)
-    .method("begin_sub_child",   &itree::begin_sub_child)
-    .method("end_sub_child",     &itree::end_sub_child)
+    .method("begin_sub",         &itree_wrapped::begin_sub)
+    .method("end_sub",           &itree_wrapped::end_sub)
+    .method("begin_sub_post",    &itree_wrapped::begin_sub_post)
+    .method("end_sub_post",      &itree_wrapped::end_sub_post)
+    .method("begin_sub_child",   &itree_wrapped::begin_sub_child)
+    .method("end_sub_child",     &itree_wrapped::end_sub_child)
 
     // 4. Insert
-    .method("insert",            &itree::insert)
-    .method("insert_subtree",    &itree::insert_subtree)
-    .method("insert_n",          &itree::insert_n)
-    .method("insert_subtree_n",  &itree::insert_subtree_n)
+    .method("insert",            &itree_wrapped::insert)
+    .method("insert_subtree",    &itree_wrapped::insert_subtree)
+    .method("insert_n",          &itree_wrapped::insert_n)
+    .method("insert_subtree_n",  &itree_wrapped::insert_subtree_n)
 
-    .method("insert_above",      &itree::insert_above)
-    .method("insert_below",      &itree::insert_below)
+    .method("insert_above",      &itree_wrapped::insert_above)
+    .method("insert_below",      &itree_wrapped::insert_below)
 
     // 5. Append + Prepend
-    .method("append",            &itree::append)
-    .method("prepend",           &itree::prepend)
-    .method("append_subtree",    &itree::append_subtree)
-    .method("prepend_subtree",   &itree::prepend_subtree)
+    .method("append",            &itree_wrapped::append)
+    .method("prepend",           &itree_wrapped::prepend)
+    .method("append_subtree",    &itree_wrapped::append_subtree)
+    .method("prepend_subtree",   &itree_wrapped::prepend_subtree)
 
-    .method("append_n",          &itree::append_n)
-    .method("prepend_n",         &itree::prepend_n)
-    .method("append_subtree_n",  &itree::append_subtree_n)
-    .method("prepend_subtree_n", &itree::prepend_subtree_n)
+    .method("append_n",          &itree_wrapped::append_n)
+    .method("prepend_n",         &itree_wrapped::prepend_n)
+    .method("append_subtree_n",  &itree_wrapped::append_subtree_n)
+    .method("prepend_subtree_n", &itree_wrapped::prepend_subtree_n)
 
     // 6. Splice
-    .method("splice",            &itree::splice)
-    .method("splice_pair",       &itree::splice_pair)
+    .method("splice",            &itree_wrapped::splice)
+    .method("splice_pair",       &itree_wrapped::splice_pair)
 
     // 7. Destructive modification
-    .method("prune",             &itree::prune)
-    .method("flatten",           &itree::flatten)
-    .method("erase",             &itree::erase)
-    .method("erase_pair",        &itree::erase_pair)
+    .method("prune",             &itree_wrapped::prune)
+    .method("flatten",           &itree_wrapped::flatten)
+    .method("erase",             &itree_wrapped::erase)
+    .method("erase_pair",        &itree_wrapped::erase_pair)
 
     // 8. Equality testing
-    .method("equals",            &itree::operator==)
+    .method("equals",            &itree_wrapped::operator==)
     ;
 
-  Rcpp::class_<isubtree_wrapped>("isubtree_wrapped")
+  Rcpp::class_<isubtree_wrapped>("isubtree")
     // NOTE: no constructor, copy, clear
 
     // 1. Basic interrogation
