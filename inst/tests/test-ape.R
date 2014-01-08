@@ -1,5 +1,7 @@
 source("helper-forest.R")
 
+context("Ape tree import/export")
+
 library(ape)
 
 ## A simple small tree with no branch lengths, and with labels changed
@@ -113,7 +115,7 @@ to.ape <- function(tr) {
 }
 
 test_that("Conversion from forest to ape works", {
-  expect_that(to.ape(tr.r), equals(phy))
+  expect_that(to.ape(cmp), equals(phy))
 })
 
 ## Here is a newick string writer, based on the lexical_cast code.
@@ -142,6 +144,6 @@ to.newick <- function(tr) {
 }
 
 test_that("Conversion from forest to newick works", {
-  expect_that(to.newick(tr.r),
+  expect_that(to.newick(cmp),
               is_identical_to(write.tree(phy)))
 })
