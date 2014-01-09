@@ -3,21 +3,8 @@
 #include "iterator_wrapper.h"
 #include "iterator_wrapper_algorithm.h"
 
-// Iterators
-
-// Pointing at nodes (node iterators)
-//   pre_iterator       -- in preorder
-//   post_iterator      -- in preorder
-//   child_iterator     -- over daughters of a node
-//
-// Pointing  at subtrees (subtree iterators)
-//   sub_pre_iterator   -- in preorder
-//   sub_post_iterator  -- in preorder
-//   sub_child_iterator -- over daughters of a node
-
-// For demo purposes, work with a tree where every node contains just
+// For testing purposes, work with a tree where every node contains just
 // an integer.
-
 typedef int node;
 
 typedef forest::tree_wrapped<node>          itree_wrapped;
