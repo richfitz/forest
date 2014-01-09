@@ -5,3 +5,4 @@ useDynLib(forest)
 export(itree)
 
 export(xnode)
+export(xtree)
