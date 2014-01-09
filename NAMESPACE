@@ -3,3 +3,5 @@ import(methods)
 useDynLib(forest)
 
 export(itree)
+
+export(xnode)
