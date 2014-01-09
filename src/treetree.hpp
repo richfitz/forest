@@ -1,5 +1,5 @@
-#ifndef _FOREST_TREETREE_H_
-#define _FOREST_TREETREE_H_
+#ifndef _FOREST_TREETREE_HPP_
+#define _FOREST_TREETREE_HPP_
 
 #ifdef __clang__
 #pragma clang diagnostic push

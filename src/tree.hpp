@@ -1,9 +1,8 @@
-// -*-c++-*-
-#ifndef _FOREST_TREE_H_
-#define _FOREST_TREE_H_
+#ifndef _FOREST_TREE_HPP_
+#define _FOREST_TREE_HPP_
 
-#include "Rcpp.h"
-#include "treetree.h"
+#include <Rcpp.h>
+#include "treetree.hpp"
 
 // Iterators
 //

@@ -1,6 +1,5 @@
-// -*-c++-*-
-#ifndef _FOREST_ITERATOR_WRAPPER_H_
-#define _FOREST_ITERATOR_WRAPPER_H_
+#ifndef _FOREST_ITERATOR_WRAPPER_HPP_
+#define _FOREST_ITERATOR_WRAPPER_HPP_
 
 #include <Rcpp.h>
 

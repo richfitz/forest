@@ -1,7 +1,7 @@
 #include <Rcpp.h>
-#include "tree.h"
-#include "iterator_wrapper.h"
-#include "iterator_wrapper_algorithm.h"
+#include "tree.hpp"
+#include "iterator_wrapper.hpp"
+#include "iterator_wrapper_algorithm.hpp"
 
 // For testing purposes, work with a tree where every node contains just
 // an integer.

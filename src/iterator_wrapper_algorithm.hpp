@@ -1,8 +1,7 @@
-// -*-c++-*-
-#ifndef _FOREST_ITERATOR_WRAPPER_ALGORITHM_H_
-#define _FOREST_ITERATOR_WRAPPER_ALGORITHM_H_
+#ifndef _FOREST_ITERATOR_WRAPPER_ALGORITHM_HPP_
+#define _FOREST_ITERATOR_WRAPPER_ALGORITHM_HPP_
 
-#include "iterator_wrapper.h"
+#include "iterator_wrapper.hpp"
 
 // Wrappers to get things to work with STL algorithms.  There are
 // rather a lot of these, and I don't know how much this will cause

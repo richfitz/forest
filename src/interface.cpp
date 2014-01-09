@@ -1,6 +1,6 @@
 #include <Rcpp.h>
 
-#include "node.h"
+#include "node.hpp"
 
 typedef forest::node<int> xnode;
 RCPP_EXPOSED_CLASS_NODECL(xnode)

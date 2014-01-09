@@ -1,10 +1,20 @@
-#include "iterator_wrapper.h"
-#include "iterator_wrapper_algorithm.h"
-
-#include "iterator_wrapper_test.h"
+#include "iterator_wrapper.hpp"
+#include "iterator_wrapper_algorithm.hpp"
 
 namespace forest {
 namespace test {
+
+// Convenience typedefs:
+typedef std::vector<double> vector_double;
+
+void vector_double_assign(vector_double* obj, Rcpp::NumericVector data);
+double vector_double_at(vector_double* obj, size_t position);
+void vector_double_insert(vector_double* obj, size_t position,
+			  Rcpp::NumericVector data);
+Rcpp::NumericVector vector_double_asR(vector_double* obj);
+void vector_double_set(vector_double* obj, size_t i, double value);
+vector_double::iterator vector_double_begin(vector_double* obj);
+vector_double::iterator vector_double_end(vector_double* obj);
 
 void vector_double_assign(vector_double* obj, Rcpp::NumericVector data) {
   obj->assign(data.begin(), data.end());
