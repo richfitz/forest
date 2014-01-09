@@ -2,7 +2,7 @@ source("helper-forest.R")
 
 context("Ape tree import/export")
 
-tree_of <- make.tree_of(itree, is.itree.node)
+tree_of <- make.tree_of(itree)
 
 library(ape)
 

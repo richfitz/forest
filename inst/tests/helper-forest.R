@@ -23,14 +23,9 @@ is_different_tree_to <- function(cmp) {
     expectation(!tr$equals(cmp), "Trees are the same")
 }
 
-## TODO: Write a method of a tree that determines if something is the
-## node data type -- we could do this by writing a function that
-## attempts to do something with an object as if it was a node and
-## throws if the conversion is not possible.  See below for what I'm
-## using now though.
-make.tree_of <- function(class, is.node) {
+make.tree_of <- function(class) {
   prepend <- function(tr, x) {
-    if (is.node(x))
+    if (tr$is_node_type(x))
       tr$prepend(x)
     else
       tr$prepend_subtree(if (inherits(x, "tree.generator")) x() else x)
@@ -52,6 +47,3 @@ make.tree_of <- function(class, is.node) {
     rec
   }
 }
-
-is.itree.node <- function(x)
-  is.integer(x) || is.numeric(x)

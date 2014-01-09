@@ -9,7 +9,7 @@ source("helper-forest.R")
 
 context("Basic tree operations")
 
-tree_of <- make.tree_of(itree, is.itree.node)
+tree_of <- make.tree_of(itree)
 
 test_that("tree_empty_ctor", {
   tr <- new(itree)

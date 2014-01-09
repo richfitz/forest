@@ -2,6 +2,7 @@
 #ifndef _FOREST_TREE_H_
 #define _FOREST_TREE_H_
 
+#include "Rcpp.h"
 #include "treetree.h"
 
 namespace forest {
@@ -139,6 +140,24 @@ public:
   // 8. Equality testing
   bool operator==(const tree_wrapped<T>& rhs) const {
     return this->tree_ == rhs.tree_;}
+
+  // NOTE: This is the only method here that actually depends on
+  // Rcpp.h being included.
+  bool is_node_type(SEXP obj) const {
+    try {
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-variable"
+#endif
+      value_type tmp = Rcpp::as<value_type>(obj);
+      return true;
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+    } catch (...) {
+      return false;
+    }
+  }
 
   // Public for the 'as' method
   tree_type tree_;
