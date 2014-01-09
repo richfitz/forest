@@ -17,7 +17,10 @@
 
 // For demo purposes, work with a tree where every node contains just
 // an integer.
-typedef forest::tree_wrapped<int>           itree_wrapped;
+
+typedef int node;
+
+typedef forest::tree_wrapped<node>          itree_wrapped;
 typedef itree_wrapped::subtree_wrapped_type isubtree_wrapped;
 typedef itree_wrapped::tree_type            itree;
 typedef itree_wrapped::subtree_type         isubtree;
@@ -61,13 +64,13 @@ template<> isubtree as(SEXP obj) {
 #pragma clang diagnostic ignored "-Wexit-time-destructors"
 #pragma clang diagnostic ignored "-Wmissing-prototypes"
 #endif
-RCPP_MODULE(forest) {
+RCPP_MODULE(tree_test) {
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
   Rcpp::class_<itree_wrapped>("itree")
     .constructor()
-    .constructor<int>()
+    .constructor<itree_wrapped::value_type>()
     .method("copy",              &itree_wrapped::copy)
     .method("clear",             &itree_wrapped::clear)
 
@@ -235,6 +238,6 @@ RCPP_MODULE(forest) {
 				   "itree_sub_child_iterator")
 
   // Useful utility function, but only exported for pre_iterators
-  Rcpp::function("parent",
+  Rcpp::function("parent_itree_iterator",
 		 &treetree::parent<itree::pre_iterator>);
 }

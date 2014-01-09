@@ -729,7 +729,7 @@ test_that("tree_splice2",  {
 test_that("tree_parent", {
   tr <- tree_of(1)(2,3,tree_of(4)(5,6))()
 
-  parent <- forest:::parent
+  parent <- forest:::parent_itree_iterator
 
   expect_that(parent(tr$begin())$equals(tr$end()), is_true())
 

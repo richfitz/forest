@@ -1,4 +1,4 @@
 .onLoad <- function(libname, pkgname) {
-  loadModule("forest", TRUE)
-  loadModule("mod_test", TRUE)
+  loadModule("iterator_wrapper_test", TRUE)
+  loadModule("tree_test",             TRUE)
 }

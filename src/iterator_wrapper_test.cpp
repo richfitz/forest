@@ -51,7 +51,7 @@ FOREST_ITERATOR_EXPORT(forest::test::vector_double::iterator)
 #pragma clang diagnostic ignored "-Wexit-time-destructors"
 #pragma clang diagnostic ignored "-Wmissing-prototypes"
 #endif
-RCPP_MODULE(mod_test) {
+RCPP_MODULE(iterator_wrapper_test) {
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
