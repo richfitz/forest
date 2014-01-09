@@ -9,6 +9,8 @@ source("helper-forest.R")
 
 context("Basic tree operations")
 
+tree_of <- make.tree_of(itree, is.itree.node)
+
 test_that("tree_empty_ctor", {
   tr <- new(itree)
   expect_that(tr, is_expected_tree(0, ""))
@@ -193,27 +195,6 @@ test_that("tree_inplace_init", {
   expect_that(tr5, is_expected_tree(6, "1(2 3(4(5)) 6)"))
 
   tr6 <- tree_of(1)(2,3,4,5,6,7,8,9,10,11)()
-  expect_that(tr6, is_expected_tree(11, "1(2 3 4 5 6 7 8 9 10 11)"))
-})
-
-test_that("tree_inplace_init (tree.of)", { # alternative version
-  tr1 <- tree.of(1)
-  expect_that(tr1, is_same_tree_as(new(itree, 1)))
-  expect_that(tr1, is_expected_tree(1, "1"))
-
-  tr2 <- tree.of(1, tree.of(2, 3,4),5)
-  expect_that(tr2, is_expected_tree(5, "1(2(3 4) 5)"))
-
-  tr3 <- tree.of(1, 2,tree.of(3, tree.of(4, 5)))
-  expect_that(tr3, is_expected_tree(5, "1(2 3(4(5)))"))
-
-  tr4 <- tree.of(1, 2,3,4)
-  expect_that(tr4, is_expected_tree(4, "1(2 3 4)"))
-
-  tr5 <- tree.of(1, 2,tree.of(3, tree.of(4, 5)),6)
-  expect_that(tr5, is_expected_tree(6, "1(2 3(4(5)) 6)"))
-
-  tr6 <- tree.of(1, 2,3,4,5,6,7,8,9,10,11)
   expect_that(tr6, is_expected_tree(11, "1(2 3 4 5 6 7 8 9 10 11)"))
 })
 

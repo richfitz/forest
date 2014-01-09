@@ -23,51 +23,35 @@ is_different_tree_to <- function(cmp) {
     expectation(!tr$equals(cmp), "Trees are the same")
 }
 
-
-## This version is more like the C++ version, but needs to be
-## terminated by () to return the tree.
-tree_of <- function(v, ...) {
-  tr <- new(itree, v)
-
-  ## TODO: Write a method of a tree that determines if something is
-  ## node like -- we could do this by trying to insert it as a tree
-  ## wrapped with try/catch, perhaps...
-  x <- function(c) {
-    if (is.integer(c) || is.numeric(c))
-      tr$prepend(c)
-    else if (inherits(c, "tree.generator"))
-      tr$prepend_subtree(c())
+## TODO: Write a method of a tree that determines if something is the
+## node data type -- we could do this by writing a function that
+## attempts to do something with an object as if it was a node and
+## throws if the conversion is not possible.  See below for what I'm
+## using now though.
+make.tree_of <- function(class, is.node) {
+  prepend <- function(tr, x) {
+    if (is.node(x))
+      tr$prepend(x)
     else
-      tr$prepend_subtree(c)
+      tr$prepend_subtree(if (inherits(x, "tree.generator")) x() else x)
   }
 
-  rec <- function(...) {
-    tail <- list(...)
-    if (length(tail) == 0)
-      return(tr)
-    for (i in rev(tail))
-      x(i)
+  function(v, ...) {
+    tr <- new(class, v)
+
+    rec <- function(...) {
+      tail <- list(...)
+      if (length(tail) == 0)
+        return(tr)
+      for (i in rev(tail))
+        prepend(tr, i)
+      rec
+    }
+
+    class(rec) <- "tree.generator"
     rec
   }
-
-  class(rec) <- "tree.generator"
-  rec
 }
 
-## This version does not require the terminating parenthesis, but
-## lends itself to more awkward syntax.
-tree.of <- function(head, ...) {
-  tr <- new(itree, head)
-
-  x <- function(c) {
-    if (is.integer(c) || is.numeric(c))
-      tr$prepend(c)
-    else
-      tr$prepend_subtree(c)
-  }
-
-  for (i in rev(list(...)))
-    x(i)
-
-  tr
-}
+is.itree.node <- function(x)
+  is.integer(x) || is.numeric(x)

@@ -2,6 +2,8 @@ source("helper-forest.R")
 
 context("Ape tree import/export")
 
+tree_of <- make.tree_of(itree, is.itree.node)
+
 library(ape)
 
 ## A simple small tree with no branch lengths, and with labels changed
@@ -147,3 +149,5 @@ test_that("Conversion from forest to newick works", {
   expect_that(to.newick(cmp),
               is_identical_to(write.tree(phy)))
 })
+
+gc()
