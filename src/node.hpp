@@ -23,6 +23,7 @@
 // an efficient calculator (e.g., boost::array<double,3> would be
 // perfect for a BM calculator).
 
+#include <R.h>     // NA_REAL
 #include <string>
 #include <ostream>
 
@@ -32,15 +33,20 @@ template <typename T>
 struct node {
   typedef T value_type;
   node(const value_type& data)
-    : data_(data), label_("") {}
+    : data_(data), label_(""), length_(NA_REAL) {}
   node(const value_type& data, const std::string& label)
-    : data_(data), label_(label) {}
+    : data_(data), label_(label), length_(NA_REAL) {}
+  node(const value_type& data, const std::string& label, double length)
+    : data_(data), label_(label), length_(length) {}
   bool operator==(const node<value_type>& rhs) const {
-    return (data_  == rhs.data_   &&
-	    label_ == rhs.label_);}
+    return (data_   == rhs.data_  &&
+	    label_  == rhs.label_ &&
+	    // TODO: wrap with a safe == double comparison.
+	    !(std::abs(length_ - rhs.length_) > 0));}
   node copy() const {return *this;}
   value_type  data_;
   std::string label_;
+  double      length_;
 };
 
 template<typename T>

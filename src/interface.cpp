@@ -66,8 +66,10 @@ RCPP_MODULE(forest) {
   Rcpp::class_<xnode>("xnode")
     .constructor<xnode::value_type>()
     .constructor<xnode::value_type, std::string>()
+    .constructor<xnode::value_type, std::string, double>()
     .field("data",    &xnode::data_)
     .field("label",   &xnode::label_)
+    .field("length",  &xnode::length_)
     .method("copy",   &xnode::copy)
     .method("equals", &xnode::operator==)
     ;
