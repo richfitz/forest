@@ -4,7 +4,6 @@ context("General tree")
 
 tree_of <- make.tree_of(xtree)
 
-library(ape)
 set.seed(1)
 phy <- rtree(5)
 phy$node.label <- paste0("n", seq_len(phy$Nnode) + Ntip(phy))

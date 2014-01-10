@@ -2,6 +2,7 @@ library(methods)
 library(Rcpp)
 library(testthat)
 library(forest)
+library(ape)
 
 is_expected_tree <- function(n, representation) {
   function(tr) {

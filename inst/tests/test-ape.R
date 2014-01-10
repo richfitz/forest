@@ -4,8 +4,6 @@ context("Ape tree import/export")
 
 tree_of <- make.tree_of(itree)
 
-library(ape)
-
 ## A simple small tree with no branch lengths, and with labels changed
 ## to be their ape indices:
 set.seed(1)

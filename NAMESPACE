@@ -6,3 +6,8 @@ export(itree)
 
 export(xnode)
 export(xtree)
+
+# TODO: rename both of these -- the first has a colision with
+# phytools, the second presumes people only use this package.
+export(read.newick)
+export(write.newick)
