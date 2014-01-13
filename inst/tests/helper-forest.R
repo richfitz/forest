@@ -48,3 +48,39 @@ make.tree_of <- function(class) {
     rec
   }
 }
+
+get.harmon.trees <- function(regenerate=FALSE) {
+  path <- "harmon-2010-trees"
+
+  if (file.exists(path)) {
+    if (regenerate)
+      unlink(path, recursive=TRUE)
+    else
+      return(path)
+  }
+
+  zipfile <- "harmon2010.zip"
+  url <-
+    "http://datadryad.org/bitstream/handle/10255/dryad.55049/Harmonetal2010.zip?sequence=1"
+  download.file(url, zipfile)
+
+  unlink(path, recursive=TRUE)
+  dir.create(path, FALSE)
+  unzip(zipfile, exdir=path)
+  keep <- dir(file.path(path, "data"), pattern="\\.phy$")
+  file.rename(file.path(path, "data", keep),
+              file.path(path, keep))
+
+  unlink(file.path(path, "__MACOSX"), recursive=TRUE)
+  unlink(file.path(path, "data"), recursive=TRUE)
+  file.remove(file.path(path, "rates_data_nonwp_2.R"))
+
+  file.remove(zipfile)
+
+  # Quick fix on some braindead formatting within a number here:
+  str <- readLines(file.path(path, "geospiza.phy"))
+  if (grepl(" ", str))
+    writeLines(gsub(" ", "", str), file.path(path, "geospiza.phy"))
+
+  return(path)
+}

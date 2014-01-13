@@ -13,4 +13,5 @@ export(read.newick)
 export(write.newick)
 
 # TODO: also rename
-export(to_newick_string)
+export(to.newick.string)
+export(from.newick.string)

@@ -2,69 +2,113 @@ source("helper-forest.R")
 
 context("Read Newick tree")
 
-digits <- 10 # ape default
+## Parse the node part of a Newick string:
+test_that("Parse node with no length", {
+  label <- "foo"
+  nd <- forest:::from_newick_node(label)
+  expect_that(nd$label, is_identical_to(label))
+  expect_that(nd$has_length, is_false())
+  expect_that(nd$length, is_identical_to(NA_real_))
+})
+
+test_that("Parse node with branch length", {
+  label <- "foo"
+  length <- pi
+  nd <- forest:::from_newick_node(paste(label, length, sep=":"))
+  expect_that(nd$label, is_identical_to(label))
+  expect_that(nd$has_length, is_true())
+  expect_that(nd$length, equals(length))
+})
+
+test_that("Don't parse node with invalid branch length", {
+  expect_that(forest:::from_newick_node("label:invalid_length"),
+              throws_error())
+})
+
+## This probably falls outside of the Newick standard, but documenting
+## that I *will* accept strings with embedded colons -- we'll take the
+## bit after the final colon as the branch length.
+test_that("Parse node with branch length and embedded colon", {
+  label <- "foo:bar"
+  length <- pi
+  nd <- forest:::from_newick_node(paste(label, length, sep=":"))
+  expect_that(nd$label, is_identical_to(label))
+  expect_that(nd$has_length, is_true())
+  expect_that(nd$length, equals(length))
+})
 
 test_that("Read easy tree, no branch lengths", {
   str <- "(a,(b,c)i)r;"
-  tr <- read.newick(str)
-  expect_that(str, is_identical_to(write.newick(tr)))
-  expect_that(str, is_identical_to(to_newick_string(tr, digits)))
+  tr.R <- read.newick(str)
+  tr.C <- from.newick.string(str)
+
+  expect_that(str, is_identical_to(write.newick(tr.R)))
+  expect_that(str, is_identical_to(to.newick.string(tr.R)))
+
+  expect_that(str, is_identical_to(write.newick(tr.C)))
+  expect_that(str, is_identical_to(to.newick.string(tr.C)))
 })
 
 test_that("Read tree with no node labels", {
   str <- "(a,(b,c));"
-  tr <- read.newick(str)
-  expect_that(str, is_identical_to(write.newick(tr)))
-  expect_that(str, is_identical_to(to_newick_string(tr, digits)))
+  tr.R <- read.newick(str)
+  tr.C <- read.newick(str)
+
+  expect_that(str, is_identical_to(write.newick(tr.R)))
+  expect_that(str, is_identical_to(to.newick.string(tr.R)))
+
+  expect_that(str, is_identical_to(write.newick(tr.C)))
+  expect_that(str, is_identical_to(to.newick.string(tr.C)))
 })
 
 test_that("Read tree with edge length", {
   str <- "(a:1.352452,(b,c));"
-  tr <- read.newick(str)
-  expect_that(str, is_identical_to(write.newick(tr)))
-  expect_that(str, is_identical_to(to_newick_string(tr, digits)))
+  tr.R <- read.newick(str)
+  tr.C <- read.newick(str)
+
+  expect_that(str, is_identical_to(write.newick(tr.R)))
+  expect_that(str, is_identical_to(to.newick.string(tr.R)))
+
+  expect_that(str, is_identical_to(write.newick(tr.C)))
+  expect_that(str, is_identical_to(to.newick.string(tr.C)))
 })
 
 test_that("Read ape::rtree() tree", {
   set.seed(1)
   phy <- rtree(10)
   str <- write.tree(phy)
-  tr <- read.newick(str)
-  expect_that(str, is_identical_to(write.newick(tr, digits)))
+
+  tr.R <- read.newick(str)
+  tr.C <- read.newick(str)
+
+  expect_that(str, is_identical_to(write.newick(tr.R)))
+  expect_that(str, is_identical_to(to.newick.string(tr.R)))
+
+  expect_that(str, is_identical_to(write.newick(tr.C)))
+  expect_that(str, is_identical_to(to.newick.string(tr.C)))
 })
 
 # This is disabled because it is slow, and because it depends on a
 # bunch of trees from Harmon et al. 2010:
-if (FALSE) {
-  path <- "harmon-2010-trees"
-  files <- dir(path, pattern="phy$", full.names=TRUE)
+test_that("Harmon trees can be read in", {
+  harmon.path <- try(get.harmon.trees(), silent=TRUE)
 
-  # Quick fix on some braindead formatting here:
-  str <- readLines(file.path(path, "geospiza.phy"))
-  if (grepl(" ", str))
-    writeLines(gsub(" ", "", str), file.path(path, "geospiza.phy"))
+  if (file.exists(harmon.path)) {
+    files <- dir(harmon.path, pattern="phy$", full.names=TRUE)
 
-  ## Read in all trees:
-  str <- suppressWarnings(lapply(files, readLines))
+    ## Read in all trees, ignoring issues with newlines
+    str <- suppressWarnings(lapply(files, readLines))
 
-  ## ape rips through and reads these all in .4s, writes back out in
-  ## .32 -- nice and fast!
-  phy.ape    <- lapply(files, ape::read.tree)
-  newick.ape <- lapply(phy.ape, write.tree)
+    ## Read:  0.5s
+    ## Write: 0.32s
+    phy.ape    <- lapply(files, ape::read.tree)
+    newick.ape <- lapply(phy.ape, write.tree)
 
-  ## Then do it with forest.  It takes 9.4s to read the full set (so
-  ## 24x slower than ape)
-  oo <- options(warn=2) # fail for any warning
-  phy    <- lapply(str, function(x) try(read.newick(x)))
-  options(oo)
-  expect_that(any(sapply(phy, inherits, "try-error")), is_false())
-  newick <- lapply(phy, write.newick)
+    ## Read:  0.2s
+    ## Write: 0.01s
+    phy <- lapply(str, from.newick.string)
+    system.time(newick <- lapply(phy, to.newick.string))
 
-  system.time(newick <- lapply(phy, write.newick))
-  expect_that(newick, is_identical_to(newick.ape))
-
-  ## This writes out the trees in 0.01s; so about 26x faster than
-  ## ape.  Not bad!
-  system.time(newick2 <- lapply(phy, to_newick_string, digits))
-  expect_that(newick2, is_identical_to(newick.ape))
-}
+    expect_that(newick, is_identical_to(newick.ape))
+  }
+})

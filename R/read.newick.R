@@ -1,8 +1,22 @@
+from.newick.string <- function(str)
+  from_newick_string(split.newick.string(str))
+to.newick.string <- function(tr, digits=10)
+  to_newick_string(tr, digits)
+
+
 PAREN_OPEN  <- 1L
 PAREN_CLOSE <- 2L
 COMMA       <- 3L
 SEMICOLON   <- 4L
 NODE        <- 5L
+
+split.newick.string <- function(str) {
+  if (length(str) > 1)
+    str <- paste(str, collapse="")
+  str <- sub("^[[:space:]]+", "", str, perl=TRUE)
+  tokens <- strsplit(str, "(?=[(),;])", perl=TRUE)[[1]]
+  sub("[[:space:]]+$", "", tokens, perl=TRUE)
+}
 
 ## First, ignore comments so all parens and commas are taken as
 ## meaninful.  If we do that then the string can be pulled apart
@@ -13,11 +27,7 @@ NODE        <- 5L
 ## parentheses or commas.  The simplest thing to do there would be to
 ## rip all the comments out.
 tokenise.newick <- function(str) {
-  if (length(str) > 1)
-    str <- paste(str, collapse="")
-  str <- sub("^[[:space:]]+", "", str, perl=TRUE)
-  tokens <- strsplit(str, "(?=[(),;])", perl=TRUE)[[1]]
-  tokens <- sub("[[:space:]]+$", "", tokens, perl=TRUE)
+  tokens <- split.newick.string(str)
 
   type <- rep.int(NODE, length(tokens))
   type[tokens == "("] <- PAREN_OPEN

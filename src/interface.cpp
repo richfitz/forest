@@ -255,4 +255,8 @@ RCPP_MODULE(forest) {
 		 &treetree::parent<xtree::pre_iterator>);
   Rcpp::function("to_newick_string",
                  &forest::to_newick_string<xtree::value_type>);
+  Rcpp::function("from_newick_node",
+                 &forest::from_newick_node<xtree::value_type>);
+  Rcpp::function("from_newick_string",
+                 &forest::from_newick_string<xtree::value_type>);
 }
