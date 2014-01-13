@@ -5,7 +5,7 @@ context("General node")
 test_that("Default constructor", {
   nd <- new(xnode)
   # This follows from default constructing an int.
-  expect_that(nd$data,       is_identical_to(0L))
+  expect_that(nd$data,       is_identical_to(NULL))
   expect_that(nd$label,      is_identical_to(""))
   expect_that(nd$length,     is_identical_to(NA_real_))
   expect_that(nd$has_label,  is_false())
@@ -14,7 +14,7 @@ test_that("Default constructor", {
 
 test_that("With-label constructor", {
   nd <- new(xnode, "lab")
-  expect_that(nd$data,       is_identical_to(0L))
+  expect_that(nd$data,       is_identical_to(NULL))
   expect_that(nd$label,      is_identical_to("lab"))
   expect_that(nd$length,     is_identical_to(NA_real_))
   expect_that(nd$has_label,  is_true())
@@ -23,7 +23,7 @@ test_that("With-label constructor", {
 
 test_that("With-edge-length constructor", {
   nd <- new(xnode, "lab", pi)
-  expect_that(nd$data,       is_identical_to(0L))
+  expect_that(nd$data,       is_identical_to(NULL))
   expect_that(nd$label,      is_identical_to("lab"))
   expect_that(nd$length,     is_identical_to(pi))
   expect_that(nd$has_label,  is_true())
@@ -32,11 +32,14 @@ test_that("With-edge-length constructor", {
 
 test_that("Node modification", {
   nd <- new(xnode, "lab")
-  expect_that(nd$data,  is_identical_to(0L))
+  expect_that(nd$data,  is_identical_to(NULL))
   new.data <- 5L
   nd$data <- new.data
   expect_that(nd$data, is_identical_to(new.data))
-  expect_that(nd$data <- "incompatible type", throws_error())
+
+  new.data <- list(1, pi, 1:5)
+  nd$data <- new.data
+  expect_that(nd$data, is_identical_to(new.data))
 
   new.label <- "new label"
   nd$label <- new.label

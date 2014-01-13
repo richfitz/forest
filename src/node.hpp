@@ -48,9 +48,9 @@ struct node {
     : label_(label), length_(length),  data_(data) {}
 
   bool operator==(const node<value_type>& rhs) const {
-    return (label_       == rhs.label_             &&
-            has_length() == rhs.has_length()       &&
-	    !(std::abs(length_ - rhs.length_) > 0) && // TODO: unsafe?
+    return (label_       == rhs.label_       &&
+            has_length() == rhs.has_length() &&
+	    (!has_length() || !(std::abs(length_ - rhs.length_) > 0)) &&
             data_   == rhs.data_);}
   node copy() const {return *this;}
   bool has_label()  const {return label_ != "";}

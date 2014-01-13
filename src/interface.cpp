@@ -5,7 +5,7 @@
 
 #include "node.hpp"
 
-typedef forest::node<int> xnode;
+typedef forest::node<Rcpp::RObject> xnode;
 RCPP_EXPOSED_CLASS_NODECL(xnode)
 
 // All this is boilerplate, copied over from interface.cpp, but with
