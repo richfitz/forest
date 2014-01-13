@@ -39,6 +39,7 @@ public:
 
   // Used internally, only.
 private:
+  typedef treetree::const_subtree<T>                 const_subtree_type;
   typedef typename tree_type::const_pre_iterator     const_pre_iterator;
   typedef typename tree_type::const_sub_pre_iterator const_sub_pre_iterator;
 
@@ -168,6 +169,16 @@ public:
     } catch (...) {
       return false;
     }
+  }
+
+  // X. extra things that are implemented on top of treetree::tree
+  size_t tips() const {
+    return static_cast<size_t>
+      (std::count_if(tree_.begin_sub(), tree_.end_sub(),
+                     &treetree::childless<const_subtree_type>));
+  }
+  size_t nodes() const {
+    return size() - tips();
   }
 
   // Public for the 'as' method

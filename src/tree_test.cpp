@@ -131,6 +131,9 @@ RCPP_MODULE(tree_test) {
     .method("equals",            &itree_wrapped::operator==)
 
     .method("is_node_type",      &itree_wrapped::is_node_type)
+
+    .property("tips",            &itree_wrapped::tips)
+    .property("nodes",           &itree_wrapped::nodes)
     ;
 
   Rcpp::class_<isubtree_wrapped>("isubtree")

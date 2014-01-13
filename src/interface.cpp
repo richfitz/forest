@@ -155,6 +155,9 @@ RCPP_MODULE(forest) {
     .method("equals",            &xtree_wrapped::operator==)
 
     .method("is_node_type",      &xtree_wrapped::is_node_type)
+
+    .property("tips",            &xtree_wrapped::tips)
+    .property("nodes",           &xtree_wrapped::nodes)
     ;
 
   Rcpp::class_<xsubtree_wrapped>("xsubtree")
