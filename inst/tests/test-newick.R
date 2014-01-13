@@ -1,5 +1,7 @@
 source("helper-forest.R")
 
+context("Read Newick tree")
+
 test_that("Read easy tree, no branch lengths", {
   str <- "(a,(b,c)i)r;"
   tr <- read.newick(str)

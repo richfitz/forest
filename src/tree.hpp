@@ -153,7 +153,7 @@ public:
     return this->tree_ == rhs.tree_;}
 
   // NOTE: This is the only method here that actually depends on
-  // Rcpp.h being included.
+  // Rcpp.h being included, and I'm not sure it's actually useful.
   bool is_node_type(SEXP obj) const {
     try {
 #ifdef __clang__

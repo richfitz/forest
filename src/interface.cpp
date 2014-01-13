@@ -64,14 +64,17 @@ RCPP_MODULE(forest) {
 #pragma clang diagnostic pop
 #endif
   Rcpp::class_<xnode>("xnode")
-    .constructor<xnode::value_type>()
-    .constructor<xnode::value_type, std::string>()
-    .constructor<xnode::value_type, std::string, double>()
-    .field("data",    &xnode::data_)
-    .field("label",   &xnode::label_)
-    .field("length",  &xnode::length_)
-    .method("copy",   &xnode::copy)
-    .method("equals", &xnode::operator==)
+    .constructor()
+    .constructor<std::string>()
+    .constructor<std::string, double>()
+    .constructor<std::string, double, xnode::value_type>()
+    .property("has_label",  &xnode::has_label)
+    .property("has_length", &xnode::has_length)
+    .field("data",          &xnode::data_)
+    .field("label",         &xnode::label_)
+    .field("length",        &xnode::length_)
+    .method("copy",         &xnode::copy)
+    .method("equals",       &xnode::operator==)
     ;
 
   Rcpp::class_<xtree_wrapped>("xtree")

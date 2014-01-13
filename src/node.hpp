@@ -15,38 +15,49 @@
 // but we can save that for later.
 //
 // The slot "data_" will hold something special: for R based trees
-// that will (eventually) by a RObject, so that it can hold any R
-// object at all (so a list for example).
+// that will be a RObject, so that it can hold any R object at all (so
+// a list for example).
 //
 // However, on the C++ side we might want to make a node where the
 // data type is a numeric vector, or a boost::array in order to make
 // an efficient calculator (e.g., boost::array<double,3> would be
 // perfect for a BM calculator).
 
-#include <R.h>     // NA_REAL
+#include <R.h>     // NA_REAL, ISNA
 #include <string>
 #include <ostream>
 
 namespace forest {
 
+// NOTE: The constructor dance below is a bit annoying; I assume that
+// it makes the least sense to initialise a node without a label, then
+// an edge length, and then some data.  That's not always going to be
+// the case of course, but values can be directly initialised (though
+// the public data fields) so where inappropriate it's easy enough to
+// deal with.
 template <typename T>
 struct node {
   typedef T value_type;
-  node(const value_type& data)
-    : data_(data), label_(""), length_(NA_REAL) {}
-  node(const value_type& data, const std::string& label)
-    : data_(data), label_(label), length_(NA_REAL) {}
-  node(const value_type& data, const std::string& label, double length)
-    : data_(data), label_(label), length_(length) {}
+  node()
+    : label_(""),    length_(NA_REAL), data_() {}
+  node(std::string label)
+    : label_(label), length_(NA_REAL), data_() {}
+  node(std::string label, double length)
+    : label_(label), length_(length),  data_() {}
+  node(std::string label, double length, const value_type& data)
+    : label_(label), length_(length),  data_(data) {}
+
   bool operator==(const node<value_type>& rhs) const {
-    return (data_   == rhs.data_  &&
-	    label_  == rhs.label_ &&
-	    // TODO: wrap with a safe == double comparison.
-	    !(std::abs(length_ - rhs.length_) > 0));}
+    return (label_       == rhs.label_             &&
+            has_length() == rhs.has_length()       &&
+	    !(std::abs(length_ - rhs.length_) > 0) && // TODO: unsafe?
+            data_   == rhs.data_);}
   node copy() const {return *this;}
-  value_type  data_;
+  bool has_label()  const {return label_ != "";}
+  bool has_length() const {return !ISNA(length_);}
   std::string label_;
   double      length_;
+  value_type  data_;
 };
 
 template<typename T>

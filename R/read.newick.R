@@ -55,7 +55,7 @@ parse.newick <- function(token.stream) {
     x <- strsplit(x, ":", fixed=TRUE)[[1]]
     label <- x[[1]]
     length <- if (length(x) == 1) NA_real_ else as.numeric(x[[2]])
-    new(xnode, NA_integer_, label, length)
+    new(xnode, label, length)
   }
 
   if (token.stream$peek() != PAREN_OPEN)
@@ -80,7 +80,7 @@ parse.newick <- function(token.stream) {
   if (token.stream$peek() == NODE)
     node <- parse.newick.node(token.stream$pop())
   else
-    node <- new(xnode, NA_integer_)
+    node <- new(xnode)
 
   tr <- new(xtree, node)
   for (x in rev(children)) {

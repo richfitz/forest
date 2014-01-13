@@ -20,7 +20,7 @@ make.node.builder <- function(phy) {
   if (is.null(length))
     length <- rep(NA_real_, length(label))
   function(i)
-    new(xnode, i, label[[i]], length[[i]])
+    new(xnode, label[[i]], length[[i]], i)
 }
 
 tree_of <- make.tree_of(xtree)
@@ -48,7 +48,7 @@ from.ape.recursive <- function(phy) {
     length <- rep.int(NA_real_, n)
 
   f <- function(nd) {
-    tr <- new(xtree, new(xnode, nd, label[[nd]], length[[nd]]))
+    tr <- new(xtree, new(xnode, label[[nd]], length[[nd]], nd))
     for (i in desc[[nd]])
       tr$append_subtree(f(i))
     tr
@@ -70,7 +70,7 @@ from.ape.iterative <- function(phy) {
     length <- rep.int(NA_real_, n)
 
   for (i in c(seq_len(Ntip(phy)), unique(from))) {
-    sub.i <- new(xtree, new(xnode, i, label[[i]], length[[i]]))
+    sub.i <- new(xtree, new(xnode, label[[i]], length[[i]], i))
     for (x in sub[desc[[i]]])
       sub.i$append_subtree(x)
     sub[[i]] <- sub.i
