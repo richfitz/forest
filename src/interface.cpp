@@ -5,6 +5,8 @@
 
 #include "node.hpp"
 
+#include "newick.hpp" // tree io
+
 typedef forest::node<Rcpp::RObject> xnode;
 RCPP_EXPOSED_CLASS_NODECL(xnode)
 
@@ -251,4 +253,6 @@ RCPP_MODULE(forest) {
   // Useful utility function, but only exported for pre_iterators
   Rcpp::function("parent_xtree_iterator",
 		 &treetree::parent<xtree::pre_iterator>);
+  Rcpp::function("to_newick_string",
+                 &forest::to_newick_string<xtree::value_type>);
 }
