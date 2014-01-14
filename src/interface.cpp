@@ -158,6 +158,10 @@ RCPP_MODULE(forest) {
 
     .property("tips",            &xtree_wrapped::tips)
     .property("nodes",           &xtree_wrapped::nodes)
+
+    // These are extra:
+    .property("tip_labels",      &xtree_wrapped::tip_labels)
+    .property("node_labels",     &xtree_wrapped::node_labels)
     ;
 
   Rcpp::class_<xsubtree_wrapped>("xsubtree")

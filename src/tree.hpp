@@ -3,6 +3,7 @@
 
 #include <Rcpp.h>
 #include "treetree.hpp"
+#include "misc.hpp"
 
 // Iterators
 //
@@ -180,6 +181,9 @@ public:
   size_t nodes() const {
     return size() - tips();
   }
+
+  std::vector<std::string> tip_labels()  const {return labels(tree_, true);}
+  std::vector<std::string> node_labels() const {return labels(tree_, false);}
 
   // Public for the 'as' method
   tree_type tree_;

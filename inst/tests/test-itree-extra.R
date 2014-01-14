@@ -25,3 +25,11 @@ test_that("Can count the number of tips in a tree", {
   expect_that(tr3$nodes, equals(1))
   expect_that(tr4$nodes, equals(1))
 })
+
+test_that("Can extract tip and node labels", {
+  tr <- tree_of(0)(1, tree_of(2)(3, 4))()
+  expect_that(tr$tips,  equals(3))
+  expect_that(tr$nodes, equals(2))
+  expect_that(tr$tip_labels,  equals(c("1", "3", "4")))
+  expect_that(tr$node_labels, equals(c("0", "2")))
+})

@@ -134,6 +134,10 @@ RCPP_MODULE(tree_test) {
 
     .property("tips",            &itree_wrapped::tips)
     .property("nodes",           &itree_wrapped::nodes)
+
+    // These are extra:
+    .property("tip_labels",      &itree_wrapped::tip_labels)
+    .property("node_labels",     &itree_wrapped::node_labels)
     ;
 
   Rcpp::class_<isubtree_wrapped>("isubtree")

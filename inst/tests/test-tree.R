@@ -202,3 +202,10 @@ test_that("Conversion from forest to newick works", {
   expect_that(to.newick(cmp0),
               is_identical_to(write.tree(phy0)))
 })
+
+test_that("tips and nodes works", {
+  expect_that(cmp$tips,        equals(Ntip(phy)))
+  expect_that(cmp$nodes,       equals(phy$Nnode))
+  expect_that(cmp$tip_labels,  equals(phy$tip.label))
+  expect_that(cmp$node_labels, equals(phy$node.label))
+})

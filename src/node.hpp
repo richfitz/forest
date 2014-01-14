@@ -66,6 +66,12 @@ std::ostream& operator<<(std::ostream& out, const node<T>& nd) {
   return out;
 }
 
+// TODO: do this with enable_if and proper SFINAE
+template <typename T>
+std::string node_label(const forest::node<T>& nd) {
+  return nd.label_;
+}
+
 }
 
 #endif
