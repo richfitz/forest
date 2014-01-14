@@ -6,6 +6,7 @@
 #include "node.hpp"
 
 #include "newick.hpp" // tree io
+#include "interrogation.hpp" // ask the tree things
 
 typedef forest::node<Rcpp::RObject> xnode;
 RCPP_EXPOSED_CLASS_NODECL(xnode)
@@ -271,4 +272,8 @@ RCPP_MODULE(forest) {
                  &forest::from_newick_node<xtree::value_type>);
   Rcpp::function("from_newick_string",
                  &forest::from_newick_string<xtree::value_type>);
+
+  // Interrogation
+  Rcpp::function("is_binary_tree",
+                 &forest::is_binary_tree<xtree::value_type>);
 }
