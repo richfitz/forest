@@ -173,9 +173,8 @@ public:
   }
 
   // X. extra things that are implemented on top of treetree::tree
-  // TODO: add these four to the subtree and test.
-  size_t tips()  const { return count_tips(tree_);  }
-  size_t nodes() const { return count_nodes(tree_); }
+  size_t tips()  const {return count_tips(tree_); }
+  size_t nodes() const {return count_nodes(tree_);}
   std::vector<std::string> tip_labels()  const {return labels(tree_, true);}
   std::vector<std::string> node_labels() const {return labels(tree_, false);}
 
@@ -296,6 +295,12 @@ public:
   // 8. Equality testing
   bool operator==(const subtree_wrapped& rhs) const {
     return this->subtree_ == rhs.subtree_; }
+
+  // X. extra things that are implemented on top of treetree::subtree
+  size_t tips()  const {return count_tips(subtree_); }
+  size_t nodes() const {return count_nodes(subtree_);}
+  std::vector<std::string> tip_labels()  const {return labels(subtree_, true);}
+  std::vector<std::string> node_labels() const {return labels(subtree_, false);}
 
   // Public for the 'as' method
   subtree_type subtree_;

@@ -156,10 +156,9 @@ RCPP_MODULE(forest) {
 
     .method("is_node_type",      &xtree_wrapped::is_node_type)
 
+    // Extra
     .property("tips",            &xtree_wrapped::tips)
     .property("nodes",           &xtree_wrapped::nodes)
-
-    // These are extra:
     .property("tip_labels",      &xtree_wrapped::tip_labels)
     .property("node_labels",     &xtree_wrapped::node_labels)
     ;
@@ -172,7 +171,7 @@ RCPP_MODULE(forest) {
     .property("size",            &xsubtree_wrapped::size)
     .property("arity",           &xsubtree_wrapped::arity)
     .property("childless",       &xsubtree_wrapped::childless)
-    //.property("representation",  &xsubtree_wrapped::representation)
+    .property("representation",  &xsubtree_wrapped::representation)
 
     // 2. Accessors
     .method("root",              &xsubtree_wrapped::root)
@@ -233,6 +232,12 @@ RCPP_MODULE(forest) {
 
     // 8. Equality testing
     .method("equals",            &xsubtree_wrapped::operator==)
+
+    // Extra
+    .property("tips",            &xsubtree_wrapped::tips)
+    .property("nodes",           &xsubtree_wrapped::nodes)
+    .property("tip_labels",      &xsubtree_wrapped::tip_labels)
+    .property("node_labels",     &xsubtree_wrapped::node_labels)
     ;
 
   // NOTE: We don't have to export the subtree iterators separately

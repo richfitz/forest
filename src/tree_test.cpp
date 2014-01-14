@@ -132,10 +132,9 @@ RCPP_MODULE(tree_test) {
 
     .method("is_node_type",      &itree_wrapped::is_node_type)
 
+    // Extra
     .property("tips",            &itree_wrapped::tips)
     .property("nodes",           &itree_wrapped::nodes)
-
-    // These are extra:
     .property("tip_labels",      &itree_wrapped::tip_labels)
     .property("node_labels",     &itree_wrapped::node_labels)
     ;
@@ -209,6 +208,12 @@ RCPP_MODULE(tree_test) {
 
     // 8. Equality testing
     .method("equals",            &isubtree_wrapped::operator==)
+
+    // Extra
+    .property("tips",            &isubtree_wrapped::tips)
+    .property("nodes",           &isubtree_wrapped::nodes)
+    .property("tip_labels",      &isubtree_wrapped::tip_labels)
+    .property("node_labels",     &isubtree_wrapped::node_labels)
     ;
 
   // NOTE: We don't have to export the subtree iterators separately

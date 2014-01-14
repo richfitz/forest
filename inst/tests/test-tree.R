@@ -208,4 +208,9 @@ test_that("tips and nodes works", {
   expect_that(cmp$nodes,       equals(phy$Nnode))
   expect_that(cmp$tip_labels,  equals(phy$tip.label))
   expect_that(cmp$node_labels, equals(phy$node.label))
+
+  expect_that(cmp[[1]]$tips,        equals(2))
+  expect_that(cmp[[1]]$nodes,       equals(1))
+  expect_that(cmp[[1]]$tip_labels,  equals(c("t3", "t4")))
+  expect_that(cmp[[1]]$node_labels, equals("n7"))
 })
