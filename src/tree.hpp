@@ -173,15 +173,9 @@ public:
   }
 
   // X. extra things that are implemented on top of treetree::tree
-  size_t tips() const {
-    return static_cast<size_t>
-      (std::count_if(tree_.begin_sub(), tree_.end_sub(),
-                     &treetree::childless<const_subtree_type>));
-  }
-  size_t nodes() const {
-    return size() - tips();
-  }
-
+  // TODO: add these four to the subtree and test.
+  size_t tips()  const { return count_tips(tree_);  }
+  size_t nodes() const { return count_nodes(tree_); }
   std::vector<std::string> tip_labels()  const {return labels(tree_, true);}
   std::vector<std::string> node_labels() const {return labels(tree_, false);}
 
