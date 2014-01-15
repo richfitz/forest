@@ -225,9 +225,15 @@ test_that("Height calculation", {
   tr$update_heights()
   heights <- unlist(treeapply(tr, function(nd)
                               structure(nd$height, names=nd$label)))
+  depths <- unlist(treeapply(tr, function(nd)
+                              structure(nd$depth, names=nd$label)))
 
   heights.cmp <- sort(diversitree:::branching.heights(phy))
+  depths.cmp <- max(heights.cmp) - heights.cmp
+
   expect_that(heights[names(heights.cmp)], equals(heights.cmp))
+  expect_that(depths[names(depths.cmp)],   equals(depths.cmp))
 
   expect_that(tr$heights, is_identical_to(unname(heights)))
+  expect_that(tr$depths,  is_identical_to(unname(depths)))
 })

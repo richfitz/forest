@@ -164,10 +164,11 @@ RCPP_MODULE(forest) {
     .property("nodes",           &xtree_wrapped::nodes)
     .property("tip_labels",      &xtree_wrapped::tip_labels)
     .property("node_labels",     &xtree_wrapped::node_labels)
+    .property("heights",         &xtree_wrapped::heights)
+    .property("depths",          &xtree_wrapped::depths)
 
     // Extra -- full tree only and require a tree< node<T> >
     .method("update_heights",    &xtree_wrapped::update_heights)
-    .property("heights",         &xtree_wrapped::heights)
     ;
 
   Rcpp::class_<xsubtree_wrapped>("xsubtree")
@@ -246,6 +247,7 @@ RCPP_MODULE(forest) {
     .property("tip_labels",      &xsubtree_wrapped::tip_labels)
     .property("node_labels",     &xsubtree_wrapped::node_labels)
     .property("heights",         &xsubtree_wrapped::heights)
+    .property("depths",          &xsubtree_wrapped::depths)
     ;
 
   // NOTE: We don't have to export the subtree iterators separately

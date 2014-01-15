@@ -79,6 +79,23 @@ std::vector<double> heights(const treetree::tree<T>& tr) {
   return heights(treetree::const_subtree<T>(tr));
 }
 
+template <typename T>
+std::vector<double> depths(const treetree::const_subtree<T>& tr) {
+  std::vector<double> ret;
+  for (typename treetree::const_subtree<T>::const_pre_iterator
+         it = tr.begin(); it != tr.end(); ++it)
+    ret.push_back(it->depth_);
+  return ret;
+}
+template <typename T>
+std::vector<double> depths(const treetree::subtree<T>& tr) {
+  return depths(treetree::const_subtree<T>(tr));
+}
+template <typename T>
+std::vector<double> depths(const treetree::tree<T>& tr) {
+  return depths(treetree::const_subtree<T>(tr));
+}
+
 
 
 }
