@@ -300,3 +300,37 @@ test_that("is_tree_ultrametric", {
   tr <- from.newick.string(write.tree(phy))
   expect_that(tr$is_ultrametric(tol), throws_error())
 })
+
+## TODO: This needs more extensive testing:
+##   * more than one singleton
+##   * comparison with ape, especially handling of node labels
+##   * edge lengths
+test_that("collapse_singles", {
+  source("helper-forest.R")
+  tree_of <- make.tree_of(xtree)
+
+  nd <- function(x, ...) new(xnode, as.character(x), ...)
+
+  ## First, tree with no singles
+  cmp <- tree_of(nd(6))(tree_of(nd(7))(nd(1), nd(2)),
+                       tree_of(nd(8))(nd(3), tree_of(nd(9))(nd(4), nd(5))))()
+
+  cmp <- tree_of(nd(6))(tree_of(nd(7))(nd(1), nd(2)),
+                        nd(3))()
+  cmp.cpy <- cmp$copy()
+  cmp$collapse_singles()
+  expect_that(cmp$equals(cmp.cpy), is_true())
+
+  ## Then a tree with singles; this does not work; it decided then
+  ## that node 6 was single!  Right; so what happenned here is that we
+  ## delete the entire sub tree '7(1)' leaving '6(3)'; 6 now has arity
+  ## 1 so we delete that too.  Need to to something a bit more clever
+  ## here!
+  cmp <- tree_of(nd(6))(tree_of(nd(7))(nd(1)), nd(3))()
+  cmp.correct <- tree_of(nd(6))(nd(1),nd(3))()
+
+  cmp.cpy <- cmp$copy()
+  cmp$collapse_singles()
+  expect_that(cmp$equals(cmp.cpy),     is_false())
+  expect_that(cmp$equals(cmp.correct), is_true())
+})

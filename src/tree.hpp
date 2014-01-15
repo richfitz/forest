@@ -4,6 +4,7 @@
 #include <Rcpp.h>
 #include "treetree.hpp"
 #include "misc.hpp"
+#include "manipulation.hpp"
 
 // Iterators
 //
@@ -189,6 +190,10 @@ public:
   bool is_ultrametric(double tol) {
     return forest::is_ultrametric(tree_, tol);}
   void update_heights() {forest::update_heights(tree_);}
+
+  // Manipulation:
+  void collapse_singles() {
+    forest::collapse_singles(tree_);}
 
   // Public for the 'as' method
   tree_type tree_;

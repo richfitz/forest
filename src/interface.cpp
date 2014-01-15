@@ -174,6 +174,8 @@ RCPP_MODULE(forest) {
     .method("is_ultrametric",
             &xtree_wrapped::is_ultrametric)
     .method("update_heights",    &xtree_wrapped::update_heights)
+
+    .method("collapse_singles",  &xtree_wrapped::collapse_singles)
     ;
 
   Rcpp::class_<xsubtree_wrapped>("xsubtree")
