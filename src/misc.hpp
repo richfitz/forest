@@ -61,6 +61,16 @@ std::vector<std::string> labels(const treetree::tree<T>& tr, bool tip) {
   return labels(treetree::const_subtree<T>(tr), tip);
 }
 
+// Are *all* branch lengths in the tree valid?
+template <typename T>
+bool has_branch_lengths(const treetree::tree<T>& tr) {
+  for (typename treetree::tree<T>::const_pre_iterator
+         it = tr.begin(); it != tr.end(); ++it)
+    if (ISNA(it->length_) && it != tr.begin())
+      return false;
+  return true;
+}
+
 // Height above the root node; by definition the root is taken to
 // have height 0.  In the max_h test, we could restrict this to
 // cases where `it->childless()` is true, but the current approach
@@ -72,6 +82,8 @@ std::vector<std::string> labels(const treetree::tree<T>& tr, bool tip) {
 template <typename T>
 void update_heights(treetree::tree<T>& tr) {
   typedef typename treetree::tree<T>::pre_iterator pre_iterator;
+  if (!has_branch_lengths(tr))
+    Rcpp::stop("Tree does not have complete branch lengths");
   double max_h = 0.0;
   for (pre_iterator it = tr.begin(); it != tr.end(); ++it) {
     const double h = it == tr.begin() ? 0.0 :
@@ -120,7 +132,26 @@ std::vector<double> depths(const treetree::tree<T>& tr) {
   return depths(treetree::const_subtree<T>(tr));
 }
 
+// NOTE: We've already swept through the tree and computed the
+// "depth"; by definition the most recent tip has depth 0.0 and every
+// other tip has a depth larger than that.  So all we need to do is
+// find the largest tip.
+//
+// NOTE: You could make the case that the empty tree (size 0), the
+// tree with just a root (size 1) and just one branch (size 2) are
+// poorly defined with ultrametricness.  I've not thrown an error
+// here, but perhaps should.
+template <typename T>
+bool is_ultrametric(treetree::tree<T> tr, double eps) {
+  update_heights(tr);
 
+  // TODO: sub_leaf_adapter might be better here?
+  for (typename treetree::tree<T>::const_sub_pre_iterator
+         it = tr.begin_sub(); it != tr.end_sub(); ++it)
+    if (it->childless() && it->begin()->depth_ > eps)
+        return false;
+  return true;
+}
 
 }
 

@@ -182,6 +182,10 @@ public:
   std::vector<double> heights() const {return forest::heights(tree_);}
   std::vector<double> depths()  const {return forest::depths(tree_); }
 
+  bool has_branch_lengths() const {
+    return forest::has_branch_lengths(tree_);}
+  bool is_ultrametric(double tol) {
+    return forest::is_ultrametric(tree_, tol);}
   void update_heights() {forest::update_heights(tree_);}
 
   // Public for the 'as' method

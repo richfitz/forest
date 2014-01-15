@@ -215,6 +215,11 @@ test_that("tips and nodes works", {
   expect_that(cmp[[1]]$node_labels, equals("n7"))
 })
 
+test_that("has_branch_lengths", {
+  expect_that(cmp$has_branch_lengths,  is_true())
+  expect_that(cmp0$has_branch_lengths, is_false())
+})
+
 test_that("Height calculation", {
   ## This is a hack to generate a reasonable length tree:
   set.seed(1)
@@ -236,4 +241,37 @@ test_that("Height calculation", {
 
   expect_that(tr$heights, is_identical_to(unname(heights)))
   expect_that(tr$depths,  is_identical_to(unname(depths)))
+
+  ## With no edge lengths, we will refuse to do this.
+  phy[["edge.length"]] <- NULL
+  tr <- from.newick.string(write.tree(phy))
+  expect_that(tr$update_heights(), throws_error())
+})
+
+test_that("is_tree_ultrametric", {
+  ## This is a hack to generate a reasonable length tree:
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  tr <- from.newick.string(write.tree(phy))
+  tol <- .Machine$double.eps^0.5
+  expect_that(tr$is_ultrametric(tol), is_false())
+
+  set.seed(1)
+  phy <- rcoal(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  tr <- from.newick.string(write.tree(phy))
+  tol <- .Machine$double.eps^0.5
+  expect_that(tr$is_ultrametric(tol), is_true())
+
+  ## Move a branch just slightly:
+  nd <- tr$begin_post()$value
+  nd$length <- nd$length + 2*tol
+  tr$begin_post()$assign(nd)
+  expect_that(tr$is_ultrametric(tol), is_false())
+
+  ## And try on a tree with no branch lengths:
+  phy[["edge.length"]] <- NULL
+  tr <- from.newick.string(write.tree(phy))
+  expect_that(tr$is_ultrametric(tol), throws_error())
 })

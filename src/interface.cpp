@@ -168,6 +168,10 @@ RCPP_MODULE(forest) {
     .property("depths",          &xtree_wrapped::depths)
 
     // Extra -- full tree only and require a tree< node<T> >
+    .property("has_branch_lengths",
+              &xtree_wrapped::has_branch_lengths)
+    .method("is_ultrametric",
+            &xtree_wrapped::is_ultrametric)
     .method("update_heights",    &xtree_wrapped::update_heights)
     ;
 
