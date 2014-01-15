@@ -15,6 +15,3 @@ export(write.newick)
 # TODO: also rename
 export(to.newick.string)
 export(from.newick.string)
-
-# Tree interrogation
-export(is_binary_tree)

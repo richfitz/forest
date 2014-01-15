@@ -215,6 +215,31 @@ test_that("tips and nodes works", {
   expect_that(cmp[[1]]$node_labels, equals("n7"))
 })
 
+test_that("is_binary", {
+  nd <- function(...) new(xnode, ...)
+  tr0 <- new(xtree)
+  expect_that(tr0$is_binary, throws_error())
+
+  tr1 <- tree_of(nd("a"))()
+  expect_that(tr$is_binary, throws_error())
+
+  tr2 <- tree_of(nd("a"))(nd("b"),nd("c"))()
+  expect_that(tr2$is_binary, is_true())
+
+  tr3 <- tree_of(nd("a"))(nd("b"),nd("c"),nd("d"))()
+  expect_that(tr3$is_binary, is_false())
+
+  tr4 <- tree_of(nd("6"))(tree_of(nd("7"))(nd("1"), nd("2")),
+                       tree_of(nd("8"))(nd("3"),
+                                        tree_of(nd("9"))(nd("4"), nd("5"))))()
+  expect_that(tr4$is_binary, is_true())
+
+  tr5 <- tree_of(nd("6"))(tree_of(nd("7"))(nd("1"), nd("2"), nd("10")),
+                       tree_of(nd("8"))(nd("3"),
+                                        tree_of(nd("9"))(nd("4"), nd("5"))))()
+  expect_that(tr5$is_binary, is_false())
+})
+
 test_that("has_branch_lengths", {
   expect_that(cmp$has_branch_lengths,  is_true())
   expect_that(cmp0$has_branch_lengths, is_false())

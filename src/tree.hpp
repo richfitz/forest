@@ -182,6 +182,8 @@ public:
   std::vector<double> heights() const {return forest::heights(tree_);}
   std::vector<double> depths()  const {return forest::depths(tree_); }
 
+  bool is_binary() const {
+    return forest::is_binary(tree_);}
   bool has_branch_lengths() const {
     return forest::has_branch_lengths(tree_);}
   bool is_ultrametric(double tol) {

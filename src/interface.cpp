@@ -6,7 +6,6 @@
 #include "node.hpp"
 
 #include "newick.hpp" // tree io
-#include "interrogation.hpp" // ask the tree things
 
 typedef forest::node<Rcpp::RObject> xnode;
 RCPP_EXPOSED_CLASS_NODECL(xnode)
@@ -166,6 +165,8 @@ RCPP_MODULE(forest) {
     .property("node_labels",     &xtree_wrapped::node_labels)
     .property("heights",         &xtree_wrapped::heights)
     .property("depths",          &xtree_wrapped::depths)
+    .property("is_binary",
+              &xtree_wrapped::is_binary)
 
     // Extra -- full tree only and require a tree< node<T> >
     .property("has_branch_lengths",
@@ -285,8 +286,4 @@ RCPP_MODULE(forest) {
                  &forest::from_newick_node<xtree::value_type>);
   Rcpp::function("from_newick_string",
                  &forest::from_newick_string<xtree::value_type>);
-
-  // Interrogation
-  Rcpp::function("is_binary_tree",
-                 &forest::is_binary_tree<xtree::value_type>);
 }
