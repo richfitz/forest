@@ -182,23 +182,7 @@ public:
   std::vector<double> heights() const {return forest::heights(tree_);}
   std::vector<double> depths()  const {return forest::depths(tree_); }
 
-  // Height above the root node; by definition the root is taken to
-  // have height 0.  In the max_h test, we could restrict this to
-  // cases where `it->childless()` is true, but the current approach
-  // allows negative branch lengths so is more general.
-  void update_heights() {
-    double max_h = 0.0;
-    for (pre_iterator it = tree_.begin(); it != tree_.end(); ++it) {
-      const double h = it == tree_.begin() ? 0.0 :
-        it->length_ + treetree::parent(it)->height_;
-      it->height_ = h;
-      if (h > max_h)
-        max_h = h;
-    }
-    // Set the depth as distance below highest tip:
-    for (pre_iterator it = tree_.begin(); it != tree_.end(); ++it)
-      it->depth_ = max_h - it->height_;
-  }
+  void update_heights() {forest::update_heights(tree_);}
 
   // Public for the 'as' method
   tree_type tree_;

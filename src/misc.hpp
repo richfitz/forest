@@ -61,6 +61,30 @@ std::vector<std::string> labels(const treetree::tree<T>& tr, bool tip) {
   return labels(treetree::const_subtree<T>(tr), tip);
 }
 
+// Height above the root node; by definition the root is taken to
+// have height 0.  In the max_h test, we could restrict this to
+// cases where `it->childless()` is true, but the current approach
+// allows negative branch lengths so is more general.
+//
+// The depths are updated so that the most recent tip has depth 0.0.
+// In an ultrametric tree, all tips will have depth 0.0 (within
+// rounding error).
+template <typename T>
+void update_heights(treetree::tree<T>& tr) {
+  typedef typename treetree::tree<T>::pre_iterator pre_iterator;
+  double max_h = 0.0;
+  for (pre_iterator it = tr.begin(); it != tr.end(); ++it) {
+    const double h = it == tr.begin() ? 0.0 :
+      it->length_ + treetree::parent(it)->height_;
+    it->height_ = h;
+    if (h > max_h)
+      max_h = h;
+  }
+  // Set the depth as distance below highest tip:
+  for (pre_iterator it = tr.begin(); it != tr.end(); ++it)
+    it->depth_ = max_h - it->height_;
+}
+
 // Extract tree heights.  These are set by update_heights()
 template <typename T>
 std::vector<double> heights(const treetree::const_subtree<T>& tr) {
