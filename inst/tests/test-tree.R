@@ -214,3 +214,20 @@ test_that("tips and nodes works", {
   expect_that(cmp[[1]]$tip_labels,  equals(c("t3", "t4")))
   expect_that(cmp[[1]]$node_labels, equals("n7"))
 })
+
+test_that("Height calculation", {
+  ## This is a hack to generate a reasonable length tree:
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  tr <- from.newick.string(write.tree(phy))
+
+  tr$update_heights()
+  heights <- unlist(treeapply(tr, function(nd)
+                              structure(nd$height, names=nd$label)))
+
+  heights.cmp <- sort(diversitree:::branching.heights(phy))
+  expect_that(heights[names(heights.cmp)], equals(heights.cmp))
+
+  expect_that(tr$heights, is_identical_to(unname(heights)))
+})

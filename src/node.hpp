@@ -39,13 +39,17 @@ template <typename T>
 struct node {
   typedef T value_type;
   node()
-    : label_(""),    length_(NA_REAL), data_() {}
+    : label_(""),    length_(NA_REAL), data_(),
+      height_(NA_REAL), depth_(NA_REAL) {}
   node(std::string label)
-    : label_(label), length_(NA_REAL), data_() {}
+    : label_(label), length_(NA_REAL), data_(),
+      height_(NA_REAL), depth_(NA_REAL) {}
   node(std::string label, double length)
-    : label_(label), length_(length),  data_() {}
+    : label_(label), length_(length),  data_(),
+      height_(NA_REAL), depth_(NA_REAL) {}
   node(std::string label, double length, const value_type& data)
-    : label_(label), length_(length),  data_(data) {}
+    : label_(label), length_(length),  data_(data),
+      height_(NA_REAL), depth_(NA_REAL) {}
 
   bool operator==(const node<value_type>& rhs) const {
     return (label_       == rhs.label_       &&
@@ -58,6 +62,9 @@ struct node {
   std::string label_;
   double      length_;
   value_type  data_;
+
+  double height_; // Height above the root
+  double depth_;  // Depth below the highest tip
 };
 
 template<typename T>

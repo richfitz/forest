@@ -45,7 +45,7 @@ template <typename T>
 std::vector<std::string> labels(const treetree::const_subtree<T>& tr,
                                 bool tip) {
   std::vector<std::string> ret;
-  for (typename treetree::tree<T>::const_sub_pre_iterator
+  for (typename treetree::const_subtree<T>::const_sub_pre_iterator
          it = tr.begin(); it != tr.end(); ++it) {
     if (it->childless() == tip)
       ret.push_back(node_label(it->root()));
@@ -60,6 +60,26 @@ template <typename T>
 std::vector<std::string> labels(const treetree::tree<T>& tr, bool tip) {
   return labels(treetree::const_subtree<T>(tr), tip);
 }
+
+// Extract tree heights.  These are set by update_heights()
+template <typename T>
+std::vector<double> heights(const treetree::const_subtree<T>& tr) {
+  std::vector<double> ret;
+  for (typename treetree::const_subtree<T>::const_pre_iterator
+         it = tr.begin(); it != tr.end(); ++it)
+    ret.push_back(it->height_);
+  return ret;
+}
+template <typename T>
+std::vector<double> heights(const treetree::subtree<T>& tr) {
+  return heights(treetree::const_subtree<T>(tr));
+}
+template <typename T>
+std::vector<double> heights(const treetree::tree<T>& tr) {
+  return heights(treetree::const_subtree<T>(tr));
+}
+
+
 
 }
 

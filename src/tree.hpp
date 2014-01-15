@@ -178,6 +178,17 @@ public:
   std::vector<std::string> tip_labels()  const {return labels(tree_, true);}
   std::vector<std::string> node_labels() const {return labels(tree_, false);}
 
+  // Extra things requiring trees of nodes
+  std::vector<double> heights() const {return forest::heights(tree_);}
+
+  // Height above the root node; by definition the root is taken to
+  // have height 0.
+  void update_heights() {
+    for (pre_iterator it = tree_.begin(); it != tree_.end(); ++it)
+      it->height_ = it == tree_.begin() ? 0.0 :
+        it->length_ + treetree::parent(it)->height_;
+  }
+
   // Public for the 'as' method
   tree_type tree_;
 };
@@ -301,6 +312,9 @@ public:
   size_t nodes() const {return count_nodes(subtree_);}
   std::vector<std::string> tip_labels()  const {return labels(subtree_, true);}
   std::vector<std::string> node_labels() const {return labels(subtree_, false);}
+
+  // Extra things requiring trees of nodes
+  std::vector<double> heights() const {return forest::heights(subtree_);}
 
   // Public for the 'as' method
   subtree_type subtree_;
