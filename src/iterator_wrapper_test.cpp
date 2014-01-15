@@ -7,22 +7,26 @@ namespace test {
 // Convenience typedefs:
 typedef std::vector<double> vector_double;
 
+void vector_double_resize(vector_double *obj, size_t size);
 void vector_double_assign(vector_double* obj, Rcpp::NumericVector data);
 double vector_double_at(vector_double* obj, size_t position);
-void vector_double_insert(vector_double* obj, size_t position,
+void vector_double_insert(vector_double* obj, int position,
 			  Rcpp::NumericVector data);
 Rcpp::NumericVector vector_double_asR(vector_double* obj);
 void vector_double_set(vector_double* obj, size_t i, double value);
 vector_double::iterator vector_double_begin(vector_double* obj);
 vector_double::iterator vector_double_end(vector_double* obj);
 
+void vector_double_resize(vector_double *obj, size_t size) {
+  obj->resize(size);
+}
 void vector_double_assign(vector_double* obj, Rcpp::NumericVector data) {
   obj->assign(data.begin(), data.end());
 }
 double vector_double_at(vector_double* obj, size_t position) {
   return obj->at(position - 1);
 }
-void vector_double_insert(vector_double* obj, size_t position,
+void vector_double_insert(vector_double* obj, int position,
 			  Rcpp::NumericVector data) {
   vector_double::iterator it = obj->begin();
   std::advance(it, position - 1);
@@ -71,7 +75,7 @@ RCPP_MODULE(iterator_wrapper_test) {
 
     .property("size",      &forest::test::vector_double::size)
     .property("max_size",  &forest::test::vector_double::max_size)
-    .method("resize",      &forest::test::vector_double::resize)
+    .method("resize",      &forest::test::vector_double_resize)
     .property("capacity",  &forest::test::vector_double::capacity)
     .property("empty",     &forest::test::vector_double::empty)
     .method("reserve",     &forest::test::vector_double::reserve)
