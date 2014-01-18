@@ -88,9 +88,11 @@ void drop_tip_by_label(treetree::tree<T>& tr, const std::string& label) {
 template <typename T>
 void drop_tips_by_label(treetree::tree<T>& tr,
                         const std::vector<std::string>& labels) {
-  std::vector<std::string>::const_iterator it;
-  while (it != labels.end())
+  std::vector<std::string>::const_iterator it = labels.begin();
+  while (it != labels.end()) {
     drop_tip_by_label(tr, *it);
+    ++it;
+  }
 }
 
 }
