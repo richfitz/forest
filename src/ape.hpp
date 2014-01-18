@@ -26,12 +26,9 @@ namespace forest {
 // * length and label are length n
 // * from and to are length n-1, because there is no root edge.
 //
-// If we do a clear, this should be O(n) memory.  However it will be
-// O(n^2) memory copies because we duplicate the subtree each time,
-// which is not very efficient.  Doing a move would be better; that
-// could be achived by splicing in the subtree.  I think it would look
-// like:
-//   target.splice(target.end_child(), subtree);
+// Because we use splice, this should not require any more memory than
+// needed to hold the entire tree.  Hopefully the number of copies is
+// not too bad.
 template <typename T>
 treetree::tree< forest::node<T> >
 from_ape_internal(const std::vector<size_t>& order,
@@ -56,8 +53,7 @@ from_ape_internal(const std::vector<size_t>& order,
                               data_type(Rcpp::wrap(j+1))));
     for (std::vector<size_t>::const_iterator
            x = desc[j].begin(); x != desc[j].end(); ++x) {
-      sub_j.append(sub[*x]);
-      // sub_j.splice(sub_j.end_child(), sub[*x]);
+      sub_j.splice(sub_j.end_child(), sub[*x]);
     }
     sub[j] = sub_j;
   }
