@@ -1,9 +1,13 @@
-import(Rcpp)
-import(methods)
+# This order is important: the reverse order (Rcpp, methods, forest)
+# causes the error:
+## Error in signalCondition(e) :
+##   no function to return from, jumping to top level
+## Calls: <Anonymous> -> .handleSimpleError -> h -> signalCondition
 useDynLib(forest)
+import(methods)
+import(Rcpp)
 
 export(itree)
-
 export(xnode)
 export(xtree)
 
