@@ -6,7 +6,7 @@
 namespace forest {
 
 // Build a tree out of an ape phylo object:
-
+//
 // NOTE: this is templated assuming that we are making a tree of
 // forest::node's, not of general data.  However, we can probably
 // generalise this later if it seems useful by putting a "data" vector
@@ -15,9 +15,6 @@ namespace forest {
 // indices, but in other cases it might be just the indices).  Given
 // how this will be used though, I'm comfortable with this level of
 // specification.
-//
-// Alternatively, we could use SFINAE and get this working for
-// weighted/unweighted and labelled/unlabelled trees.
 //
 // Assumed, but not checked:
 //
@@ -30,15 +27,14 @@ namespace forest {
 // needed to hold the entire tree.  Hopefully the number of copies is
 // not too bad.
 template <typename T>
-treetree::tree< forest::node<T> >
+treetree::tree<T>
 from_ape_internal(const std::vector<size_t>& order,
                   const std::vector<size_t>& from,
                   const std::vector<size_t>& to,
                   const std::vector<std::string>& label,
                   const std::vector<double>& length) {
-  typedef treetree::tree<forest::node<T> > tree_type;
-  typedef typename tree_type::value_type   node_type;
-  typedef typename node_type::value_type   data_type; //Rcpp::RObject
+  typedef typename treetree::tree<T>     tree_type;
+  typedef typename tree_type::value_type node_type;
 
   // First go through and work out who is descended from whom.
   std::vector< std::vector<size_t> > desc(order.size());
@@ -50,7 +46,7 @@ from_ape_internal(const std::vector<size_t>& order,
        i != order.end(); ++i) {
     const size_t j = *i;
     tree_type sub_j(node_type(label[j], length[j],
-                              data_type(Rcpp::wrap(j+1))));
+                              Rcpp::RObject(Rcpp::wrap(j+1))));
     for (std::vector<size_t>::const_iterator
            x = desc[j].begin(); x != desc[j].end(); ++x) {
       sub_j.splice(sub_j.end_child(), sub[*x]);

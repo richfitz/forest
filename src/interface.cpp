@@ -290,7 +290,6 @@ RCPP_MODULE(forest) {
                  &forest::from_newick_node<xtree::value_type>);
   Rcpp::function("from_newick_string",
                  &forest::from_newick_string<xtree::value_type>);
-  // NOTE: Using xnode::, not xtree:: here.
   Rcpp::function("from_ape_internal",
-                 &forest::from_ape_internal<xnode::value_type>);
+                 &forest::from_ape_internal<xtree::value_type>);
 }
