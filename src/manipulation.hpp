@@ -41,26 +41,56 @@ namespace forest {
 //
 // NOTE: collapse_node does not check that a node is actually
 // collapsable -- it just does it.
-//
-// NOTE: I am not 100% sure that the assignment here causes a polite
-// cleanup: erase seems more what I'd want to do, but it cleans up too
-// much.  This should do the whole subtree assignment thing so I guess
-// the Right Thing is being done.
 template <typename T>
-void collapse_node(typename treetree::tree<T>::sub_post_iterator singleton) {
+void collapse_node(treetree::tree<T>& tr,
+                   typename treetree::tree<T>::sub_post_iterator singleton) {
   typedef typename treetree::tree<T>::sub_post_iterator sub_post_iterator;
   sub_post_iterator descendant = boost::prior(singleton);
   descendant->begin()->length_ += singleton->begin()->length_;
-  *singleton = *descendant;
+  singleton = tr.flatten(singleton);
+  tr.erase(singleton);
 }
 
+// Seek out and remove all singletons in a tree:
 template <typename T>
 void collapse_singles(treetree::tree<T>& tr) {
   typedef typename treetree::tree<T>::sub_post_iterator sub_post_iterator;
   for (sub_post_iterator it = tr.begin_sub_post();
        it != tr.end_sub_post(); ++it)
     if (it->arity() == 1)
-      collapse_node<T>(it);
+      collapse_node(tr, it);
+}
+
+// Drop a tip -- if this results in a singleton node, collapse it.
+template <typename T>
+void drop_tip(treetree::tree<T>& tr,
+              typename treetree::tree<T>::sub_post_iterator it) {
+  typename treetree::tree<T>::sub_post_iterator parent = treetree::parent(it);
+  it = tr.erase(it);
+  if (parent->arity() == 1)
+    collapse_node(tr, parent);
+}
+
+// TODO: This will chance once I get a better way of addressing nodes
+// from the R side.
+template <typename T>
+void drop_tip_by_label(treetree::tree<T>& tr, const std::string& label) {
+  typedef typename treetree::tree<T>::sub_post_iterator sub_post_iterator;
+  for (sub_post_iterator it = tr.begin_sub_post();
+       it != tr.end_sub_post(); ++it)
+    if (it->childless() && it->begin()->label_ == label) {
+      drop_tip(tr, it);
+      return;
+    }
+  Rcpp::stop("Did not find tip " + label + " in tree\n");
+}
+
+template <typename T>
+void drop_tips_by_label(treetree::tree<T>& tr,
+                        const std::vector<std::string>& labels) {
+  std::vector<std::string>::const_iterator it;
+  while (it != labels.end())
+    drop_tip_by_label(tr, *it);
 }
 
 }

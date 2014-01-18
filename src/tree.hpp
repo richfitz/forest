@@ -194,6 +194,8 @@ public:
   // Manipulation:
   void collapse_singles() {
     forest::collapse_singles(tree_);}
+  void drop_tips(std::string label) {
+    forest::drop_tip_by_label(tree_, label);}
 
   // Public for the 'as' method
   tree_type tree_;

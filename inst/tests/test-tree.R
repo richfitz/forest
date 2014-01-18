@@ -334,3 +334,26 @@ test_that("collapse_singles", {
   expect_that(cmp$equals(cmp.cpy),     is_false())
   expect_that(cmp$equals(cmp.correct), is_true())
 })
+
+## The notorious drop.tip()
+test_that("drop_tip", {
+  source("helper-forest.R")
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  tr <- from.newick.string(write.tree(phy))
+
+  expect_that(tr$drop_tip("not_in_tree"), throws_error())
+
+  n.tips <- tr$tips
+  n.nodes <- tr$nodes
+  tip.labels <- tr$tip_labels
+  node.labels <- tr$node_labels
+
+  tr$drop_tips("t1")
+
+  expect_that(tr$tips, equals(n.tips-1))
+  expect_that(tr$tip_labels, equals(setdiff(tip.labels, "t1")))
+  expect_that(tr$nodes, equals(n.nodes - 1))
+  expect_that(tr$node_labels, equals(setdiff(node.labels, "n6")))
+})

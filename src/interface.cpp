@@ -176,6 +176,7 @@ RCPP_MODULE(forest) {
     .method("update_heights",    &xtree_wrapped::update_heights)
 
     .method("collapse_singles",  &xtree_wrapped::collapse_singles)
+    .method("drop_tips",         &xtree_wrapped::drop_tips)
     ;
 
   Rcpp::class_<xsubtree_wrapped>("xsubtree")
