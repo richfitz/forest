@@ -6,6 +6,7 @@
 #include "node.hpp"
 
 #include "newick.hpp" // tree io
+#include "ape.hpp"    // ape conversion
 
 typedef forest::node<Rcpp::RObject> xnode;
 RCPP_EXPOSED_CLASS_NODECL(xnode)
@@ -289,4 +290,7 @@ RCPP_MODULE(forest) {
                  &forest::from_newick_node<xtree::value_type>);
   Rcpp::function("from_newick_string",
                  &forest::from_newick_string<xtree::value_type>);
+  // NOTE: Using xnode::, not xtree:: here.
+  Rcpp::function("from_ape_internal",
+                 &forest::from_ape_internal<xnode::value_type>);
 }

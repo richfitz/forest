@@ -62,6 +62,11 @@ void collapse_singles(treetree::tree<T>& tr) {
 }
 
 // Drop a tip -- if this results in a singleton node, collapse it.
+//
+// NOTE: Though untested, this should actually work perfectly well for
+// nodes too; it will drop the node, all descendants, and resolve if
+// any singles should be resolved.  However, if it is used this way we
+// should also change the name.  `drop_node` is probably more generic.
 template <typename T>
 void drop_tip(treetree::tree<T>& tr,
               typename treetree::tree<T>::sub_post_iterator it) {

@@ -38,3 +38,5 @@ test_that("Can extract tip and node labels", {
   expect_that(tr[[2]]$tip_labels,  equals(c("3", "4")))
   expect_that(tr[[2]]$node_labels, equals(c("2")))
 })
+
+gc() # Rcpp vs testthat vs methods?

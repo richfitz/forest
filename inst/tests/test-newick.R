@@ -39,38 +39,20 @@ test_that("Parse node with branch length and embedded colon", {
 
 test_that("Read easy tree, no branch lengths", {
   str <- "(a,(b,c)i)r;"
-  tr.R <- read.newick(str)
-  tr.C <- from.newick.string(str)
-
-  expect_that(str, is_identical_to(write.newick(tr.R)))
-  expect_that(str, is_identical_to(to.newick.string(tr.R)))
-
-  expect_that(str, is_identical_to(write.newick(tr.C)))
-  expect_that(str, is_identical_to(to.newick.string(tr.C)))
+  tr <- from.newick.string(str)
+  expect_that(str, is_identical_to(to.newick.string(tr)))
 })
 
 test_that("Read tree with no node labels", {
   str <- "(a,(b,c));"
-  tr.R <- read.newick(str)
-  tr.C <- read.newick(str)
-
-  expect_that(str, is_identical_to(write.newick(tr.R)))
-  expect_that(str, is_identical_to(to.newick.string(tr.R)))
-
-  expect_that(str, is_identical_to(write.newick(tr.C)))
-  expect_that(str, is_identical_to(to.newick.string(tr.C)))
+  tr <- from.newick.string(str)
+  expect_that(str, is_identical_to(to.newick.string(tr)))
 })
 
 test_that("Read tree with edge length", {
   str <- "(a:1.352452,(b,c));"
-  tr.R <- read.newick(str)
-  tr.C <- read.newick(str)
-
-  expect_that(str, is_identical_to(write.newick(tr.R)))
-  expect_that(str, is_identical_to(to.newick.string(tr.R)))
-
-  expect_that(str, is_identical_to(write.newick(tr.C)))
-  expect_that(str, is_identical_to(to.newick.string(tr.C)))
+  tr <- from.newick.string(str)
+  expect_that(str, is_identical_to(to.newick.string(tr)))
 })
 
 test_that("Read ape::rtree() tree", {
@@ -78,14 +60,8 @@ test_that("Read ape::rtree() tree", {
   phy <- rtree(10)
   str <- write.tree(phy)
 
-  tr.R <- read.newick(str)
-  tr.C <- read.newick(str)
-
-  expect_that(str, is_identical_to(write.newick(tr.R)))
-  expect_that(str, is_identical_to(to.newick.string(tr.R)))
-
-  expect_that(str, is_identical_to(write.newick(tr.C)))
-  expect_that(str, is_identical_to(to.newick.string(tr.C)))
+  tr <- from.newick.string(str)
+  expect_that(str, is_identical_to(to.newick.string(tr)))
 })
 
 # This is disabled because it is slow, and because it depends on a

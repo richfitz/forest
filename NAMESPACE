@@ -7,11 +7,10 @@ export(itree)
 export(xnode)
 export(xtree)
 
-# TODO: rename both of these -- the first has a colision with
-# phytools, the second presumes people only use this package.
-export(read.newick)
-export(write.newick)
-
-# TODO: also rename
+# TODO: rename
 export(to.newick.string)
 export(from.newick.string)
+
+# TODO: again, names to be decided
+export(forest.from.ape)
+export(ape.from.forest)
