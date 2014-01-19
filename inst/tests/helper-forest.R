@@ -49,14 +49,12 @@ make.tree_of <- function(class) {
   }
 }
 
-get.harmon.trees <- function(regenerate=FALSE) {
-  path <- "harmon-2010-trees"
-
+get.harmon.trees <- function(path, regenerate=FALSE) {
   if (file.exists(path)) {
     if (regenerate)
       unlink(path, recursive=TRUE)
     else
-      return(path)
+      return(invisible(path))
   }
 
   zipfile <- "harmon2010.zip"
@@ -82,7 +80,7 @@ get.harmon.trees <- function(regenerate=FALSE) {
   if (grepl(" ", str))
     writeLines(gsub(" ", "", str), file.path(path, "geospiza.phy"))
 
-  return(path)
+  invisible(path)
 }
 
 ## Very hackish version of a treeapply() type function.  Pre-order

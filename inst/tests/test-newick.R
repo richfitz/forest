@@ -64,11 +64,12 @@ test_that("Read ape::rtree() tree", {
   expect_that(str, is_identical_to(to.newick.string(tr)))
 })
 
-# This is disabled because it is slow, and because it depends on a
-# bunch of trees from Harmon et al. 2010:
+# This won't get run unless there is a directory "harmon-2010-trees"
+# containing the trees from Harmon et al 2010 (early bursts are
+# rare...).  To set this up, run
+#   get.harmon.trees("harmon-2010-trees")
 test_that("Harmon trees can be read in", {
-  harmon.path <- try(get.harmon.trees(), silent=TRUE)
-
+  harmon.path <- "harmon-2010-trees"
   if (file.exists(harmon.path)) {
     files <- dir(harmon.path, pattern="phy$", full.names=TRUE)
 
