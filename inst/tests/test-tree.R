@@ -76,7 +76,12 @@ test_that("Height calculation", {
   depths <- unlist(treeapply(tr, function(nd)
                               structure(nd$depth, names=nd$label)))
 
-  heights.cmp <- sort(diversitree:::branching.heights(phy))
+  if (suppressWarnings(require("diversitree", quietly=TRUE)))
+    branching.heights <- diversitree:::branching.heights
+  else
+    branching.heights <- dt_branching.heights
+
+  heights.cmp <- sort(branching.heights(phy))
   depths.cmp <- max(heights.cmp) - heights.cmp
 
   expect_that(heights[names(heights.cmp)], equals(heights.cmp))

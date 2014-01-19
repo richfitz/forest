@@ -105,3 +105,28 @@ make.node.builder.xnode <- function(phy) {
   function(i)
     new(xnode, label[[i]], length[[i]], as.numeric(i))
 }
+
+## Copied over from diversitree, for now:
+## Similar to ape's branching.times(), but returns the height above
+## the root node, even for non-ultrametric trees.  Includes tip times.
+dt_branching.heights <- function(phy) {
+  if (!inherits(phy, "phylo"))
+    stop('object "phy" is not of class "phylo"')
+  phy <- reorder(phy, "cladewise")
+
+  edge <- phy$edge
+  n.node <- phy$Nnode
+  n.tip <- length(phy$tip.label)
+
+  ht <- numeric(n.node + n.tip) # zero'd
+  for (i in seq_len(nrow(edge)))
+    ht[edge[i, 2]] <- ht[edge[i, 1]] + phy$edge.length[i]
+
+  ## Ugly, but fairly compatible with branching.times()
+  names.node <- phy$node.label
+  if (is.null(names.node))
+    names.node <- (n.tip + 1):(n.tip + n.node)
+  names(ht) <- c(phy$tip.label, names.node)
+
+  ht
+}
