@@ -1,6 +1,7 @@
 #ifndef _FOREST_APE_HPP_
 #define _FOREST_APE_HPP_
 
+#include <Rcpp.h>
 #include "tree.hpp"
 
 namespace forest {
@@ -55,6 +56,49 @@ from_ape_internal(const std::vector<size_t>& order,
   }
 
   return sub[order.back()];
+}
+
+template <typename T>
+int to_ape_internal_node(int parent,
+                         std::vector<int>& edge,
+                         std::vector<double>& length,
+                         std::vector<std::string>& label,
+                         typename
+                         treetree::tree<T>::const_sub_child_iterator first,
+                         typename
+                         treetree::tree<T>::const_sub_child_iterator last) {
+  int index = parent + 1;
+  while (first != last) {
+    T nd = *(first->begin());
+    edge.push_back(parent);
+    edge.push_back(index);
+    length.push_back(nd.length_);
+    label.push_back(nd.label_);
+
+    if (!first->childless()) {
+      index = to_ape_internal_node<T>(index, edge, length, label,
+                                      first->begin_sub_child(),
+                                      first->end_sub_child());
+    } else {
+      ++index;
+    }
+    ++first;
+  }
+  return index;
+}
+
+template <typename T>
+Rcpp::List to_ape_internal(const treetree::tree<T>& tr) {
+  std::vector<int> edge;
+  std::vector<double> length;
+  std::vector<std::string> label;
+
+  to_ape_internal_node<T>(1, edge, length, label,
+                          tr.begin_sub_child(), tr.end_sub_child());
+
+  return Rcpp::List::create(Rcpp::_["edge"]   = edge,
+                            Rcpp::_["length"] = length,
+                            Rcpp::_["label"]  = label);
 }
 
 }

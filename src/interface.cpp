@@ -292,4 +292,6 @@ RCPP_MODULE(forest) {
                  &forest::from_newick_string<xtree::value_type>);
   Rcpp::function("from_ape_internal",
                  &forest::from_ape_internal<xtree::value_type>);
+  Rcpp::function("to_ape_internal",
+                 &forest::to_ape_internal<xtree::value_type>);
 }
