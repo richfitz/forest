@@ -1,0 +1,29 @@
+\name{from.newick.string}
+\alias{from.newick.string}
+\alias{to.newick.string}
+\title{Read and Write Trees in Newick Parenthetic Format}
+\usage{
+from.newick.string(str)
+
+to.newick.string(tree, digits = 10)
+}
+\arguments{
+  \item{str}{A string encoding a tree in Newick format.}
+
+  \item{tree}{A forest tree (currently class \code{xtree})}
+
+  \item{digits}{Number of digits to format branch lengths
+  to.  The default is the same as ape.}
+}
+\description{
+Load and save a tree in Newick parenthetic format.
+}
+\details{
+For now, these only operate on \emph{strings}, rather than
+dealing with files.  This, and the names of the functions,
+willl likely change in future versions of forest.
+}
+\author{
+Rich FitzJohn
+}
+

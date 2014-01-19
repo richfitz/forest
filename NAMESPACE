@@ -1,20 +1,10 @@
-# This order is important: the reverse order (Rcpp, methods, forest)
-# causes the error:
-## Error in signalCondition(e) :
-##   no function to return from, jumping to top level
-## Calls: <Anonymous> -> .handleSimpleError -> h -> signalCondition
-useDynLib(forest)
-import(methods)
-import(Rcpp)
-
+export(ape.from.forest)
+export(forest.from.ape)
+export(from.newick.string)
 export(itree)
+export(to.newick.string)
 export(xnode)
 export(xtree)
-
-# TODO: rename
-export(to.newick.string)
-export(from.newick.string)
-
-# TODO: again, names to be decided
-export(forest.from.ape)
-export(ape.from.forest)
+import(Rcpp)
+import(methods)
+useDynLib(forest)

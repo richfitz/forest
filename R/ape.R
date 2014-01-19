@@ -1,3 +1,18 @@
+##' Converts between ape trees (objects of class \code{phylo}) and
+##' forest trees (currently \code{xtree} objects composed of
+##' \code{xnode}s.
+##'
+##' These functions are lossy: converting from ape to forest and back
+##' may not preserve edge index numbers, though it will preseve names
+##' (and topology, etc).  Converting from forest to ape will lose all
+##' data associated with the tree (that is, the \code{data} field
+##' associated with each node), and only the labels give a route to
+##' re-associating.  Both these may change in future.
+##'
+##' @title Convert Between Forest and Ape Trees
+##' @param phy A tree in ape's "phylo" class.
+##' @rdname ape
+##' @export
 forest.from.ape <- function(phy) {
   if (!inherits(phy, "phylo"))
     stop("Need a 'phylo' object to convert")
@@ -29,6 +44,9 @@ forest.from.ape <- function(phy) {
 ##
 ## I would rather a non-recursive algorithm, but given how this will
 ## be used I don't really see that it's worth the time right now.
+##' @param tree A tree from forest
+##' @rdname ape
+##' @export
 ape.from.forest <- function(tree) {
   obj <- to_ape_internal(tree)
   edge <- obj$edge
