@@ -44,41 +44,38 @@ ape.from.forest <- function(tr) {
   length <- numeric(0)
   label <- character(0)
 
-  # Indices of the next tip and node we see:
-  root <- n.tip + 1  # ape root is n.tip + 1
-  i.tip <- 1         # haven't seen any tip yet.
-  i.node <- root + 1 # seen the root already.
-
   rbind0 <- function(...) rbind(..., deparse.level=0)
-  process.node <- function(index, first, last) {
+  process.node <- function(parent, first, last) {
+    index <- parent + 1
     while (first$differs(last)) {
       subtr <- first$value # or just first$post_increment()
       nd <- subtr$begin()$value
 
-      is.tip <- subtr$childless
-      if (is.tip) {
-        i <- i.tip
-        i.tip <<- i.tip + 1
-      } else {
-        i <- i.node
-        i.node <<- i.node + 1
-      }
-
-      edge   <<- rbind0(edge, c(index, i))
+      edge   <<- rbind0(edge, c(parent, index))
       length <<- c(length, nd$length)
-      label  <<- c(label, nd$label)
+      label  <<- c(label,  nd$label)
 
-      if (!is.tip)
-        process.node(i, subtr$begin_sub_child(), subtr$end_sub_child())
+      if (!subtr$childless)
+        index <-
+          process.node(index, subtr$begin_sub_child(),
+                       subtr$end_sub_child())
+      else
+        index <- index + 1
       first$increment()
     }
+    index
   }
 
-  process.node(root, tr$begin_sub_child(), tr$end_sub_child())
+  process.node(1, tr$begin_sub_child(), tr$end_sub_child())
+
+  tip.index  <- setdiff(edge[,2], edge[,1])
+  node.index <- setdiff(seq_len(n.tip + n.node), tip.index)
+  edge[] <- match(edge, c(tip.index, node.index))
 
   tip.label <- label[match(seq_len(n.tip), edge[,2])]
+  # TODO: Second part will fail on a 1 node tree?
   node.label <- c(tr$root()$label,
-                  label[match((root+1):(n.tip+n.node), edge[,2])])
+                  label[match((n.tip+2):(n.tip+n.node), edge[,2])])
 
   storage.mode(edge) <- "integer"
   if (all(is.na(length)))
