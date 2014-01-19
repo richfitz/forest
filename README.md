@@ -1,5 +1,7 @@
 # Forest
 
+[![Build Status](https://travis-ci.org/richfitz/forest.png?branch=master)](https://travis-ci.org/richfitz/forest)
+
 A new tree data structure for phylogenetics in R
 
 This package arises from my frustration with dealing with edge
