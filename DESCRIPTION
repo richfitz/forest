@@ -12,5 +12,5 @@ Depends:
     methods,
     Rcpp (>= 0.10.6)
 Suggests:
-    testthat
+    testthat, ape
 LinkingTo: Rcpp, BH
