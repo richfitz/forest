@@ -69,7 +69,7 @@ int to_ape_internal_node(int parent,
                          treetree::tree<T>::const_sub_child_iterator last) {
   int index = parent + 1;
   while (first != last) {
-    T nd = *(first->begin());
+    T nd = first->root();
     edge.push_back(parent);
     edge.push_back(index);
     length.push_back(nd.length_);
@@ -96,7 +96,18 @@ Rcpp::List to_ape_internal(const treetree::tree<T>& tr) {
   to_ape_internal_node<T>(1, edge, length, label,
                           tr.begin_sub_child(), tr.end_sub_child());
 
-  return Rcpp::List::create(Rcpp::_["edge"]   = edge,
+  // Convert the edge bits into an actual matrix; this is the
+  // poor equivalent of matrix(edge, ncol=2, byrow=TRUE)
+  const size_t n = length.size();
+  Rcpp::IntegerMatrix edge_matrix(static_cast<int>(n), 2);
+  std::vector<int>::const_iterator
+    from = edge.begin(), to = edge.begin() + 1;
+  for (size_t i = 0; i < n; ++i, from += 2, to += 2) {
+    edge_matrix(i, 0) = *from;
+    edge_matrix(i, 1) = *to;
+  }
+
+  return Rcpp::List::create(Rcpp::_["edge"]   = edge_matrix,
                             Rcpp::_["length"] = length,
                             Rcpp::_["label"]  = label);
 }

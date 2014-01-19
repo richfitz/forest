@@ -29,14 +29,13 @@ forest.from.ape <- function(phy) {
 ##
 ## I would rather a non-recursive algorithm, but given how this will
 ## be used I don't really see that it's worth the time right now.
-ape.from.forest <- function(tr) {
-  n.tip <- tr$tips
-  n.node <- tr$nodes
-
-  obj <- to_ape_internal(tr)
-  edge <- matrix(obj$edge, ncol=2, byrow=TRUE)
+ape.from.forest <- function(tree) {
+  obj <- to_ape_internal(tree)
+  edge <- obj$edge
   label <- obj$label
   length <- obj$length
+  n.tip <- tree$tips
+  n.node <- tree$nodes
 
   tip.index  <- setdiff(edge[,2], edge[,1])
   node.index <- setdiff(seq_len(n.tip + n.node), tip.index)
@@ -45,7 +44,7 @@ ape.from.forest <- function(tr) {
   tip.label <- label[match(seq_len(n.tip), edge[,2])]
   i <- if (n.node > 1)
     match((n.tip+2):(n.tip+n.node), edge[,2]) else integer(0)
-  node.label <- c(tr$root()$label, label[i])
+  node.label <- c(tree$root()$label, label[i])
 
   if (all(is.na(length)))
     length <- NULL
