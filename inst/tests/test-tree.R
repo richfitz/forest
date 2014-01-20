@@ -148,10 +148,8 @@ test_that("get_subtree", {
 
   expect_that(sub2$get_subtree("not_in_tree"), throws_error())
   expect_that(sub2$get_subtree("t6"),          throws_error())
-  ## TODO: this does not work; it finds node elsewhere (correct
-  ## subtree, fwiw).  Pretty sure that this is undesirable, but
-  ## waiting on fixing locator code first.
-  ## expect_that(sub2$get_subtree("n8"),          throws_error())
+  # Node exists, but not within this subtree, so error:
+  expect_that(sub2$get_subtree("n8"),          throws_error())
 
   ## Can further get a subtree of a subtree:
   target2 <- "n3"

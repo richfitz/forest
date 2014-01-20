@@ -228,15 +228,15 @@ Iterator locate_internal_by_label(Iterator first, Iterator last,
 template <typename T>
 treetree::subtree<T> subtree_at_label(treetree::subtree<T>& tr,
                                       const std::string& label) {
-  return *locate_internal_by_label<T>(tr.begin_sub_post(),
-                                      tr.end_sub_post(), label);
+  return *locate_internal_by_label<T>(tr.begin_sub(), tr.end_sub(),
+                                      label);
 }
 
 template <typename T>
 treetree::subtree<T> subtree_at_label(treetree::tree<T>& tr,
                                       const std::string& label) {
-  return *locate_internal_by_label<T>(tr.begin_sub_post(),
-                                      tr.end_sub_post(), label);
+  return *locate_internal_by_label<T>(tr.begin_sub(), tr.end_sub(),
+                                      label);
 }
 
 
