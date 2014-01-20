@@ -179,3 +179,29 @@ test_that("drop_tip", {
   expect_that(tr$nodes, equals(n.nodes - 1))
   expect_that(tr$node_labels, equals(setdiff(node.labels, "n6")))
 })
+
+## Rotate a node:
+test_that("rotate", {
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  tr <- from.newick.string(write.tree(phy))
+
+  expect_that(tr$rotate("not_in_tree"), throws_error())
+  expect_that(tr$rotate("t1"),          throws_error())
+  # TODO: To test for error: node of arity 1 and 3?
+
+  # n9 subtends t4 and t8
+  expect_that(tr[[2]][[2]][[1]]$representation,
+              is_identical_to("n9(t8 t4)"))
+  tr$rotate("n9")
+  expect_that(tr[[2]][[2]][[1]]$representation,
+              is_identical_to("n9(t4 t8)"))
+
+  # n2 subtends
+  expect_that(tr[[1]]$representation,
+              is_identical_to("n2(t10 n3(t6 t9))"))
+  tr$rotate("n2")
+  expect_that(tr[[1]]$representation,
+              is_identical_to("n2(n3(t6 t9) t10)"))
+})

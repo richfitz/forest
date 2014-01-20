@@ -1,6 +1,8 @@
 #ifndef _FOREST_MANIPULATION_HPP_
 #define _FOREST_MANIPULATION_HPP_
 
+#include "util.hpp"
+
 namespace forest {
 
 // Collapse singleton nodes; nodes that have just one descendant
@@ -100,6 +102,41 @@ void drop_tips_by_label(treetree::tree<T>& tr,
     drop_tip_by_label(tr, *it);
     ++it;
   }
+}
+
+
+// Rotate:
+//
+// Reorder the order of child subtrees.  There are two approaches that
+// will give identical results on a bifurcating node that would be
+// plausible with a multifurcation, std::rotate and std::reverse.
+//
+// A more general approach here would be to use a predicate on the
+// nodes or something; that then generalise nicely (sort by species
+// richness, some data element, etc).
+//
+// TODO: Issues using std::reverse;
+//   - can't use std::reverse(sub->begin_child(), sub->end_child())
+//     because that iterates the node contents, not the topology.
+//   - can't use begin_sub_child()/end_sub_child() because we get a
+//     huge pile of compiler errors relating to
+//     boost::bidirectional_traversal_tag.
+//
+// TODO: The gymnastics here would be better if we just got the right
+// sort of iterator by default (that, is we can pass in a sub iterator
+// rather than a node iterator to the locate function).
+template <typename T>
+void rotate(treetree::tree<T>& tr, const std::string& label) {
+  typedef typename treetree::tree<T>::sub_pre_iterator sub_pre_iterator;
+  typedef typename treetree::tree<T>::pre_iterator     pre_iterator;
+  pre_iterator nd = locate_internal_by_label<T>(tr.begin(), tr.end(), label);
+  sub_pre_iterator sub = static_cast<sub_pre_iterator>(nd);
+  if (sub->arity() == 1)
+    return; // or throw error?
+  typename treetree::tree<T>::sub_child_iterator
+    new_first = sub->begin_sub_child();
+  ++new_first;
+  util::rotate(sub->begin_sub_child(), new_first, sub->end_sub_child());
 }
 
 }

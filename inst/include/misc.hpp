@@ -205,6 +205,19 @@ Iterator locate_tip_by_label(Iterator first, Iterator last,
   return ret;
 }
 
+// TODO: Repetition with above; combine with flags perhaps?
+template <typename T, typename Iterator>
+Iterator locate_internal_by_label(Iterator first, Iterator last,
+                                  const std::string& label) {
+  Iterator ret = locate_node_by_label<T>(first, last, label);
+  if (ret == last)
+    Rcpp::stop("Did not find node " + label + " in tree\n");
+  typename treetree::tree<T>::sub_pre_iterator sub = ret;
+  if (sub->childless())
+    Rcpp::stop("The label " + label + " is not internal\n");
+  return ret;
+}
+
 }
 
 #endif

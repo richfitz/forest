@@ -196,6 +196,7 @@ public:
     forest::collapse_singles(tree_);}
   void drop_tips(std::vector<std::string> labels) {
     forest::drop_tips_by_label(tree_, labels);}
+  void rotate(std::string label) {forest::rotate(tree_, label);}
 
   // Public for the 'as' method
   tree_type tree_;
