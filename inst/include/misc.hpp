@@ -218,6 +218,37 @@ Iterator locate_internal_by_label(Iterator first, Iterator last,
   return ret;
 }
 
+// NOTE: Currently, will refuse to return a subtree of a terminal
+// node; not sure if that is the best behaviour or not, actually.
+// Could be useful in some contexts.
+//
+// Note there is a lot of duplication here, but because the trees are
+// to be modified this appears necessary.  There is probably a nicer
+// way of doing this!
+template <typename T>
+treetree::subtree<T> subtree_at_label(treetree::subtree<T>& tr,
+                                      const std::string& label) {
+  typedef typename treetree::subtree<T>::sub_post_iterator sub_post_iterator;
+  typedef typename treetree::subtree<T>::post_iterator     post_iterator;
+  post_iterator it = locate_internal_by_label<T>(tr.begin_post(),
+                                                 tr.end_post(), label);
+  return *static_cast<sub_post_iterator>(it);
+}
+
+template <typename T>
+treetree::subtree<T> subtree_at_label(treetree::tree<T>& tr,
+                                      const std::string& label) {
+  typedef typename treetree::tree<T>::sub_post_iterator sub_post_iterator;
+  typedef typename treetree::tree<T>::post_iterator     post_iterator;
+  post_iterator it = locate_internal_by_label<T>(tr.begin_post(),
+                                                 tr.end_post(), label);
+  return *static_cast<sub_post_iterator>(it);
+}
+
+
+
+
+
 }
 
 #endif

@@ -179,6 +179,7 @@ RCPP_MODULE(forest) {
     .method("collapse_singles",  &xtree_wrapped::collapse_singles)
     .method("drop_tips",         &xtree_wrapped::drop_tips)
     .method("rotate",            &xtree_wrapped::rotate)
+    .method("get_subtree",       &xtree_wrapped::get_subtree)
     ;
 
   Rcpp::class_<xsubtree_wrapped>("xsubtree")
@@ -258,6 +259,8 @@ RCPP_MODULE(forest) {
     .property("node_labels",     &xsubtree_wrapped::node_labels)
     .property("heights",         &xsubtree_wrapped::heights)
     .property("depths",          &xsubtree_wrapped::depths)
+
+    .method("get_subtree",       &xsubtree_wrapped::get_subtree)
     ;
 
   // NOTE: We don't have to export the subtree iterators separately

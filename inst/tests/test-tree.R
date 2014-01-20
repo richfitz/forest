@@ -124,12 +124,54 @@ test_that("is_tree_ultrametric", {
   expect_that(tr$is_ultrametric(tol), throws_error())
 })
 
+test_that("get_subtree", {
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  tr <- forest.from.ape(phy)
+  str <- tr$representation
+
+  expect_that(tr$get_subtree("not_in_tree"), throws_error())
+  expect_that(tr$get_subtree("t1"),          throws_error())
+
+  target <- "n2"
+  sub2 <- tr$get_subtree(target)
+
+  ## Modify the subtree:
+  nd <- sub2$root()
+  nd$label <- "subtree_root"
+  sub2$begin()$assign(nd)
+
+  ## Test that propogates to the main tree:
+  str2 <- sub(target, nd$label, str)
+  expect_that(tr$representation, is_identical_to(str2))
+
+  expect_that(sub2$get_subtree("not_in_tree"), throws_error())
+  expect_that(sub2$get_subtree("t6"),          throws_error())
+  ## TODO: this does not work; it finds node elsewhere (correct
+  ## subtree, fwiw).  Pretty sure that this is undesirable, but
+  ## waiting on fixing locator code first.
+  ## expect_that(sub2$get_subtree("n8"),          throws_error())
+
+  ## Can further get a subtree of a subtree:
+  target2 <- "n3"
+  sub3 <- sub2$get_subtree(target2)
+
+  ## Modify the subtree:
+  nd3 <- sub3$root()
+  nd3$label <- "subsubtree_root"
+  sub3$begin()$assign(nd3)
+
+  ## Test that propogates to the main tree:
+  str3 <- sub(target2, nd3$label, str2)
+  expect_that(tr$representation, is_identical_to(str3))
+})
+
 ## TODO: This needs more extensive testing:
 ##   * more than one singleton
 ##   * comparison with ape, especially handling of node labels
 ##   * edge lengths
 test_that("collapse_singles", {
-  source("helper-forest.R")
   tree_of <- make.tree_of(xtree)
 
   nd <- function(x, ...) new(xnode, as.character(x), ...)

@@ -196,7 +196,11 @@ public:
     forest::collapse_singles(tree_);}
   void drop_tips(std::vector<std::string> labels) {
     forest::drop_tips_by_label(tree_, labels);}
-  void rotate(std::string label) {forest::rotate(tree_, label);}
+  void rotate(const std::string& label) {
+    forest::rotate(tree_, label);}
+
+  treetree::subtree<T> get_subtree(const std::string& label) {
+    return forest::subtree_at_label(tree_, label);}
 
   // Public for the 'as' method
   tree_type tree_;
@@ -325,6 +329,9 @@ public:
   // Extra things requiring trees of nodes
   std::vector<double> heights() const {return forest::heights(subtree_);}
   std::vector<double> depths()  const {return forest::depths(subtree_); }
+
+  treetree::subtree<T> get_subtree(const std::string& label) {
+    return forest::subtree_at_label(subtree_, label);}
 
   // Public for the 'as' method
   subtree_type subtree_;
