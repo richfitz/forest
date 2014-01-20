@@ -179,6 +179,10 @@ struct label_finder {
   bool operator()(const T& nd) const {
     return nd.has_label() && nd.label_ == target;
   }
+  bool operator()(const treetree::subtree<T>& sub) const {
+    const T& nd = sub.root();
+    return nd.has_label() && nd.label_ == target;
+  }
   const std::string target;
 };
 
@@ -188,19 +192,20 @@ Iterator locate_node_by_label(Iterator first, Iterator last,
   return std::find_if(first, last, label_finder<T>(label));
 }
 
+template <typename T, typename Iterator>
+bool is_terminal(Iterator it) {
+  typename treetree::tree<T>::sub_pre_iterator sub = it;
+  return sub->childless();
+}
+
 // Same as above, but make sure we do find it.
-//
-// Some of the gymnastics between sub and non-sub iterators could be
-// improved greatly; perhaps detect if we have one or the other?
-// Should be entirely doable at compile time.
 template <typename T, typename Iterator>
 Iterator locate_tip_by_label(Iterator first, Iterator last,
                              const std::string& label) {
   Iterator ret = locate_node_by_label<T>(first, last, label);
   if (ret == last)
     Rcpp::stop("Did not find tip " + label + " in tree\n");
-  typename treetree::tree<T>::sub_pre_iterator sub = ret;
-  if (!sub->childless())
+  if (!is_terminal<T>(ret))
     Rcpp::stop("The label " + label + " is not terminal\n");
   return ret;
 }
@@ -212,8 +217,7 @@ Iterator locate_internal_by_label(Iterator first, Iterator last,
   Iterator ret = locate_node_by_label<T>(first, last, label);
   if (ret == last)
     Rcpp::stop("Did not find node " + label + " in tree\n");
-  typename treetree::tree<T>::sub_pre_iterator sub = ret;
-  if (sub->childless())
+  if (is_terminal<T>(ret))
     Rcpp::stop("The label " + label + " is not internal\n");
   return ret;
 }
@@ -221,28 +225,18 @@ Iterator locate_internal_by_label(Iterator first, Iterator last,
 // NOTE: Currently, will refuse to return a subtree of a terminal
 // node; not sure if that is the best behaviour or not, actually.
 // Could be useful in some contexts.
-//
-// Note there is a lot of duplication here, but because the trees are
-// to be modified this appears necessary.  There is probably a nicer
-// way of doing this!
 template <typename T>
 treetree::subtree<T> subtree_at_label(treetree::subtree<T>& tr,
                                       const std::string& label) {
-  typedef typename treetree::subtree<T>::sub_post_iterator sub_post_iterator;
-  typedef typename treetree::subtree<T>::post_iterator     post_iterator;
-  post_iterator it = locate_internal_by_label<T>(tr.begin_post(),
-                                                 tr.end_post(), label);
-  return *static_cast<sub_post_iterator>(it);
+  return *locate_internal_by_label<T>(tr.begin_sub_post(),
+                                      tr.end_sub_post(), label);
 }
 
 template <typename T>
 treetree::subtree<T> subtree_at_label(treetree::tree<T>& tr,
                                       const std::string& label) {
-  typedef typename treetree::tree<T>::sub_post_iterator sub_post_iterator;
-  typedef typename treetree::tree<T>::post_iterator     post_iterator;
-  post_iterator it = locate_internal_by_label<T>(tr.begin_post(),
-                                                 tr.end_post(), label);
-  return *static_cast<sub_post_iterator>(it);
+  return *locate_internal_by_label<T>(tr.begin_sub_post(),
+                                      tr.end_sub_post(), label);
 }
 
 

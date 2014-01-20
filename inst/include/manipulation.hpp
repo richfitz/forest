@@ -80,18 +80,11 @@ void drop_tip(treetree::tree<T>& tr,
 
 // TODO: This will chance once I get a better way of addressing nodes
 // from the R side.
-//
-// TODO: As with locate_tip_by_label, can we do better with the
-// casting between subtrees and nodes here.  Then either the final
-// cast is not needed, or we can pass in begin_sub_post / end_sub_post
-// to locate_tip_by_label.
 template <typename T>
 void drop_tip_by_label(treetree::tree<T>& tr, const std::string& label) {
-  typedef typename treetree::tree<T>::sub_post_iterator sub_post_iterator;
-  typedef typename treetree::tree<T>::post_iterator     post_iterator;
-  post_iterator it = locate_tip_by_label<T>(tr.begin_post(),
-                                            tr.end_post(), label);
-  drop_tip(tr, static_cast<sub_post_iterator>(it));
+  typename treetree::tree<T>::sub_pre_iterator it =
+    locate_tip_by_label<T>(tr.begin_sub(), tr.end_sub(), label);
+  drop_tip(tr, it);
 }
 
 template <typename T>
@@ -104,7 +97,6 @@ void drop_tips_by_label(treetree::tree<T>& tr,
   }
 }
 
-
 // Rotate:
 //
 // Reorder the order of child subtrees.  There are two approaches that
@@ -115,24 +107,14 @@ void drop_tips_by_label(treetree::tree<T>& tr,
 // nodes or something; that then generalise nicely (sort by species
 // richness, some data element, etc).
 //
-// TODO: Issues using std::reverse;
-//   - can't use std::reverse(sub->begin_child(), sub->end_child())
-//     because that iterates the node contents, not the topology.
-//   - can't use begin_sub_child()/end_sub_child() because we get a
-//     huge pile of compiler errors relating to
-//     boost::bidirectional_traversal_tag.
-//
-// TODO: The gymnastics here would be better if we just got the right
-// sort of iterator by default (that, is we can pass in a sub iterator
-// rather than a node iterator to the locate function).
+// NOTE: the arity 1 case is unclear; could throw here instead?
 template <typename T>
 void rotate(treetree::tree<T>& tr, const std::string& label) {
-  typedef typename treetree::tree<T>::sub_pre_iterator sub_pre_iterator;
-  typedef typename treetree::tree<T>::pre_iterator     pre_iterator;
-  pre_iterator nd = locate_internal_by_label<T>(tr.begin(), tr.end(), label);
-  sub_pre_iterator sub = static_cast<sub_pre_iterator>(nd);
+  typename treetree::tree<T>::sub_post_iterator sub =
+    locate_internal_by_label<T>(tr.begin_sub_post(),
+                                tr.end_sub_post(), label);
   if (sub->arity() == 1)
-    return; // or throw error?
+    return;
   typename treetree::tree<T>::sub_child_iterator
     new_first = sub->begin_sub_child();
   ++new_first;
