@@ -261,6 +261,7 @@ RCPP_MODULE(forest) {
     .property("depths",          &xsubtree_wrapped::depths)
 
     .method("get_subtree",       &xsubtree_wrapped::get_subtree)
+    .method("to_tree",           &xsubtree_wrapped::to_tree)
     ;
 
   // NOTE: We don't have to export the subtree iterators separately

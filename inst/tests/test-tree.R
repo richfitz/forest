@@ -163,6 +163,15 @@ test_that("get_subtree", {
   ## Test that propogates to the main tree:
   str3 <- sub(target2, nd3$label, str2)
   expect_that(tr$representation, is_identical_to(str3))
+
+  ## Extract a further subtree from the main tree, but convert to full
+  ## tree:
+  sub4 <- tr$get_subtree("n4")$to_tree()
+  nd4 <- sub4$root()
+  nd4$label <- "newtree_root"
+  sub4$begin()$assign(nd4)
+  ## This change has *not* propagated up to the main tree:
+  expect_that(tr$representation, is_identical_to(str3))
 })
 
 ## TODO: This needs more extensive testing:

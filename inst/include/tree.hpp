@@ -332,6 +332,8 @@ public:
 
   treetree::subtree<T> get_subtree(const std::string& label) {
     return forest::subtree_at_label(subtree_, label);}
+  treetree::tree<T> to_tree() const {
+    return treetree::tree<T>(subtree_);}
 
   // Public for the 'as' method
   subtree_type subtree_;
