@@ -109,17 +109,25 @@ void drop_tips_by_label(treetree::tree<T>& tr,
 //
 // NOTE: the arity 1 case is unclear; could throw here instead?
 template <typename T>
-void rotate(treetree::tree<T>& tr, const std::string& label) {
-  typename treetree::tree<T>::sub_post_iterator sub =
-    locate_internal_by_label<T>(tr.begin_sub_post(),
-                                tr.end_sub_post(), label);
-  if (sub->arity() == 1)
+void rotate(typename treetree::tree<T>::sub_pre_iterator node) {
+  if (node->arity() == 1)
     return;
   typename treetree::tree<T>::sub_child_iterator
-    new_first = sub->begin_sub_child();
+    new_first = node->begin_sub_child();
   ++new_first;
-  util::rotate(sub->begin_sub_child(), new_first, sub->end_sub_child());
+  util::rotate(node->begin_sub_child(), new_first, node->end_sub_child());
 }
+
+template <typename T>
+void rotate(treetree::tree<T>& tr, const std::string& label) {
+  rotate<T>(locate_internal_by_label<T>(tr.begin_sub(), tr.end_sub(), label));
+}
+
+template <typename T>
+void rotate(treetree::subtree<T>& tr, const std::string& label) {
+  rotate<T>(locate_internal_by_label<T>(tr.begin_sub(), tr.end_sub(), label));
+}
+
 
 }
 

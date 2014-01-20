@@ -260,6 +260,7 @@ RCPP_MODULE(forest) {
     .property("heights",         &xsubtree_wrapped::heights)
     .property("depths",          &xsubtree_wrapped::depths)
 
+    .method("rotate",            &xsubtree_wrapped::rotate)
     .method("get_subtree",       &xsubtree_wrapped::get_subtree)
     .method("to_tree",           &xsubtree_wrapped::to_tree)
     ;

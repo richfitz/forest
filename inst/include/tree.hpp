@@ -330,6 +330,9 @@ public:
   std::vector<double> heights() const {return forest::heights(subtree_);}
   std::vector<double> depths()  const {return forest::depths(subtree_); }
 
+  void rotate(const std::string& label) {
+    forest::rotate(subtree_, label);}
+
   treetree::subtree<T> get_subtree(const std::string& label) {
     return forest::subtree_at_label(subtree_, label);}
   treetree::tree<T> to_tree() const {

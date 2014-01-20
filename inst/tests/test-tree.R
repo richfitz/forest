@@ -241,16 +241,26 @@ test_that("rotate", {
   # TODO: To test for error: node of arity 1 and 3?
 
   # n9 subtends t4 and t8
-  expect_that(tr[[2]][[2]][[1]]$representation,
+  sub9 <- tr$get_subtree("n9")
+  expect_that(sub9$representation,
               is_identical_to("n9(t8 t4)"))
   tr$rotate("n9")
-  expect_that(tr[[2]][[2]][[1]]$representation,
+  expect_that(sub9$representation,
               is_identical_to("n9(t4 t8)"))
 
-  # n2 subtends
-  expect_that(tr[[1]]$representation,
+  # n2 subtends three species:
+  sub2 <- tr$get_subtree("n2")
+  expect_that(sub2$representation,
               is_identical_to("n2(t10 n3(t6 t9))"))
   tr$rotate("n2")
-  expect_that(tr[[1]]$representation,
+  expect_that(sub2$representation,
               is_identical_to("n2(n3(t6 t9) t10)"))
+
+  expect_that(sub2$rotate("not_in_tree"), throws_error())
+  expect_that(sub2$rotate("t1"),          throws_error())
+  expect_that(sub2$rotate("n8"),          throws_error())
+
+  sub2$rotate("n3")
+  expect_that(sub2$representation,
+              is_identical_to("n2(n3(t9 t6) t10)"))
 })
