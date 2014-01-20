@@ -173,6 +173,37 @@ bool is_binary(const treetree::tree<T>& tr) {
   return true;
 }
 
+template <typename T>
+struct label_finder {
+  label_finder(const std::string& label) : target(label) {}
+  bool operator()(const T& nd) const {
+    return nd.has_label() && nd.label_ == target;
+  }
+  const std::string target;
+};
+
+template <typename T, typename Iterator>
+Iterator locate_node_by_label(Iterator first, Iterator last,
+                              const std::string& label) {
+  return std::find_if(first, last, label_finder<T>(label));
+}
+
+// Same as above, but make sure we do find it.
+//
+// Some of the gymnastics between sub and non-sub iterators could be
+// improved greatly; perhaps detect if we have one or the other?
+// Should be entirely doable at compile time.
+template <typename T, typename Iterator>
+Iterator locate_tip_by_label(Iterator first, Iterator last,
+                             const std::string& label) {
+  Iterator ret = locate_node_by_label<T>(first, last, label);
+  if (ret == last)
+    Rcpp::stop("Did not find tip " + label + " in tree\n");
+  typename treetree::tree<T>::sub_pre_iterator sub = ret;
+  if (!sub->childless())
+    Rcpp::stop("The label " + label + " is not terminal\n");
+  return ret;
+}
 
 }
 

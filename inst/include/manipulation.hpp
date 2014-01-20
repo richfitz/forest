@@ -78,16 +78,18 @@ void drop_tip(treetree::tree<T>& tr,
 
 // TODO: This will chance once I get a better way of addressing nodes
 // from the R side.
+//
+// TODO: As with locate_tip_by_label, can we do better with the
+// casting between subtrees and nodes here.  Then either the final
+// cast is not needed, or we can pass in begin_sub_post / end_sub_post
+// to locate_tip_by_label.
 template <typename T>
 void drop_tip_by_label(treetree::tree<T>& tr, const std::string& label) {
   typedef typename treetree::tree<T>::sub_post_iterator sub_post_iterator;
-  for (sub_post_iterator it = tr.begin_sub_post();
-       it != tr.end_sub_post(); ++it)
-    if (it->childless() && it->begin()->label_ == label) {
-      drop_tip(tr, it);
-      return;
-    }
-  Rcpp::stop("Did not find tip " + label + " in tree\n");
+  typedef typename treetree::tree<T>::post_iterator     post_iterator;
+  post_iterator it = locate_tip_by_label<T>(tr.begin_post(),
+                                            tr.end_post(), label);
+  drop_tip(tr, static_cast<sub_post_iterator>(it));
 }
 
 template <typename T>
