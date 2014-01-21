@@ -4,9 +4,9 @@
 namespace Rcpp {
 template<> SEXP wrap(const forest::models::gaussian& obj);
 template<> SEXP wrap(const forest::models::gaussian& obj) {
-  return NumericVector::create(_["mean"]     = obj.mean,
-                               _["variance"] = obj.variance,
-                               _["scale"]    = obj.scale);
+  return NumericVector::create(_["mean"]      = obj.mean,
+                               _["variance"]  = obj.variance,
+                               _["log_scale"] = obj.log_scale);
 }
 template<> forest::models::gaussian as(SEXP obj);
 template<> forest::models::gaussian as(SEXP obj) {
@@ -17,13 +17,19 @@ template<> forest::models::gaussian as(SEXP obj) {
 }
 }
 
-std::vector<double> test_gaussian(forest::models::gaussian obj);
-std::vector<double> test_gaussian(forest::models::gaussian obj) {
+using forest::models::gaussian;
+std::vector<double> test_gaussian(gaussian obj);
+std::vector<double> test_gaussian(gaussian obj) {
   std::vector<double> ret;
   ret.push_back(obj.mean);
   ret.push_back(obj.variance);
-  ret.push_back(obj.scale);
+  ret.push_back(obj.log_scale);
   return ret;
+}
+
+gaussian test_gaussian_product(gaussian x, gaussian y);
+gaussian test_gaussian_product(gaussian x, gaussian y) {
+  return x * y;
 }
 
 #ifdef __clang__
@@ -46,6 +52,9 @@ RCPP_MODULE(models) {
             &forest::models::brownian_motion::forward)
     .method("backward",
             &forest::models::brownian_motion::backward)
+    .method("combine",
+            &forest::models::brownian_motion::combine)
     ;
   Rcpp::function("test_gaussian", &test_gaussian);
+  Rcpp::function("test_gaussian_product", &test_gaussian_product);
 }
