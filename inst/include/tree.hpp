@@ -198,6 +198,7 @@ public:
     forest::drop_tips_by_label(tree_, labels);}
   void rotate(const std::string& label) {
     forest::rotate(tree_, label);}
+  void ladderise(bool right) {forest::ladderise(tree_, right);}
 
   treetree::subtree<T> get_subtree(const std::string& label) {
     return forest::subtree_at_label(tree_, label);}

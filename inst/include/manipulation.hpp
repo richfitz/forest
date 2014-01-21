@@ -128,6 +128,20 @@ void rotate(treetree::subtree<T>& tr, const std::string& label) {
   rotate<T>(locate_internal_by_label<T>(tr.begin_sub(), tr.end_sub(), label));
 }
 
+template <typename T>
+void ladderise(treetree::tree<T>& tr, bool right) {
+  for (typename treetree::tree<T>::sub_pre_iterator
+         it = tr.begin_sub(); it != tr.end_sub(); ++it) {
+    if (!it->childless() && it->arity() > 1) {
+      if (it->arity() > 2)
+        Rcpp::stop("Can't (yet) ladderize a polytomy");
+      const size_t nl = (*it)[0].size(), nr = (*it)[1].size();
+      if ((right && nr > nl) || (!right && nl > nr))
+        rotate<T>(it);
+    }
+  }
+}
+
 
 }
 

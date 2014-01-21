@@ -179,6 +179,7 @@ RCPP_MODULE(forest) {
     .method("collapse_singles",  &xtree_wrapped::collapse_singles)
     .method("drop_tips",         &xtree_wrapped::drop_tips)
     .method("rotate",            &xtree_wrapped::rotate)
+    .method("ladderise",         &xtree_wrapped::ladderise)
     .method("get_subtree",       &xtree_wrapped::get_subtree)
     ;
 

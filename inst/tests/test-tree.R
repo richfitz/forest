@@ -264,3 +264,27 @@ test_that("rotate", {
   expect_that(sub2$representation,
               is_identical_to("n2(n3(t9 t6) t10)"))
 })
+
+test_that("ladderise", {
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+
+  ## Ladderize left and right:
+  phy.l <- ladderize(phy, FALSE)
+  phy.r <- ladderize(phy, TRUE)
+
+  tr <- forest.from.ape(phy)
+
+  tr.l <- tr$copy()
+  tr.l$ladderise(FALSE)
+
+  tr.r <- tr$copy()
+  tr.r$ladderise(TRUE)
+
+  ## TODO: Still issues with tree comparisons to deal with:
+  expect_that(to.newick.string(tr.l),
+              is_identical_to(write.tree(phy.l)))
+  expect_that(to.newick.string(tr.r),
+              is_identical_to(write.tree(phy.r)))
+})
