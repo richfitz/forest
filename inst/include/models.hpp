@@ -2,6 +2,7 @@
 #define _FOREST_MODELS_HPP_
 
 #include <cstdlib>
+#include <vector>
 
 namespace forest {
 namespace models {
@@ -24,6 +25,31 @@ struct gaussian {
   double mean;
   double variance;
   double scale;
+};
+
+struct brownian_motion { // no drift
+  brownian_motion() : s2(0.0) {} // NA_REAL better?
+  // TODO: in-place or reference version to avoid copy?
+  gaussian forward(gaussian y, double t) const {
+    y.variance += t * s2;
+    return y;
+  }
+  gaussian backward(gaussian y, double t) const {
+    return forward(y, t);
+  }
+
+  std::vector<double> parameters() const {
+    return std::vector<double>(1, s2);
+  }
+  void set_parameters(std::vector<double> parameters) {
+    // TODO: check length 1
+    s2 = parameters.front();
+  }
+  // TODO: r_parameters() that returns named parameter vector?
+  // TODO: length of parameter vector
+
+private:
+  double s2;
 };
 
 }

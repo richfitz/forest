@@ -37,5 +37,15 @@ RCPP_MODULE(models) {
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
+  Rcpp::class_<forest::models::brownian_motion>("brownian_motion")
+    .constructor()
+    .property("parameters",
+              &forest::models::brownian_motion::parameters,
+              &forest::models::brownian_motion::set_parameters)
+    .method("forward",
+            &forest::models::brownian_motion::forward)
+    .method("backward",
+            &forest::models::brownian_motion::backward)
+    ;
   Rcpp::function("test_gaussian", &test_gaussian);
 }
