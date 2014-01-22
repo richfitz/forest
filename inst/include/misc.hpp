@@ -5,6 +5,7 @@
 // in src/tree.hpp).
 
 #include "treetree.hpp"
+#include "node.hpp"
 
 namespace forest {
 
@@ -265,20 +266,23 @@ bool check_names(const treetree::tree<T>& tr,
   return true;
 }
 
+// NOTE: I'm not sure why node needs to be fully qualified in the
+// typename statement below (and not in the argument list) but it
+// apparently does.
 template <typename T>
-void associate_data(treetree::tree<T>& tr, Rcpp::List data,
+void associate_data(treetree::tree<node<T> >& tr, Rcpp::List data,
                     bool tip, bool node) {
   const std::vector<std::string> names = data.names();
   // NOTE: Add a more informative error here.  See Rcpp sugar's setdiff.
   if (!check_names(tr, names, tip, node))
     Rcpp::stop("Not all tips/nodes are represented in 'data'");
-  for (typename treetree::tree<T>::sub_pre_iterator
+  for (typename treetree::tree<forest::node<T> >::sub_pre_iterator
          it = tr.begin(); it != tr.end(); ++it)
     if ((tip  && it->childless()) || (node && !it->childless()))
       it->begin()->data_ =
-        Rcpp::as<Rcpp::RObject>(data[node_label(it->root())]);
+        Rcpp::as<T>(data[node_label(it->root())]);
     else
-      it->begin()->data_ = Rcpp::as<Rcpp::RObject>(R_NilValue);
+      it->begin()->data_ = Rcpp::as<T>(R_NilValue);
 }
 
 }
