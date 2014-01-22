@@ -239,9 +239,32 @@ treetree::subtree<T> subtree_at_label(treetree::tree<T>& tr,
                                       label);
 }
 
-
-
-
+// Check that all tip and/or node labels are present in the vector
+// 'names'.  Note that this does not check the reverse (that all
+// elements in 'names' are present in the tree).
+//
+// I'm also not checking that names is unique, or that names in the
+// tree are unique.  Both of these are probably required for more
+// sensible use of this sort of thing.
+//
+// This uses a completely naive search.  If we sort names, then we
+// could use std::binary_search.  But using boost::unordered_set or
+// std::tr1::unordered_set would give O(1) lookup, which will be way
+// faster if this turns out to be annoying.  But the interface won't
+// change.
+template <typename T>
+bool check_names(const treetree::tree<T>& tr,
+                 const std::vector<std::string>& names,
+                 bool tip, bool node) {
+  for (typename treetree::tree<T>::const_sub_pre_iterator
+         it = tr.begin(); it != tr.end(); ++it)
+    if ((tip  && it->childless()) ||
+        (node && !it->childless()))
+      if (std::find(names.begin(), names.end(),
+                    node_label(it->root())) == names.end())
+        return false;
+  return true;
+}
 
 }
 

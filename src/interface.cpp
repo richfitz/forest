@@ -181,6 +181,8 @@ RCPP_MODULE(forest) {
     .method("rotate",            &xtree_wrapped::rotate)
     .method("ladderise",         &xtree_wrapped::ladderise)
     .method("get_subtree",       &xtree_wrapped::get_subtree)
+
+    .method("check_names",       &xtree_wrapped::check_names)
     ;
 
   Rcpp::class_<xsubtree_wrapped>("xsubtree")

@@ -187,7 +187,7 @@ public:
     return forest::is_binary(tree_);}
   bool has_branch_lengths() const {
     return forest::has_branch_lengths(tree_);}
-  bool is_ultrametric(double tol) {
+  bool is_ultrametric(double tol) const {
     return forest::is_ultrametric(tree_, tol);}
   void update_heights() {forest::update_heights(tree_);}
 
@@ -199,6 +199,11 @@ public:
   void rotate(const std::string& label) {
     forest::rotate(tree_, label);}
   void ladderise(bool right) {forest::ladderise(tree_, right);}
+
+  // Associating data
+  bool check_names(std::vector<std::string> names,
+                   bool tip, bool node) const {
+    return forest::check_names(tree_, names, tip, node);}
 
   treetree::subtree<T> get_subtree(const std::string& label) {
     return forest::subtree_at_label(tree_, label);}
