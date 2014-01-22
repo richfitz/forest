@@ -183,6 +183,7 @@ RCPP_MODULE(forest) {
     .method("get_subtree",       &xtree_wrapped::get_subtree)
 
     .method("check_names",       &xtree_wrapped::check_names)
+    .method("associate_data",    &xtree_wrapped::associate_data)
     ;
 
   Rcpp::class_<xsubtree_wrapped>("xsubtree")

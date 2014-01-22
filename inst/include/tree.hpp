@@ -204,6 +204,8 @@ public:
   bool check_names(std::vector<std::string> names,
                    bool tip, bool node) const {
     return forest::check_names(tree_, names, tip, node);}
+  void associate_data(Rcpp::List data, bool tip, bool node) {
+    forest::associate_data(tree_, data, tip, node);}
 
   treetree::subtree<T> get_subtree(const std::string& label) {
     return forest::subtree_at_label(tree_, label);}
