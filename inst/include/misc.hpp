@@ -285,6 +285,40 @@ void associate_data(treetree::tree<node<T> >& tr, Rcpp::List data,
       it->begin()->data_ = Rcpp::as<T>(R_NilValue);
 }
 
+// For a T->T transition we could just delete the data.  But here we
+// need to be more clever.  We need to iterate over the topology of
+// the source tree, creating things appropriately.
+//
+// It is possible (though probably not likely) that we can do a
+// (say) preorder traversal over the source tree and do combinations
+// of append and append_subtree to the destination tree depending on
+// whether the source tree iterator points at a node or a tip.
+//
+// The other option is to do this recursively, unfortunately.  I think
+// that the from_newick() approch might be the best.
+template <typename T_out, typename T_in>
+forest::node<T_out> duplicate_node(const forest::node<T_in>& nd) {
+  return forest::node<T_out>(nd.label_, nd.length_);
+}
+
+// Might be that we can strip down some of the template specifications
+// here, and that a T_out/T_in ordering might allow better type inference.
+template <typename T_out, typename T_in>
+treetree::tree<T_out>
+duplicate_topology(const treetree::const_subtree<T_in>& tr) {
+  if (tr.size() == 0)
+    return treetree::tree<T_out>();
+  treetree::tree<T_out>
+    ret(duplicate_node<typename T_out::value_type>(tr.root()));
+  if (!tr.childless()) {
+    for (typename treetree::const_subtree<T_in>::const_sub_child_iterator
+           it = tr.begin_sub_child(); it != tr.end_sub_child(); ++it) {
+      ret.insert(ret.end_child(), duplicate_topology<T_out>(*it));
+    }
+  }
+  return ret;
+}
+
 }
 
 #endif

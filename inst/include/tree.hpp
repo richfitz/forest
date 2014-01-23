@@ -207,6 +207,11 @@ public:
   void associate_data(Rcpp::List data, bool tip, bool node) {
     forest::associate_data(tree_, data, tip, node);}
 
+  // This version returns only the same type of tree back:
+  treetree::tree<T> duplicate_topology() const {
+    return forest::duplicate_topology<T,T>(treetree::const_subtree<T>(tree_));
+  }
+
   treetree::subtree<T> get_subtree(const std::string& label) {
     return forest::subtree_at_label(tree_, label);}
 

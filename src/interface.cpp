@@ -184,6 +184,9 @@ RCPP_MODULE(forest) {
 
     .method("check_names",       &xtree_wrapped::check_names)
     .method("associate_data",    &xtree_wrapped::associate_data)
+
+    .method("duplicate_topology",
+            &xtree_wrapped::duplicate_topology)
     ;
 
   Rcpp::class_<xsubtree_wrapped>("xsubtree")

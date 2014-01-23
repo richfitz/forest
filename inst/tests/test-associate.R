@@ -88,3 +88,24 @@ test_that("associate_data", {
                    names=unlist(treeapply(tr, function(x) x$label)))
   expect_that(cmp[names(states.nodes)], equals(states.nodes))
 })
+
+test_that("duplicate_topology", {
+  states.tips <- structure(as.list(runif(tr$tips)),
+                           names=tr$tip_labels)
+  states.nodes <- structure(as.list(runif(tr$nodes)),
+                            names=tr$node_labels)
+  states.all <- c(states.tips, states.nodes)
+  tr$associate_data(states.all, TRUE, TRUE)
+
+  tr2 <- tr$duplicate_topology()
+  expect_that(tr2$representation, is_identical_to(tr$representation))
+  expect_that(to.newick.string(tr2),
+              is_identical_to(to.newick.string(tr)))
+
+  data1 <- structure(treeapply(tr, function(x) x$data),
+                     names=unlist(treeapply(tr, function(x) x$label)))
+  expect_that(data1[names(states.all)], equals(states.all))
+
+  data2 <- treeapply(tr2, function(x) x$data)
+  expect_that(data2, is_identical_to(list()))
+})
