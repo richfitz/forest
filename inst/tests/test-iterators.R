@@ -174,3 +174,4 @@ test_that("std::distance works", {
 ## used incorrectly iterators will crash R.  So the solution is
 ## probably just not to expose them too much to users, even if they
 ## get used a bit internally.
+gc()

@@ -26,10 +26,12 @@ is_different_tree_to <- function(cmp) {
 
 make.tree_of <- function(class) {
   prepend <- function(tr, x) {
-    if (tr$is_node_type(x))
-      tr$prepend(x)
+    if (inherits(x, "tree.generator"))
+      tr$prepend_subtree(x())
+    else if (class(x) == class(tr))
+      tr$prepend_subtree(x)
     else
-      tr$prepend_subtree(if (inherits(x, "tree.generator")) x() else x)
+      tr$prepend(x)
   }
 
   function(v, ...) {

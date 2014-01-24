@@ -157,8 +157,6 @@ RCPP_MODULE(forest) {
     // 8. Equality testing
     .method("equals",            &xtree_wrapped::operator==)
 
-    .method("is_node_type",      &xtree_wrapped::is_node_type)
-
     // Extra
     .property("tips",            &xtree_wrapped::tips)
     .property("nodes",           &xtree_wrapped::nodes)
