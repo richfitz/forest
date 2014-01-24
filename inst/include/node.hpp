@@ -26,6 +26,7 @@
 #include <R.h>     // NA_REAL, ISNA
 #include <string>
 #include <ostream>
+#include <cmath>   // std::abs
 
 namespace forest {
 
@@ -41,13 +42,13 @@ struct node {
   node()
     : label_(""),    length_(NA_REAL), data_(),
       height_(NA_REAL), depth_(NA_REAL) {}
-  node(std::string label)
+  node(const std::string& label)
     : label_(label), length_(NA_REAL), data_(),
       height_(NA_REAL), depth_(NA_REAL) {}
-  node(std::string label, double length)
+  node(const std::string& label, double length)
     : label_(label), length_(length),  data_(),
       height_(NA_REAL), depth_(NA_REAL) {}
-  node(std::string label, double length, const value_type& data)
+  node(const std::string& label, double length, const value_type& data)
     : label_(label), length_(length),  data_(data),
       height_(NA_REAL), depth_(NA_REAL) {}
 
