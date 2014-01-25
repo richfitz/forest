@@ -32,6 +32,7 @@ test_that("Empty vector is empty", {
   v$clear()
   expect_that(v$size, equals(0))
 })
+gc()
 
 v <- new(vector_double)
 v$assign(1:10)

@@ -5,7 +5,7 @@ context("Ape conversion")
 test_that("Simple ape -> forest conversion works", {
   # Start with a small tree that we can write out easily (5 tips).
   set.seed(1)
-  phy <- rtree(5)
+  phy <- ape::rtree(5)
   phy$node.label <- paste0("n", seq_len(phy$Nnode) + Ntip(phy))
 
   # Version with no edge lengths:

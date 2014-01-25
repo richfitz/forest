@@ -63,29 +63,25 @@ test_that("associate_data", {
   states.all <- c(states.tips, states.nodes)
 
   tr$associate_data(states.tips, TRUE, FALSE)
-  cmp <- structure(treeapply(tr, function(x) x$data),
-                   names=tr$tip_labels)
-  expect_that(cmp, equals(states.tips))
+  labels <- unlist(treeapply(tr, function(x) x$label))
+  cmp <- structure(treeapply(tr, function(x) x$data), names=labels)
+  expect_that(cmp[!sapply(cmp, is.null)], equals(states.tips))
 
   expect_that(tr$associate_data(2*states.tips[-1], TRUE, FALSE),
               throws_error())
   ## Did not change any data
-  cmp <- structure(treeapply(tr, function(x) x$data),
-                   names=tr$tip_labels)
-  expect_that(cmp, equals(states.tips))
+  cmp <- structure(treeapply(tr, function(x) x$data), names=labels)
+  expect_that(cmp[!sapply(cmp, is.null)], equals(states.tips))
 
-  cmp <- structure(treeapply(tr, function(x) x$data),
-                   names=tr$tip_labels)
-  expect_that(cmp, equals(states.tips))
+  cmp <- structure(treeapply(tr, function(x) x$data), names=labels)
+  expect_that(cmp[!sapply(cmp, is.null)], equals(states.tips))
 
   tr$associate_data(states.nodes, FALSE, TRUE)
-  cmp <- structure(treeapply(tr, function(x) x$data),
-                   names=tr$node_labels)
-  expect_that(cmp, equals(states.nodes))
+  cmp <- structure(treeapply(tr, function(x) x$data), names=labels)
+  expect_that(cmp[!sapply(cmp, is.null)], equals(states.nodes))
 
   tr$associate_data(states.all, TRUE, TRUE)
-  cmp <- structure(treeapply(tr, function(x) x$data),
-                   names=unlist(treeapply(tr, function(x) x$label)))
+  cmp <- structure(treeapply(tr, function(x) x$data), names=labels)
   expect_that(cmp[names(states.nodes)], equals(states.nodes))
 })
 
@@ -107,5 +103,7 @@ test_that("duplicate_topology", {
   expect_that(data1[names(states.all)], equals(states.all))
 
   data2 <- treeapply(tr2, function(x) x$data)
-  expect_that(data2, is_identical_to(list()))
+  expect_that(all(sapply(data2, is.null)), is_true())
 })
+
+gc()

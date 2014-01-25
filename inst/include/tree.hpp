@@ -1,8 +1,10 @@
 #ifndef _FOREST_TREE_HPP_
 #define _FOREST_TREE_HPP_
 
-#include <Rcpp.h>
 #include "treetree.hpp"
+
+#include <RcppCommon.h> // SEXP
+
 #include "misc.hpp"
 #include "manipulation.hpp"
 
@@ -186,7 +188,7 @@ public:
   bool check_names(std::vector<std::string> names,
                    bool tip, bool node) const {
     return forest::check_names(tree_, names, tip, node);}
-  void associate_data(Rcpp::List data, bool tip, bool node) {
+  void associate_data(SEXP data, bool tip, bool node) {
     forest::associate_data(tree_, data, tip, node);}
 
   // This version returns only the same type of tree back:
@@ -196,6 +198,11 @@ public:
 
   treetree::subtree<T> get_subtree(const std::string& label) {
     return forest::subtree_at_label(tree_, label);}
+
+  // NOTE: for the simple interface -- reorganise?
+  // NOTE: syntax copied from R side -- better way here though?
+  // NOTE: may crash on empty tree?
+  void set_root_node(value_type nd) { *tree_.begin() = nd; }
 
   // Public for the 'as' method
   tree_type tree_;
@@ -332,6 +339,8 @@ public:
     return forest::subtree_at_label(subtree_, label);}
   treetree::tree<T> to_tree() const {
     return treetree::tree<T>(subtree_);}
+
+  void set_root_node(value_type nd) { *subtree_.begin() = nd; }
 
   // Public for the 'as' method
   subtree_type subtree_;

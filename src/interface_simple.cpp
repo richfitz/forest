@@ -1,9 +1,8 @@
-#include "node.hpp"
-#include "node_wrapper.hpp"
+#include "forest.hpp"
 
-#include "tree_rcpp.hpp"
-
-#include <Rcpp.h>
+// Within tree, there are two uses of Rcpp; the first is Rcpp::stop,
+// which is easy enough to get around.  The second is associate_data
+// takes Rcpp::List as an argument.
 
 // These three are silly little testing functions: they take a node as
 // an argument, return as a return value and do both.  They're purely
@@ -28,7 +27,15 @@ forest::node<T> combine(const forest::node<T>& a,
                          a.data_   + b.data_);
 }
 
-typedef forest::node_wrapped<Rcpp::RObject> rnode;
+// Temporary -- used in treeapply
+template <typename T>
+Rcpp::List drain_tree(const treetree::tree<T>& tree) {
+  Rcpp::List ret;
+  for (typename treetree::tree<T>::const_pre_iterator
+         it = tree.begin(); it != tree.end(); ++it)
+    ret.push_back(Rcpp::wrap(*it));
+  return ret;
+}
 
 // This is identical to the xnode description.
 #ifdef __clang__
@@ -48,25 +55,94 @@ RCPP_MODULE(simple) {
     .constructor<std::string, double>()
     .constructor<std::string, double, rnode::data_type>()
 
-    .property("label",
-              &rnode::get_label,
-              &rnode::set_label)
-    .property("length",
-              &rnode::get_length,
-              &rnode::set_length)
-    .property("data",
-              &rnode::get_data,
-              &rnode::set_data)
+    .property("label",  &rnode::get_label,  &rnode::set_label)
+    .property("length", &rnode::get_length, &rnode::set_length)
+    .property("data",   &rnode::get_data,   &rnode::set_data)
 
-    .property("has_label",    &rnode::has_label)
-    .property("has_length",   &rnode::has_length)
+    .property("has_label",       &rnode::has_label)
+    .property("has_length",      &rnode::has_length)
 
-    .property("height",       &rnode::height)
-    .property("depth",        &rnode::depth)
+    .property("height",          &rnode::height)
+    .property("depth",           &rnode::depth)
 
-    .method("copy",           &rnode::copy)
-    .method("equals",         &rnode::equals)
+    .method("copy",              &rnode::copy)
+    .method("equals",            &rnode::equals)
     ;
+
+  Rcpp::class_<rtree>("rtree")
+    .constructor()
+    .constructor<rtree::value_type>()
+
+    .method("copy",              &rtree::copy)
+    .method("clear",             &rtree::clear)
+
+    // 1. Basic interrogation
+    .property("empty",           &rtree::empty)
+    .property("size",            &rtree::size)
+    .property("arity",           &rtree::arity)
+    .property("childless",       &rtree::childless)
+    .property("representation",  &rtree::representation)
+
+    // 2. Accessors: Provide access to root node.  I wonder if we
+    // should let '[[' access children?  And should allow root
+    // assignment.  But with [[, how to distinguish between subtrees
+    // and nodes of subtrees?  Probably return subtrees by default.
+    .property("root_node",       &rtree::root,
+              &rtree::set_root_node)
+
+    .property("tips",            &rtree::tips)
+    .property("nodes",           &rtree::nodes)
+    .property("tip_labels",      &rtree::tip_labels)
+    .property("node_labels",     &rtree::node_labels)
+    .property("heights",         &rtree::heights)
+    .property("depths",          &rtree::depths)
+    .property("is_binary",       &rtree::is_binary)
+    .property("has_branch_lengths",
+              &rtree::has_branch_lengths)
+    .method("is_ultrametric",    &rtree::is_ultrametric)
+    .method("update_heights",    &rtree::update_heights)
+
+    .method("collapse_singles",  &rtree::collapse_singles)
+    .method("drop_tips",         &rtree::drop_tips)
+    .method("rotate",            &rtree::rotate)
+    .method("ladderise",         &rtree::ladderise)
+    .method("get_subtree",       &rtree::get_subtree)
+
+    .method("check_names",       &rtree::check_names)
+    .method("associate_data",    &rtree::associate_data)
+    .method("duplicate_topology",&rtree::duplicate_topology)
+    ;
+
+  Rcpp::class_<rsubtree>("rsubtree")
+    // NOTE: no constructor, copy, clear
+    // 1. Basic interrogation
+    .property("empty",           &rsubtree::empty)
+    .property("size",            &rsubtree::size)
+    .property("arity",           &rsubtree::arity)
+    .property("childless",       &rsubtree::childless)
+    .property("representation",  &rsubtree::representation)
+
+    // 2. Accessors: Provide access to root node.  I wonder if we
+    // should let '[[' access children?  And should allow root
+    // assignment.  But with [[, how to distinguish between subtrees
+    // and nodes of subtrees?  Probably return subtrees by default.
+    .property("root_node",       &rsubtree::root,
+              &rsubtree::set_root_node)
+
+    // Extra
+    .property("tips",            &rsubtree::tips)
+    .property("nodes",           &rsubtree::nodes)
+    .property("tip_labels",      &rsubtree::tip_labels)
+    .property("node_labels",     &rsubtree::node_labels)
+    .property("heights",         &rsubtree::heights)
+    .property("depths",          &rsubtree::depths)
+
+    .method("rotate",            &rsubtree::rotate)
+    .method("get_subtree",       &rsubtree::get_subtree)
+    .method("to_tree",           &rsubtree::to_tree)
+    ;
+
+  Rcpp::function("drain_tree",   &drain_tree<rtree::value_type>);
 
   Rcpp::function("node_with_twice_length_int",
                  &node_with_twice_length<int>);

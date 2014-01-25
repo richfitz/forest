@@ -6,6 +6,7 @@
 
 #include "treetree.hpp"
 #include "node.hpp"
+#include "util.hpp"
 
 namespace forest {
 
@@ -84,7 +85,7 @@ template <typename T>
 void update_heights(treetree::tree<T>& tr) {
   typedef typename treetree::tree<T>::pre_iterator pre_iterator;
   if (!has_branch_lengths(tr))
-    Rcpp::stop("Tree does not have complete branch lengths");
+    stop("Tree does not have complete branch lengths");
   double max_h = 0.0;
   for (pre_iterator it = tr.begin(); it != tr.end(); ++it) {
     const double h = it == tr.begin() ? 0.0 :
@@ -162,7 +163,7 @@ bool is_ultrametric(treetree::tree<T> tr, double eps) {
 template <typename T>
 bool is_binary(const treetree::tree<T>& tr) {
   if (tr.size() < 2)
-    Rcpp::stop("Tree of size < 2 does not have defined binaryness");
+    stop("Tree of size < 2 does not have defined binaryness");
   for (typename treetree::tree<T>::const_sub_pre_iterator
          it = tr.begin_sub(); it != tr.end_sub(); ++it) {
     if (!it->childless()) {   // not terminal
@@ -205,9 +206,9 @@ Iterator locate_tip_by_label(Iterator first, Iterator last,
                              const std::string& label) {
   Iterator ret = locate_node_by_label<T>(first, last, label);
   if (ret == last)
-    Rcpp::stop("Did not find tip " + label + " in tree\n");
+    stop("Did not find tip " + label + " in tree\n");
   if (!is_terminal<T>(ret))
-    Rcpp::stop("The label " + label + " is not terminal\n");
+    stop("The label " + label + " is not terminal\n");
   return ret;
 }
 
@@ -217,9 +218,9 @@ Iterator locate_internal_by_label(Iterator first, Iterator last,
                                   const std::string& label) {
   Iterator ret = locate_node_by_label<T>(first, last, label);
   if (ret == last)
-    Rcpp::stop("Did not find node " + label + " in tree\n");
+    stop("Did not find node " + label + " in tree\n");
   if (is_terminal<T>(ret))
-    Rcpp::stop("The label " + label + " is not internal\n");
+    stop("The label " + label + " is not internal\n");
   return ret;
 }
 
@@ -266,24 +267,10 @@ bool check_names(const treetree::tree<T>& tr,
   return true;
 }
 
-// NOTE: I'm not sure why node needs to be fully qualified in the
-// typename statement below (and not in the argument list) but it
-// apparently does.
+// NOTE: defined in tree_post_rcpp.hpp
 template <typename T>
-void associate_data(treetree::tree<node<T> >& tr, Rcpp::List data,
-                    bool tip, bool node) {
-  const std::vector<std::string> names = data.names();
-  // NOTE: Add a more informative error here.  See Rcpp sugar's setdiff.
-  if (!check_names(tr, names, tip, node))
-    Rcpp::stop("Not all tips/nodes are represented in 'data'");
-  for (typename treetree::tree<forest::node<T> >::sub_pre_iterator
-         it = tr.begin(); it != tr.end(); ++it)
-    if ((tip  && it->childless()) || (node && !it->childless()))
-      it->begin()->data_ =
-        Rcpp::as<T>(data[node_label(it->root())]);
-    else
-      it->begin()->data_ = Rcpp::as<T>(R_NilValue);
-}
+void associate_data(treetree::tree<node<T> >& tr, SEXP data,
+                    bool tip, bool node);
 
 // For a T->T transition we could just delete the data.  But here we
 // need to be more clever.  We need to iterate over the topology of

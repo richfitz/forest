@@ -1,9 +1,14 @@
 #ifndef _FOREST_UTIL_HPP_
 #define _FOREST_UTIL_HPP_
 
-#include <Rcpp.h>
+#include <string>
+#include <algorithm> // std::swap
+#include <sstream>
 
 namespace forest {
+
+void stop(const std::string& message);
+
 namespace util {
 
 // Adapted from the C++ FAQ
@@ -11,7 +16,7 @@ inline double string_to_double(const std::string& str) {
   std::istringstream i(str);
   double x;
   if (!(i >> x))
-    Rcpp::stop("failed to convert " + str + " to double");
+    stop("failed to convert " + str + " to double");
   return x;
 }
 

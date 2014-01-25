@@ -62,7 +62,7 @@ ape.from.forest <- function(tree) {
   tip.label <- label[match(seq_len(n.tip), edge[,2])]
   i <- if (n.node > 1)
     match((n.tip+2):(n.tip+n.node), edge[,2]) else integer(0)
-  node.label <- c(tree$root()$label, label[i])
+  node.label <- c(tree$root_node$label, label[i])
 
   if (all(is.na(length)))
     length <- NULL

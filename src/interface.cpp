@@ -8,6 +8,8 @@
 #include "newick.hpp" // tree io
 #include "ape.hpp"    // ape conversion
 
+#include "forest_post_rcpp.hpp" // associate data
+
 typedef forest::node<Rcpp::RObject> xnode;
 RCPP_EXPOSED_CLASS_NODECL(xnode)
 

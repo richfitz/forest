@@ -88,14 +88,7 @@ get.harmon.trees <- function(path, regenerate=FALSE) {
 ## Very hackish version of a treeapply() type function.  Pre-order
 ## traversal only, and taking node only (not subtree, or data)
 treeapply <- function(tr, f) {
-  it <- tr$begin()
-  last <- tr$end()
-  res <- list()
-  while (it$differs(last)) {
-    nd <- it$post_increment()$value
-    res <- c(res, f(nd))
-  }
-  res
+  lapply(forest:::drain_tree(tr), f)
 }
 
 make.node.builder.xnode <- function(phy) {

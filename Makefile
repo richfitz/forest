@@ -17,6 +17,8 @@ document: all
 
 check:
 	R CMD build .
-	R CMD check forest_0.1.tar.gz
+	R CMD check --no-manual `ls -1tr forest*gz | tail -n1`
+	@rm -f `ls -1tr forest*gz | tail -n1`
+	@rm -rf forest.Rcheck
 
 .PHONY: all install clean test

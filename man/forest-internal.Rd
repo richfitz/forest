@@ -2,6 +2,7 @@
 \alias{itree}
 \alias{xnode}
 \alias{xtree}
+\alias{rnode}
 \title{Internal Forest Functions}
 \description{
   OK, this is currently a cop out until I (a) work out how to document

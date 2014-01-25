@@ -20,7 +20,8 @@ namespace forest {
 
 template <typename T>
 struct node_wrapped {
-  typedef T data_type;
+  typedef T       data_type;
+  typedef node<T> node_type;
   node_wrapped() : node_() {}
   node_wrapped(const std::string& label)
     : node_(label) {}
@@ -30,7 +31,7 @@ struct node_wrapped {
    : node_(label, length, data) {}
 
   // This is the way that the wrapper will do construction.
-  node_wrapped(const node<T>& node) : node_(node) {}
+  node_wrapped(const node_type& node) : node_(node) {}
 
   node_wrapped copy() const {return *this;}
   bool equals(const node_wrapped<T>& rhs) const { return node_ == rhs.node_; }
@@ -47,7 +48,7 @@ struct node_wrapped {
   data_type get_data() const {return node_.data_;}
   void set_data(data_type data) {node_.data_ = data;}
 
-  node<T> node_;
+  node_type node_;
 };
 
 }

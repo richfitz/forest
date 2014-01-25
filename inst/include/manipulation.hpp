@@ -134,7 +134,7 @@ void ladderise(treetree::tree<T>& tr, bool right) {
          it = tr.begin_sub(); it != tr.end_sub(); ++it) {
     if (!it->childless() && it->arity() > 1) {
       if (it->arity() > 2)
-        Rcpp::stop("Can't (yet) ladderize a polytomy");
+        stop("Can't (yet) ladderize a polytomy");
       const size_t nl = (*it)[0].size(), nr = (*it)[1].size();
       if ((right && nr > nl) || (!right && nl > nr))
         rotate<T>(it);
