@@ -18,15 +18,28 @@ gaussian.product <- function(x, y) {
     log_scale=s.x + s.y -(m.x - m.y)^2 / (2 * vv) - log(2 * pi * vv) / 2)
 }
 
-test_that("Gaussian transport wrappers", {
-  x <- c(mean=1, variance=2, log_scale=3)
+as.vector.gaussian <- function(g)
+  c(mean=g$mean, variance=g$variance, log_scale=g$log_scale)
 
-  expect_that(forest:::test_gaussian(x[1]),
-              throws_error())
-  expect_that(forest:::test_gaussian(x[c(1,1:3)]),
-              throws_error())
-  expect_that(forest:::test_gaussian(x),
-              is_identical_to(unname(x)))
+test_that("Gaussian creation", {
+  x <- c(mean=1, variance=2, log_scale=3)
+  g <- new(forest:::gaussian, x[["mean"]], x[["variance"]],
+           x[["log_scale"]])
+  expect_that(g$mean,      is_identical_to(x[["mean"]]))
+  expect_that(g$variance,  is_identical_to(x[["variance"]]))
+  expect_that(g$log_scale, is_identical_to(x[["log_scale"]]))
+  expect_that(g$valid,     is_true())
+
+  g <- new(forest:::gaussian, x)
+  expect_that(as.vector.gaussian(g), is_identical_to(x))
+
+  g <- new(forest:::gaussian, x[["mean"]], -x[["variance"]],
+           x[["log_scale"]])
+  expect_that(g$valid,     is_false())
+
+  # This does throw an error, but it is obscure (Error: vector)
+  expect_that(new(forest:::gaussian, x[-1]),        throws_error())
+  expect_that(new(forest:::gaussian, x[c(1, 1:3)]), throws_error())
 })
 
 test_that("Gaussian product", {
@@ -34,31 +47,49 @@ test_that("Gaussian product", {
   x <- runif(3)
   y <- runif(3)
   names(x) <- names(y) <- c("mean", "variance", "log_scale")
-  expect_that(forest:::test_gaussian_product(x, y),
+
+  gx <- new(forest:::gaussian, x)
+  gy <- new(forest:::gaussian, y)
+
+  expect_that(as.vector.gaussian(gx$times(gy)),
               equals(gaussian.product(x, y)))
+
+  ## Multiplication is commutative:
+  expect_that(as.vector.gaussian(gx$times(gy)),
+              is_identical_to(as.vector.gaussian(gy$times(gx))))
 })
 
 test_that("Brownian motion", {
   bm <- new(forest:::brownian_motion)
-  expect_that(bm$parameters, is_identical_to(0.0))
+  expect_that(bm$parameters, is_identical_to(NA_real_))
   s2 <- exp(1)
   bm$parameters <- s2
   expect_that(bm$parameters, is_identical_to(s2))
 
-  x <- c(mean=0, variance=0, log_scale=0)
   t <- pi
-  expect_that(bm$forward(x, t),
-              is_identical_to(c(x[1], variance=t * s2, x[3])))
-  expect_that(bm$backward(x, t),
-              is_identical_to(c(x[1], variance=t * s2, x[3])))
 
+  ## Starting from delta function
+  x <- new(forest:::gaussian, c(mean=0, variance=0, log_scale=0))
+  cmp <- c(mean=x$mean, variance=x$variance + t * s2,
+           log_scale=x$log_scale)
+
+  expect_that(as.vector.gaussian(bm$forward(x, t)),
+              is_identical_to(cmp))
+  expect_that(as.vector.gaussian(bm$forward(x, t)),
+              is_identical_to(cmp))
+
+  ## Starting from gaussian
   v0 <- sqrt(2)
   set.seed(1)
-  x <- c(mean=runif(1), variance=v0, log_scale=runif(1))
-  expect_that(bm$forward(x, t),
-              is_identical_to(c(x[1], variance=v0 + t * s2, x[3])))
-  expect_that(bm$backward(x, t),
-              is_identical_to(c(x[1], variance=v0 + t * s2, x[3])))
+  x <- new(forest:::gaussian,
+           c(mean=runif(1), variance=v0, log_scale=runif(1)))
+  cmp <- c(mean=x$mean, variance=x$variance + t * s2,
+           log_scale=x$log_scale)
+
+  expect_that(as.vector.gaussian(bm$forward(x, t)),
+              is_identical_to(cmp))
+  expect_that(as.vector.gaussian(bm$forward(x, t)),
+              is_identical_to(cmp))
 })
 
 test_that("Brownian motion combine", {
@@ -70,6 +101,9 @@ test_that("Brownian motion combine", {
   y <- runif(3)
   names(x) <- names(y) <- c("mean", "variance", "log_scale")
 
-  expect_that(bm$combine(x, y),
+  gx <- new(forest:::gaussian, x)
+  gy <- new(forest:::gaussian, y)
+
+  expect_that(as.vector.gaussian(bm$combine(gx, gy)),
               equals(gaussian.product(x, y)))
 })

@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <vector>
 #include <R.h> // pi
+#include "models/gaussian.hpp"
 
 namespace forest {
 namespace models {
@@ -18,27 +19,6 @@ namespace models {
 // Then there is a little less poking about with indices.  Will be
 // interesting to compare versions with this idea and without for
 // speed though.
-//
-// NOTE: I think that 2pi is a constant already.
-struct gaussian {
-  gaussian(double mean_, double variance_, double log_scale_)
-    : mean(mean_), variance(variance_), log_scale(log_scale_) {}
-  // Also add convolve here?
-  gaussian operator*(const gaussian& rhs) const {
-    const double vv = variance + rhs.variance;
-    const double dx = mean - rhs.mean;
-    return
-      gaussian((mean * rhs.variance + rhs.mean * variance) / vv,
-               variance * rhs.variance / vv,
-               log_scale + rhs.log_scale -
-               dx * dx / (2 * vv) - log(2 * M_PI * vv) / 2);
-  }
-  // could have a validate method.
-  static size_t size() {return 3;}
-  double mean;
-  double variance;
-  double log_scale;
-};
 
 // In terms of thinking about future time-dependent models, some of
 // this might need to change.  But this is possibly the lowest level
@@ -46,8 +26,14 @@ struct gaussian {
 //
 // NOTE: that for backward/forward we pass by value because we need to
 // copy things anyway.  Pass by reference might be better?
+
+// The other way of viewing these is as convolutions: Forward in time
+// convolves a BM distribution with a kernel of mean 0, scale 1 and
+// variance t * s2.  With drift we convolve it with a kernel that has
+// nonzero mean.  Doing it this way will further simplify the code
+// below.
 struct brownian_motion { // no drift
-  brownian_motion() : s2(0.0) {} // NA_REAL better?
+  brownian_motion() : s2(NA_REAL) {}
   gaussian forward(gaussian y, double t) const {
     y.variance += t * s2;
     return y;
@@ -59,6 +45,8 @@ struct brownian_motion { // no drift
     return x * y;
   }
 
+  // Probably significant repetition here amongst models; factor that
+  // out as we find it.
   std::vector<double> parameters() const {
     return std::vector<double>(1, s2);
   }
