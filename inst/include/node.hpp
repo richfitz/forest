@@ -38,7 +38,7 @@ namespace forest {
 // deal with.
 template <typename T>
 struct node {
-  typedef T value_type;
+  typedef T data_type;
   node()
     : label_(""),    length_(NA_REAL), data_(),
       height_(NA_REAL), depth_(NA_REAL) {}
@@ -48,11 +48,11 @@ struct node {
   node(const std::string& label, double length)
     : label_(label), length_(length),  data_(),
       height_(NA_REAL), depth_(NA_REAL) {}
-  node(const std::string& label, double length, const value_type& data)
+  node(const std::string& label, double length, const data_type& data)
     : label_(label), length_(length),  data_(data),
       height_(NA_REAL), depth_(NA_REAL) {}
 
-  bool operator==(const node<value_type>& rhs) const {
+  bool operator==(const node<data_type>& rhs) const {
     return (label_       == rhs.label_       &&
             has_length() == rhs.has_length() &&
 	    (!has_length() || !(std::abs(length_ - rhs.length_) > 0)) &&
@@ -62,7 +62,7 @@ struct node {
   bool has_length() const {return !ISNA(length_);}
   std::string label_;
   double      length_;
-  value_type  data_;
+  data_type   data_;
 
   double height_; // Height above the root
   double depth_;  // Depth below the highest tip

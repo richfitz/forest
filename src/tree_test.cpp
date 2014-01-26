@@ -57,7 +57,7 @@ RCPP_MODULE(tree_test) {
 #endif
   Rcpp::class_<itree_wrapped>("itree")
     .constructor()
-    .constructor<itree_wrapped::value_type>()
+    .constructor<itree_wrapped::node_type>()
     .method("copy",              &itree_wrapped::copy)
     .method("clear",             &itree_wrapped::clear)
 

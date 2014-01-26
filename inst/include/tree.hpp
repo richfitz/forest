@@ -31,7 +31,7 @@ public:
   typedef treetree::tree<T>                          tree_type;
   typedef treetree::subtree<T>                       subtree_type;
   typedef subtree_wrapped<T>                         subtree_wrapped_type;
-  typedef typename tree_type::value_type             value_type;
+  typedef typename tree_type::value_type             node_type;
 
   // Iterator types:
   typedef typename tree_type::pre_iterator           pre_iterator;
@@ -66,9 +66,9 @@ public:
     return boost::lexical_cast<std::string>(tree_);}
 
   // 2. Accessors
-  value_type root()        {return tree_.root();     }
-  value_type front()       {return tree_.front();    }
-  value_type back()        {return tree_.back();     }
+  node_type root()         {return tree_.root();     }
+  node_type front()        {return tree_.front();    }
+  node_type back()         {return tree_.back();     }
   subtree_type root_sub()  {return tree_.root_sub(); }
   subtree_type front_sub() {return tree_.front_sub();}
   subtree_type back_sub()  {return tree_.back_sub(); }
@@ -105,11 +105,11 @@ public:
   // able to deal with all the different iterator types, as they will
   // silently convert from one to the other (this is instantiated in
   // the module code as a pre_iterator).
-  void insert(pre_iterator i, const value_type& v) {
+  void insert(pre_iterator i, const node_type& v) {
     tree_.insert(i, v);}
   void insert_subtree(pre_iterator i, const subtree_type& s) {
     tree_.insert(i, s);}
-  void insert_n(pre_iterator i, size_t n, const value_type& v) {
+  void insert_n(pre_iterator i, size_t n, const node_type& v) {
     tree_.insert(i, n, v);}
   void insert_subtree_n(pre_iterator i, size_t n, const subtree_type& s) {
     tree_.insert(i, n, s);}
@@ -117,20 +117,20 @@ public:
   // NOTE: insert_above and insert_below should return iterators.  But
   // getting the correct type back out may be tricky, so I'm skipping
   // this for now.
-  void insert_above(pre_iterator i, const value_type& v) {
+  void insert_above(pre_iterator i, const node_type& v) {
     tree_.insert_above(i, v);}
-  void insert_below(pre_iterator i, const value_type& v) {
+  void insert_below(pre_iterator i, const node_type& v) {
     tree_.insert_below(i, v);}
 
   // 5 Append + Prepend
-  void append(const value_type& v)  {tree_.append(v); }
-  void prepend(const value_type& v) {tree_.prepend(v);}
+  void append(const node_type& v)  {tree_.append(v); }
+  void prepend(const node_type& v) {tree_.prepend(v);}
   void append_subtree(const subtree_type s)  {tree_.append(s); }
   void prepend_subtree(const subtree_type s) {tree_.prepend(s);}
 
-  void append_n(size_t n, const value_type& v) {
+  void append_n(size_t n, const node_type& v) {
     tree_.append(n, v);}
-  void prepend_n(size_t n, const value_type& v) {
+  void prepend_n(size_t n, const node_type& v) {
     tree_.prepend(n, v);}
   void append_subtree_n(size_t n, const subtree_type s) {
     tree_.append(n, s);}
@@ -202,7 +202,7 @@ public:
   // NOTE: for the simple interface -- reorganise?
   // NOTE: syntax copied from R side -- better way here though?
   // NOTE: may crash on empty tree?
-  void set_root_node(value_type nd) { *tree_.begin() = nd; }
+  void set_root_node(node_type nd) { *tree_.begin() = nd; }
 
   // Public for the 'as' method
   tree_type tree_;
@@ -215,7 +215,7 @@ public:
   // place where the type relations are defined.
   typedef tree_wrapped<T>                           tree_wrapped_type;
   typedef typename tree_wrapped_type::tree_type     tree_type;
-  typedef typename tree_wrapped_type::value_type    value_type;
+  typedef typename tree_wrapped_type::node_type     node_type;
   typedef typename tree_wrapped_type::subtree_type  subtree_type;
 
   typedef typename tree_type::pre_iterator          pre_iterator;
@@ -239,9 +239,9 @@ public:
     return boost::lexical_cast<std::string>(subtree_);}
 
   // 2. Accessors
-  value_type root()        {return subtree_.root();     }
-  value_type front()       {return subtree_.front();    }
-  value_type back()        {return subtree_.back();     }
+  node_type root()         {return subtree_.root();     }
+  node_type front()        {return subtree_.front();    }
+  node_type back()         {return subtree_.back();     }
   subtree_type root_sub()  {return subtree_.root_sub(); }
   subtree_type front_sub() {return subtree_.front_sub();}
   subtree_type back_sub()  {return subtree_.back_sub(); }
@@ -273,30 +273,30 @@ public:
   sub_child_iterator end_sub_child()   {return subtree_.end_sub_child();  }
 
   // 4. Insert
-  void insert(pre_iterator i, const value_type& v) {
+  void insert(pre_iterator i, const node_type& v) {
     subtree_.insert(i, v);}
   void insert_subtree(pre_iterator i, const subtree_type& s) {
     subtree_.insert(i, s);}
-  void insert_n(pre_iterator i, size_t n, const value_type& v) {
+  void insert_n(pre_iterator i, size_t n, const node_type& v) {
     subtree_.insert(i, n, v);}
   void insert_subtree_n(pre_iterator i, size_t n, const subtree_type& s) {
     subtree_.insert(i, n, s);}
 
   // NOTE: returning void -- see tree.insert_above().
-  void insert_above(pre_iterator i, const value_type& v) {
+  void insert_above(pre_iterator i, const node_type& v) {
     subtree_.insert_above(i, v);}
-  void insert_below(pre_iterator i, const value_type& v) {
+  void insert_below(pre_iterator i, const node_type& v) {
     subtree_.insert_below(i, v);}
 
   // 5 Append + Prepend
-  void append(const value_type& v)  {subtree_.append(v); }
-  void prepend(const value_type& v) {subtree_.prepend(v);}
+  void append(const node_type& v)  {subtree_.append(v); }
+  void prepend(const node_type& v) {subtree_.prepend(v);}
   void append_subtree(const subtree_type s)  {subtree_.append(s); }
   void prepend_subtree(const subtree_type s) {subtree_.prepend(s);}
 
-  void append_n(size_t n, const value_type& v) {
+  void append_n(size_t n, const node_type& v) {
     subtree_.append(n, v);}
-  void prepend_n(size_t n, const value_type& v) {
+  void prepend_n(size_t n, const node_type& v) {
     subtree_.prepend(n, v);}
   void append_subtree_n(size_t n, const subtree_type s) {
     subtree_.append(n, s);}
@@ -340,7 +340,7 @@ public:
   treetree::tree<T> to_tree() const {
     return treetree::tree<T>(subtree_);}
 
-  void set_root_node(value_type nd) { *subtree_.begin() = nd; }
+  void set_root_node(node_type nd) { *subtree_.begin() = nd; }
 
   // Public for the 'as' method
   subtree_type subtree_;

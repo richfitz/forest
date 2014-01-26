@@ -288,15 +288,13 @@ forest::node<T_out> duplicate_node(const forest::node<T_in>& nd) {
   return forest::node<T_out>(nd.label_, nd.length_);
 }
 
-// Might be that we can strip down some of the template specifications
-// here, and that a T_out/T_in ordering might allow better type inference.
 template <typename T_out, typename T_in>
 treetree::tree<T_out>
 duplicate_topology(const treetree::const_subtree<T_in>& tr) {
   if (tr.size() == 0)
     return treetree::tree<T_out>();
   treetree::tree<T_out>
-    ret(duplicate_node<typename T_out::value_type>(tr.root()));
+    ret(duplicate_node<typename T_out::data_type>(tr.root()));
   if (!tr.childless()) {
     for (typename treetree::const_subtree<T_in>::const_sub_child_iterator
            it = tr.begin_sub_child(); it != tr.end_sub_child(); ++it) {

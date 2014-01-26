@@ -75,7 +75,7 @@ RCPP_MODULE(forest) {
 
   Rcpp::class_<rtree>("rtree")
     .constructor()
-    .constructor<rtree::value_type>()
+    .constructor<rtree::node_type>()
 
     .method("copy",              &rtree::copy)
     .method("clear",             &rtree::clear)
@@ -157,17 +157,17 @@ RCPP_MODULE(forest) {
     ;
 
   Rcpp::function("to_newick_string",
-                 &forest::to_newick_string<rtree::value_type>);
+                 &forest::to_newick_string<rtree::node_type>);
   Rcpp::function("from_newick_node",
-                 &forest::from_newick_node<rtree::value_type>);
+                 &forest::from_newick_node<rtree::node_type>);
   Rcpp::function("from_newick_string",
-                 &forest::from_newick_string<rtree::value_type>);
+                 &forest::from_newick_string<rtree::node_type>);
   Rcpp::function("from_ape_internal",
-                 &forest::from_ape_internal<rtree::value_type>);
+                 &forest::from_ape_internal<rtree::node_type>);
   Rcpp::function("to_ape_internal",
-                 &forest::to_ape_internal<rtree::value_type>);
+                 &forest::to_ape_internal<rtree::node_type>);
 
-  Rcpp::function("drain_tree",   &drain_tree<rtree::value_type>);
+  Rcpp::function("drain_tree",   &drain_tree<rtree::node_type>);
 
   Rcpp::function("node_with_twice_length_int",
                  &node_with_twice_length<int>);

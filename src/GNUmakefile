@@ -1,4 +1,4 @@
-SOURCES = util.cpp iterator_wrapper_test.cpp tree_test.cpp models.cpp interface_simple.cpp
+SOURCES = util.cpp iterator_wrapper_test.cpp tree_test.cpp models.cpp interface.cpp
 
 TARGETS = forest.so
 
