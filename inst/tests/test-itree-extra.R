@@ -7,7 +7,7 @@ context("Basic tree operations: extra")
 tree_of <- make.tree_of(itree)
 
 test_that("Can count the number of tips in a tree", {
-  tr0 <- new(xtree)
+  tr0 <- new(itree)
   tr1 <- tree_of(5)()
   tr2 <- tree_of(5)(1)()
   tr3 <- tree_of(5)(1,2)()

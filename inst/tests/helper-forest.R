@@ -4,6 +4,9 @@ library(testthat)
 library(forest)
 library(ape)
 
+# Oops; there's namespace confict here.
+rtree <- forest::rtree
+
 is_expected_tree <- function(n, representation) {
   function(tr) {
     ok <- (isTRUE(all.equal(tr$size, n))           &&
@@ -89,16 +92,6 @@ get.harmon.trees <- function(path, regenerate=FALSE) {
 ## traversal only, and taking node only (not subtree, or data)
 treeapply <- function(tr, f) {
   lapply(forest:::drain_tree(tr), f)
-}
-
-make.node.builder.xnode <- function(phy) {
-  label  <- c(phy$tip.label, phy$node.label)
-  idx    <- seq_len(phy$Nnode + Ntip(phy))
-  length <- phy$edge.length[match(idx, phy$edge[,2])]
-  if (is.null(length))
-    length <- rep(NA_real_, length(label))
-  function(i)
-    new(xnode, label[[i]], length[[i]], as.numeric(i))
 }
 
 ## Copied over from diversitree, for now:

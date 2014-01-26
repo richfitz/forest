@@ -1,8 +1,7 @@
 \name{forest-internal}
 \alias{itree}
-\alias{xnode}
-\alias{xtree}
 \alias{rnode}
+\alias{rtree}
 \title{Internal Forest Functions}
 \description{
   OK, this is currently a cop out until I (a) work out how to document
