@@ -66,9 +66,8 @@ inline gpair gaussian_pair_from_R(SEXP obj) {
     stop("Missing a mean");
   else if (p.size() < 3)
     p.resize(3, 0.0); // variance, log_scale
-  // NOTE: pairs are (currently) initialised as tipward/rootward.  But
-  // this is counter intuitive and I might change it.
-  return branch_pair<gaussian>(gaussian(p), gaussian());
+  //                           rootward,   tipward
+  return branch_pair<gaussian>(gaussian(), gaussian(p));
 }
 
 }

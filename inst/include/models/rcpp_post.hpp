@@ -14,7 +14,7 @@ forest::models::branch_pair<T> helper_branch_pair(SEXP obj) {
   Rcpp::List obj_l = Rcpp::as<Rcpp::List>(obj);
   if (obj_l.size() != 2)
     Rcpp::stop("Conversion failure");
-  // TODO: Select on names tipward/rootward instead of position 0/1?
+  // TODO: Select on names rootward/tipward instead of position 0/1?
   return forest::models::branch_pair<T>(Rcpp::as<T>(obj_l[0]),
                                         Rcpp::as<T>(obj_l[1]));
 }
@@ -23,8 +23,8 @@ forest::models::branch_pair<T> helper_branch_pair(SEXP obj) {
 namespace Rcpp {
 template <typename T>
 SEXP wrap(const forest::models::branch_pair<T>& obj) {
-  return List::create(_["tipward"]  = Rcpp::wrap(obj.tipward),
-                      _["rootward"] = Rcpp::wrap(obj.rootward));
+  return List::create(_["rootward"] = Rcpp::wrap(obj.rootward),
+                      _["tipward"]  = Rcpp::wrap(obj.tipward));
 }
 namespace traits {
 template <typename T>
