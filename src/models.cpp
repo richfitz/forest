@@ -1,12 +1,15 @@
 #include "models.hpp"
 
-// Lotsa defines:
+// Testing only
 typedef forest::node<forest::models::gaussian> gnode;
-typedef forest::models::branch_pair<forest::models::gaussian> gpair;
-typedef forest::node<gpair> gpnode;
-typedef treetree::tree<gnode> gtree;
 
-RCPP_EXPOSED_CLASS_NODECL(forest::tree_wrapped<gnode>)
+// Actually used
+typedef forest::models::branch_pair<forest::models::gaussian> gpair;
+typedef forest::node<gpair>                    gpnode;
+typedef treetree::tree<gpnode>                 gptree;
+
+// Also requiring module export below.
+RCPP_EXPOSED_CLASS_NODECL(forest::tree_wrapped<gpnode>)
 
 gnode test_convert_node(forest::rnode::node_type nd);
 gnode test_convert_node(forest::rnode::node_type nd) {
@@ -49,8 +52,9 @@ RCPP_MODULE(models) {
             &forest::models::brownian_motion::combine)
     ;
 
-  Rcpp::class_<forest::tree_wrapped<gnode> >("gtree")
-    .method("to_rtree", &forest::tree_wrapped<gnode>::to_rtree)
+  // Also requiring EXPOSED_CLASS above.
+  Rcpp::class_<forest::tree_wrapped<gpnode> >("gptree")
+    .method("to_rtree", &forest::tree_wrapped<gpnode>::to_rtree)
     ;
 
   Rcpp::function("test_convert_node",  &test_convert_node);

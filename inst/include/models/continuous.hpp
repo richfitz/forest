@@ -15,9 +15,13 @@ namespace forest {
 namespace models {
 
 // These will be useful, but for now restrict them to this file.
+// Because the types are naturally nested, these would be a pain to
+// write:
+//   treetree::tree<node<branch_pair<gaussian> > >
 namespace {
-typedef forest::node<gaussian> gnode;
-typedef treetree::tree<gnode>  gtree;
+typedef branch_pair<gaussian> gpair;
+typedef forest::node<gpair>   gnode;
+typedef treetree::tree<gnode> gtree;
 }
 
 // Go through and check that all data are reasonable.  This is
@@ -38,8 +42,9 @@ typedef treetree::tree<gnode>  gtree;
 
 // At the risk of being implicit over explicit. Also, this behaviour
 // would be better in the gaussian class I think.  But this function
-// can just move there.
-inline gaussian gaussian_from_R(SEXP obj);
+// can just move there, perhaps as a static function, used by a
+// constructor?
+inline gpair gaussian_pair_from_R(SEXP obj);
 
 template <typename T>
 gtree build_gaussian_tree(const treetree::tree<T>& tree) {
@@ -48,20 +53,22 @@ gtree build_gaussian_tree(const treetree::tree<T>& tree) {
   typename treetree::tree<gnode>::pre_iterator it_to = ret.begin();
   while (it != tree.end()) {
     if (it->data_ != R_NilValue)
-      it_to->data_ = gaussian_from_R(it->data_);
+      it_to->data_ = gaussian_pair_from_R(it->data_);
     ++it_to;
     ++it;
   }
   return ret;
 }
 
-inline gaussian gaussian_from_R(SEXP obj) {
+inline gpair gaussian_pair_from_R(SEXP obj) {
   std::vector<double> p = Rcpp::as<std::vector<double> >(obj);
   if (p.size() == 0)
     stop("Missing a mean");
   else if (p.size() < 3)
     p.resize(3, 0.0); // variance, log_scale
-  return gaussian(p);
+  // NOTE: pairs are (currently) initialised as tipward/rootward.  But
+  // this is counter intuitive and I might change it.
+  return branch_pair<gaussian>(gaussian(p), gaussian());
 }
 
 }

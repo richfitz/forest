@@ -141,14 +141,21 @@ test_that("Push Gaussians onto tree", {
   is.node <- sapply(cmp, is.null)
   is.tip  <- !is.node
 
-  expect_that(lapply(gg[is.tip], function(x) x$mean),
+  expect_that(lapply(gg[is.tip], function(x) x$tipward$mean),
               is_identical_to(cmp[is.tip]))
-  expect_that(lapply(gg[is.node], function(x) x$mean),
+  expect_that(lapply(gg[is.node], function(x) x$tipward$mean),
               is_identical_to(rep_len(list(NA_real_), sum(is.node))))
-  expect_that(sapply(gg, function(x) x$variance),
+  expect_that(sapply(gg, function(x) x$tipward$variance),
               is_identical_to(ifelse(is.tip, 0.0, NA_real_)))
-  expect_that(sapply(gg, function(x) x$log_scale),
+  expect_that(sapply(gg, function(x) x$tipward$log_scale),
               is_identical_to(ifelse(is.tip, 0.0, NA_real_)))
+
+  expect_that(sapply(gg, function(x) x$rootward$mean),
+              is_identical_to(rep_len(NA_real_, tr$size)))
+  expect_that(sapply(gg, function(x) x$rootward$variance),
+              is_identical_to(rep_len(NA_real_, tr$size)))
+  expect_that(sapply(gg, function(x) x$rootward$log_scale),
+              is_identical_to(rep_len(NA_real_, tr$size)))
 })
 
 gc()
