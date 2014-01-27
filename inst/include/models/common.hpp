@@ -5,4 +5,6 @@
 #include "models/brownian_motion.hpp"
 #include "models/util.hpp"
 
+#include "models/rcpp_pre.hpp"
+
 #endif

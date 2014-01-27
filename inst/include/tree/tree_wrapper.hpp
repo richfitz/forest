@@ -203,6 +203,9 @@ public:
   // NOTE: may crash on empty tree?
   void set_root_node(node_type nd) { *tree_.begin() = nd; }
 
+  SEXP to_rtree() const {
+    return forest::to_rtree(treetree::const_subtree<T>(tree_));}
+
   // Public for the 'as' method
   tree_type tree_;
 };

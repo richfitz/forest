@@ -17,6 +17,7 @@ namespace models {
 template <typename T>
 struct branch_pair {
   typedef T value_type;
+  branch_pair() : tipward(), rootward() {}
   branch_pair(const T& tipward_, const T& rootward_)
     : tipward(tipward_), rootward(rootward_) {}
   T tipward;

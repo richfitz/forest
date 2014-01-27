@@ -1,12 +1,16 @@
 #include "models.hpp"
 
-forest::node<forest::models::gaussian>
-test_convert(forest::rnode::node_type nd);
-forest::node<forest::models::gaussian>
-test_convert(forest::rnode::node_type nd) {
-  forest::node<forest::models::gaussian> ret =
-    forest::duplicate_node<forest::models::gaussian>(nd);
-  return ret;
+// Lotsa defines:
+typedef forest::node<forest::models::gaussian> gnode;
+typedef forest::models::branch_pair<forest::models::gaussian> gpair;
+typedef forest::node<gpair> gpnode;
+typedef treetree::tree<gnode> gtree;
+
+RCPP_EXPOSED_CLASS_NODECL(forest::tree_wrapped<gnode>)
+
+gnode test_convert_node(forest::rnode::node_type nd);
+gnode test_convert_node(forest::rnode::node_type nd) {
+  return forest::duplicate_node<forest::models::gaussian>(nd);
 }
 
 #ifdef __clang__
@@ -45,5 +49,11 @@ RCPP_MODULE(models) {
             &forest::models::brownian_motion::combine)
     ;
 
-  Rcpp::function("test_convert", &test_convert);
+  Rcpp::class_<forest::tree_wrapped<gnode> >("gtree")
+    .method("to_rtree", &forest::tree_wrapped<gnode>::to_rtree)
+    ;
+
+  Rcpp::function("test_convert_node",  &test_convert_node);
+  Rcpp::function("build_gaussian_tree",
+                 &forest::models::build_gaussian_tree<forest::rnode::node_type>);
 }

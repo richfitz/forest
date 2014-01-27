@@ -4,4 +4,6 @@
 #include "tree/node_wrapper.hpp"
 #include "tree/tree_wrapper.hpp"
 
+#include "tree/rcpp_pre.hpp"
+
 #endif

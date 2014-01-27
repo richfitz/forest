@@ -30,7 +30,7 @@ struct gaussian {
                dx * dx / (2 * vv) - log(2 * M_PI * vv) / 2);
   }
   bool valid() const {
-    return variance > 0;
+    return variance >= 0;
   }
   double mean;
   double variance;

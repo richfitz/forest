@@ -20,6 +20,8 @@ RCPP_EXPOSED_CLASS_NODECL(forest::rsubtree)
 // (above), enabling as and wrap on this data type.  Then, take that
 // data slot and convert it to type T, constructing a new node with
 // this.
+//
+// TODO: Probably need a RObject-specialised version of this...
 namespace {
 template <typename T>
 forest::node<T> helper_node_wrapped(SEXP obj) {

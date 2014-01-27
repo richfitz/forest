@@ -272,6 +272,9 @@ template <typename T>
 void associate_data(treetree::tree<node<T> >& tr, SEXP data,
                     bool tip, bool node);
 
+template <typename T>
+SEXP to_rtree(const treetree::const_subtree<node<T> >& tr);
+
 // For a T->T transition we could just delete the data.  But here we
 // need to be more clever.  We need to iterate over the topology of
 // the source tree, creating things appropriately.

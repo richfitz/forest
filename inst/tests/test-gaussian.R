@@ -116,12 +116,39 @@ test_that("Brownian motion combine", {
               equals(gaussian.product(x, y)))
 })
 
-test_that("Works in tree", {
-  nd <- new(rnode, "label", pi, list(1, 2, 3))
-  cmp <- forest:::test_convert(nd)
-  g <- cmp$data # will be blank gaussian
-  expect_that(g$mean,      is_identical_to(NA_real_))
-  expect_that(g$variance,  is_identical_to(NA_real_))
-  expect_that(g$log_scale, is_identical_to(NA_real_))
-  expect_that(g$valid,     is_false())
+test_that("Push Gaussians onto tree", {
+  source("helper-forest.R")
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  tr <- forest.from.ape(phy)
+
+  states <- structure(as.list(runif(tr$tips)), names=tr$tip_labels)
+  tr$associate_data(states, TRUE, FALSE)
+
+  gtr <- forest:::build_gaussian_tree(tr)
+
+  cmp <- gtr$to_rtree()
+
+  expect_that(treeapply(cmp, function(x) x$label),
+              is_identical_to(treeapply(tr, function(x) x$label)))
+  expect_that(treeapply(cmp, function(x) x$length),
+              is_identical_to(treeapply(tr, function(x) x$length)))
+  ## Here are the gaussians we made:
+  gg <- treeapply(cmp, function(x) x$data)
+
+  cmp <- treeapply(tr, function(x) x$data)
+  is.node <- sapply(cmp, is.null)
+  is.tip  <- !is.node
+
+  expect_that(lapply(gg[is.tip], function(x) x$mean),
+              is_identical_to(cmp[is.tip]))
+  expect_that(lapply(gg[is.node], function(x) x$mean),
+              is_identical_to(rep_len(list(NA_real_), sum(is.node))))
+  expect_that(sapply(gg, function(x) x$variance),
+              is_identical_to(ifelse(is.tip, 0.0, NA_real_)))
+  expect_that(sapply(gg, function(x) x$log_scale),
+              is_identical_to(ifelse(is.tip, 0.0, NA_real_)))
 })
+
+gc()
