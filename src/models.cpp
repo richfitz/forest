@@ -1,7 +1,4 @@
 #include "models.hpp"
-#include <Rcpp.h>
-
-RCPP_EXPOSED_CLASS_NODECL(forest::models::gaussian)
 
 #ifdef __clang__
 #pragma clang diagnostic push
