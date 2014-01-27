@@ -5,7 +5,6 @@
 
 #include <RcppCommon.h>
 
-// Start with wrap, because it's much easier than as.
 namespace Rcpp {
 template <typename T> SEXP wrap(const forest::node<T>& obj);
 template <typename T> SEXP wrap(const treetree::tree<T>& obj);

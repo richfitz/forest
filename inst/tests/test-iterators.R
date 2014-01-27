@@ -119,48 +119,6 @@ test_that("pre and post increment", {
   expect_that(it$value,  equals(4))
 })
 
-test_that("std::find works", {
-  ## Pardon the ugly name for now:
-  it <- forest:::find_vector_double_iterator(v$begin(), v$end(), 5)
-  expect_that(it$equals(v$end()), is_false())
-  expect_that(it$value, equals(5))
-
-  ## Now, try and find something not in the vector:
-  it <- forest:::find_vector_double_iterator(v$begin(), v$end(), 5.5)
-  expect_that(it$equals(v$end()), is_true())
-
-  ## Try getting this done a bit more nicely; I'm using "locate" here,
-  ## because "find" is already used.  If these turn out to be useful,
-  ## I'll try and get some more definitions written up.
-  setGeneric("locate", function(begin, end, value) {
-    standardGeneric("locate")
-  }, where=.GlobalEnv)
-  setMethod("locate",
-            c(begin=forest:::vector_double_iterator,
-              end=forest:::vector_double_iterator),
-            function(begin, end, value)
-            forest:::find_vector_double_iterator(begin, end, value))
-
-  it1 <- forest:::find_vector_double_iterator(v$begin(), v$end(), 5)
-  it2 <- locate(v$begin(), v$end(), 5)
-  expect_that(it1$equals(it2), is_true())
-})
-
-test_that("std::distance works", {
-  distance <- forest:::distance_vector_double_iterator
-  expect_that(distance(v$begin(), v$end()),
-              equals(v$size))
-
-  it1 <- v$begin()
-  it2 <- v$end()
-  n1 <- 2
-  n2 <- 1
-  it1$advance(n1)
-  it2$advance(-n2)
-  expect_that(distance(it1, it2), equals(v$size - (n1 + n2)))
-  expect_that(distance(it2, it1), equals(-distance(it1, it2)))
-})
-
 ## It's easy to invalidate iterators by changing the underlying data.
 ## For example, run this under valgrind:
 ##

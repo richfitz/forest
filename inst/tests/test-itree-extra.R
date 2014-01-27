@@ -4,6 +4,8 @@ source("helper-forest.R")
 
 context("Basic tree operations: extra")
 
+itree <- forest:::itree
+
 tree_of <- make.tree_of(itree)
 
 test_that("Can count the number of tips in a tree", {

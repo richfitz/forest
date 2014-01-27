@@ -1,7 +1,6 @@
 #include <Rcpp.h>
 #include "tree.hpp"
-#include "iterator_wrapper.hpp"
-#include "iterator_wrapper_algorithm.hpp"
+#include "iterator/iterator_wrapper.hpp"
 
 // For testing purposes, work with a tree where every node contains just
 // an integer.
@@ -51,7 +50,7 @@ template<> isubtree as(SEXP obj) {
 #pragma clang diagnostic ignored "-Wexit-time-destructors"
 #pragma clang diagnostic ignored "-Wmissing-prototypes"
 #endif
-RCPP_MODULE(tree_test) {
+RCPP_MODULE(test_tree) {
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
@@ -222,19 +221,6 @@ RCPP_MODULE(tree_test) {
   FOREST_ITERATOR_MODULE(itree::sub_pre_iterator,   "itree_sub_pre_iterator")
   FOREST_ITERATOR_MODULE(itree::sub_post_iterator,  "itree_sub_post_iterator")
   FOREST_ITERATOR_MODULE(itree::sub_child_iterator, "itree_sub_child_iterator")
-
-  FOREST_ITERATOR_MODULE_ALGORITHM(itree::pre_iterator,
-				   "itree_pre_iterator")
-  FOREST_ITERATOR_MODULE_ALGORITHM(itree::post_iterator,
-				   "itree_post_iterator")
-  FOREST_ITERATOR_MODULE_ALGORITHM(itree::child_iterator,
-				   "itree_child_iterator")
-  FOREST_ITERATOR_MODULE_ALGORITHM(itree::sub_pre_iterator,
-				   "itree_sub_pre_iterator")
-  FOREST_ITERATOR_MODULE_ALGORITHM(itree::sub_post_iterator,
-				   "itree_sub_post_iterator")
-  FOREST_ITERATOR_MODULE_ALGORITHM(itree::sub_child_iterator,
-				   "itree_sub_child_iterator")
 
   // Useful utility function, but only exported for pre_iterators
   Rcpp::function("parent_itree_iterator",

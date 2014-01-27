@@ -1,7 +1,6 @@
 export(ape.from.forest)
 export(forest.from.ape)
 export(from.newick.string)
-export(itree)
 export(rnode)
 export(rtree)
 export(to.newick.string)

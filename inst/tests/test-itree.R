@@ -9,6 +9,8 @@ source("helper-forest.R")
 
 context("Basic tree operations")
 
+itree <- forest:::itree
+
 tree_of <- make.tree_of(itree)
 
 test_that("tree_empty_ctor", {
@@ -266,10 +268,6 @@ test_that("tree_const_iters", {
       tree_of(8)(),
       tree_of(1)(2,tree_of(3)(tree_of(4)(5),6),7,8)())
 
-  # TODO: This is uglier than needed because iterators are not generic
-  # yet, and we don't have iterators over vectors (could get that
-  # working later with package iterators).  Plus the wrapped node
-  # causes problems here, still.
   check_range <- function(f1, l1, cmp) {
     if (distance(f1, l1) != length(cmp))
       return(FALSE)
@@ -287,31 +285,28 @@ test_that("tree_const_iters", {
     }
     TRUE
   }
+  distance <- function(first, last) {
+    i <- 0
+    while (first$differs(last)) { # first$post_increment()$differs(last)
+      first$increment()
+      i <- i + 1
+    }
+    i
+  }
 
-  distance <- forest:::distance_itree_pre_iterator
   expect_that(check_range(tr$begin(), tr$end(), pre.contents),
               is_true())
-
-  distance <- forest:::distance_itree_sub_pre_iterator
   expect_that(check_range(tr$begin_sub(), tr$end_sub(), pre.subtr),
               is_true())
-
-  distance <- forest:::distance_itree_child_iterator
   expect_that(check_range(tr$begin_child(), tr$end_child(),
                           child.contents),
               is_true())
-
-  distance <- forest:::distance_itree_sub_child_iterator
   expect_that(check_range(tr$begin_sub_child(), tr$end_sub_child(),
                           child.subtr),
               is_true())
-
-  distance <- forest:::distance_itree_post_iterator
   expect_that(check_range(tr$begin_post(), tr$end_post(),
                           post.contents),
               is_true())
-
-  distance <- forest:::distance_itree_sub_post_iterator
   expect_that(check_range(tr$begin_sub_post(), tr$end_sub_post(),
                           post.subtr),
               is_true())

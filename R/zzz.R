@@ -1,11 +1,12 @@
 ##' @useDynLib forest
 ##' @import methods
 ##' @import Rcpp
-##' @export itree
 ##' @export rnode
 ##' @export rtree
 
-loadModule("iterator_wrapper_test", TRUE)
-loadModule("tree_test",             TRUE)
+# These will become optionally compiled/loaded soon
+loadModule("test_iterator_wrapper", TRUE)
+loadModule("test_tree",             TRUE)
+
 loadModule("forest",                TRUE)
 loadModule("models",                TRUE)

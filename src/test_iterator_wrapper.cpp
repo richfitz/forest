@@ -1,7 +1,7 @@
-#include "iterator_wrapper.hpp"
-#include "iterator_wrapper_algorithm.hpp"
+#include "iterator/iterator_wrapper.hpp"
 
 namespace forest {
+namespace iterator {
 namespace test {
 
 // Convenience typedefs:
@@ -50,13 +50,15 @@ vector_double::iterator vector_double_begin(vector_double* obj) {
 vector_double::iterator vector_double_end(vector_double* obj) {
   return obj->end();
 }
+
+}
 }
 }
 
 // This line is required to make the iterators available to R --
 // though that will pretty much always be the idea when creating a
 // wrapped iterator!
-FOREST_ITERATOR_EXPORT(forest::test::vector_double::iterator)
+FOREST_ITERATOR_EXPORT(forest::iterator::test::vector_double::iterator)
 
 #ifdef __clang__
 #pragma clang diagnostic push
@@ -65,46 +67,42 @@ FOREST_ITERATOR_EXPORT(forest::test::vector_double::iterator)
 #pragma clang diagnostic ignored "-Wexit-time-destructors"
 #pragma clang diagnostic ignored "-Wmissing-prototypes"
 #endif
-RCPP_MODULE(iterator_wrapper_test) {
+RCPP_MODULE(test_iterator_wrapper) {
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
-  Rcpp::class_<forest::test::vector_double>("vector_double")
+  Rcpp::class_<forest::iterator::test::vector_double>("vector_double")
     .constructor()
     .constructor<int>()
 
-    .property("size",      &forest::test::vector_double::size)
-    .property("max_size",  &forest::test::vector_double::max_size)
-    .method("resize",      &forest::test::vector_double_resize)
-    .property("capacity",  &forest::test::vector_double::capacity)
-    .property("empty",     &forest::test::vector_double::empty)
-    .method("reserve",     &forest::test::vector_double::reserve)
-    .method("push_back",   &forest::test::vector_double::push_back)
-    .method("pop_back",    &forest::test::vector_double::pop_back)
-    .method("clear",       &forest::test::vector_double::clear)
+    .property("size",      &forest::iterator::test::vector_double::size)
+    .property("max_size",  &forest::iterator::test::vector_double::max_size)
+    .method("resize",      &forest::iterator::test::vector_double_resize)
+    .property("capacity",  &forest::iterator::test::vector_double::capacity)
+    .property("empty",     &forest::iterator::test::vector_double::empty)
+    .method("reserve",     &forest::iterator::test::vector_double::reserve)
+    .method("push_back",   &forest::iterator::test::vector_double::push_back)
+    .method("pop_back",    &forest::iterator::test::vector_double::pop_back)
+    .method("clear",       &forest::iterator::test::vector_double::clear)
 
-    .const_method("back",  &forest::test::vector_double::back)
-    .const_method("front", &forest::test::vector_double::front)
-    .method("at",          &forest::test::vector_double_at)
+    .const_method("back",  &forest::iterator::test::vector_double::back)
+    .const_method("front", &forest::iterator::test::vector_double::front)
+    .method("at",          &forest::iterator::test::vector_double_at)
 
-    .method("assign",      &forest::test::vector_double_assign)
-    .method("insert",      &forest::test::vector_double_insert)
-    .method("as.vector",   &forest::test::vector_double_asR)
+    .method("assign",      &forest::iterator::test::vector_double_assign)
+    .method("insert",      &forest::iterator::test::vector_double_insert)
+    .method("as.vector",   &forest::iterator::test::vector_double_asR)
 
     // special methods for indexing
-    .method("[[",          &forest::test::vector_double_at)
-    .method("[[<-",        &forest::test::vector_double_set)
+    .method("[[",          &forest::iterator::test::vector_double_at)
+    .method("[[<-",        &forest::iterator::test::vector_double_set)
 
     // Iterators
-    .method("begin",       &forest::test::vector_double_begin)
-    .method("end",         &forest::test::vector_double_end)
+    .method("begin",       &forest::iterator::test::vector_double_begin)
+    .method("end",         &forest::iterator::test::vector_double_end)
     ;
 
-  FOREST_ITERATOR_MODULE(forest::test::vector_double::iterator,
-    "vector_double_iterator")
-    ;
-  // Make algorithms available (currently only std::find()):
-  FOREST_ITERATOR_MODULE_ALGORITHM(forest::test::vector_double::iterator,
+  FOREST_ITERATOR_MODULE(forest::iterator::test::vector_double::iterator,
     "vector_double_iterator")
     ;
 }
