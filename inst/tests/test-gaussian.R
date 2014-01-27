@@ -115,3 +115,13 @@ test_that("Brownian motion combine", {
   expect_that(as.vector.gaussian(bm$combine(gx, gy)),
               equals(gaussian.product(x, y)))
 })
+
+test_that("Works in tree", {
+  nd <- new(rnode, "label", pi, list(1, 2, 3))
+  cmp <- forest:::test_convert(nd)
+  g <- cmp$data # will be blank gaussian
+  expect_that(g$mean,      is_identical_to(NA_real_))
+  expect_that(g$variance,  is_identical_to(NA_real_))
+  expect_that(g$log_scale, is_identical_to(NA_real_))
+  expect_that(g$valid,     is_false())
+})

@@ -1,5 +1,14 @@
 #include "models.hpp"
 
+forest::node<forest::models::gaussian>
+test_convert(forest::rnode::node_type nd);
+forest::node<forest::models::gaussian>
+test_convert(forest::rnode::node_type nd) {
+  forest::node<forest::models::gaussian> ret =
+    forest::duplicate_node<forest::models::gaussian>(nd);
+  return ret;
+}
+
 #ifdef __clang__
 #pragma clang diagnostic push
 // These I have no control over because they're Rcpp issues.
@@ -35,4 +44,6 @@ RCPP_MODULE(models) {
     .method("combine",
             &forest::models::brownian_motion::combine)
     ;
+
+  Rcpp::function("test_convert", &test_convert);
 }
