@@ -1,5 +1,5 @@
-#ifndef _FOREST_NODE_WRAPPER_HPP_
-#define _FOREST_NODE_WRAPPER_HPP_
+#ifndef _FOREST_TREE_NODE_WRAPPER_HPP_
+#define _FOREST_TREE_NODE_WRAPPER_HPP_
 
 // This is going to exist to deal with passing back and forth between
 // R and C++.  It should immediately work for any as/wrappable type T
@@ -14,7 +14,7 @@
 // classes, with the data slot (of type T) converted to an
 // Rcpp::Object.
 
-#include "node.hpp"
+#include "tree/node.hpp"
 
 namespace forest {
 

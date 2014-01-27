@@ -1,5 +1,5 @@
-#ifndef _FOREST_NODE_HPP_
-#define _FOREST_NODE_HPP_
+#ifndef _FOREST_TREE_NODE_HPP_
+#define _FOREST_TREE_NODE_HPP_
 
 // This is the thing that will be a generic node type.  The things
 // that we need are going to be

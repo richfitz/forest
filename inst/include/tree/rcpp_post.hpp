@@ -1,32 +1,19 @@
-#ifndef _FOREST_RCPP_HPP_
-#define _FOREST_RCPP_HPP_
+#ifndef _FOREST_TREE_RCPP_POST_HPP_
+#define _FOREST_TREE_RCPP_POST_HPP_
 
-#include "node.hpp"
-
-#include <RcppCommon.h>
-
-namespace Rcpp {
-template <typename T> SEXP wrap(const forest::node<T>& obj);
-template <typename T> SEXP wrap(const treetree::tree<T>& obj);
-template <typename T> SEXP wrap(const treetree::subtree<T>& obj);
-
-namespace traits {
-template <typename T> class Exporter< forest::node<T> >;
-template <typename T> class Exporter< treetree::tree<T> >;
-template <typename T> class Exporter< treetree::subtree<T> >;
-}
-}
+#include "tree/rcpp_pre.hpp"
 
 #include <Rcpp.h>
 
-// TODO: push into forest namespace
+namespace forest {
 typedef forest::node_wrapped<Rcpp::RObject>    rnode;
 typedef forest::tree_wrapped<rnode::node_type> rtree;
 typedef rtree::subtree_wrapped_type            rsubtree;
+}
 
-RCPP_EXPOSED_CLASS_NODECL(rnode)
-RCPP_EXPOSED_CLASS_NODECL(rtree)
-RCPP_EXPOSED_CLASS_NODECL(rsubtree)
+RCPP_EXPOSED_CLASS_NODECL(forest::rnode)
+RCPP_EXPOSED_CLASS_NODECL(forest::rtree)
+RCPP_EXPOSED_CLASS_NODECL(forest::rsubtree)
 
 // Convert to our node_wrapper with the data slot being an RObject --
 // this is possible because we declared this type to be exportable
@@ -60,9 +47,10 @@ SEXP wrap(const treetree::subtree<T>& obj) {
 // This might be a micro-optimisation, but it does work; if we want a
 // node<RObject> we can just take the node from within the wrapper.
 // That will use the copy constructor rather than manually
-// constructing.
+// constructing.  The inline is required to avoid multiple-definition
+// problems.
 template<>
-SEXP wrap(const forest::node<Rcpp::RObject>& obj) {
+inline SEXP wrap(const forest::node<Rcpp::RObject>& obj) {
   return wrap(forest::node_wrapped<RObject>(obj));
 }
 

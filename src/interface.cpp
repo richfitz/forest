@@ -1,12 +1,7 @@
-#include "forest.hpp"
+#include "tree.hpp"
 
-// These two won't be API:
-#include "ape.hpp"
-#include "newick.hpp"
-
-// Within tree, there are two uses of Rcpp; the first is Rcpp::stop,
-// which is easy enough to get around.  The second is associate_data
-// takes Rcpp::List as an argument.
+#include "tree/ape.hpp"
+#include "tree/newick.hpp"
 
 // These three are silly little testing functions: they take a node as
 // an argument, return as a return value and do both.  They're purely
@@ -40,6 +35,10 @@ Rcpp::List drain_tree(const treetree::tree<T>& tree) {
     ret.push_back(Rcpp::wrap(*it));
   return ret;
 }
+
+using forest::rnode;
+using forest::rtree;
+using forest::rsubtree;
 
 // This is identical to the xnode description.
 #ifdef __clang__

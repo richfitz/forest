@@ -2,10 +2,10 @@
 #define _FOREST_MISC_HPP_
 
 // Miscellaneous things to do with treetree trees (*not* the wrapper
-// in src/tree.hpp).
+// in include/tree/tree_wrapper.hpp).
 
+#include "tree/node.hpp"
 #include "treetree.hpp"
-#include "node.hpp"
 #include "util.hpp"
 
 namespace forest {
@@ -267,7 +267,7 @@ bool check_names(const treetree::tree<T>& tr,
   return true;
 }
 
-// NOTE: defined in tree_post_rcpp.hpp
+// NOTE: defined in tree/misc_post_rcpp.hpp
 template <typename T>
 void associate_data(treetree::tree<node<T> >& tr, SEXP data,
                     bool tip, bool node);

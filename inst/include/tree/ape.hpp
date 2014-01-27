@@ -1,5 +1,5 @@
-#ifndef _FOREST_APE_HPP_
-#define _FOREST_APE_HPP_
+#ifndef _FOREST_TREE_APE_HPP_
+#define _FOREST_TREE_APE_HPP_
 
 #include <Rcpp.h>
 #include "tree.hpp"

@@ -1,11 +1,10 @@
-#ifndef _FOREST_NEWICK_HPP_
-#define _FOREST_NEWICK_HPP_
+#ifndef _FOREST_TREE_NEWICK_HPP_
+#define _FOREST_TREE_NEWICK_HPP_
 
 #include <ostream>
 #include <iomanip>
 
 #include "tree.hpp"
-#include "node.hpp"
 #include "util.hpp"
 
 namespace forest {

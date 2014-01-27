@@ -1,9 +1,5 @@
-#ifndef _FOREST_POST_RCPP_HPP_
-#define _FOREST_POST_RCPP_HPP_
-
-// Things to define *after* hauling in the Rcpp transfer code.  I'll
-// make this a bit more transparent to end users later.  I think that
-// Conrad would call this a "meat" file.
+#ifndef _FOREST_TREE_MISC_POST_RCPP_HPP_
+#define _FOREST_TREE_MISC_POST_RCPP_HPP_
 
 namespace forest {
 // NOTE: I'm not sure why node needs to be fully qualified in the

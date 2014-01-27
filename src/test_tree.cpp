@@ -1,5 +1,5 @@
 #include <Rcpp.h>
-#include "tree.hpp"
+#include "tree/tree_wrapper.hpp"
 #include "iterator/iterator_wrapper.hpp"
 
 // For testing purposes, work with a tree where every node contains just
