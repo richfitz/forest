@@ -21,6 +21,14 @@ gaussian.product <- function(x, y) {
 as.vector.gaussian <- function(g)
   c(mean=g$mean, variance=g$variance, log_scale=g$log_scale)
 
+test_that("Gaussian defaults", {
+  g <- new(forest:::gaussian)
+  expect_that(g$mean,      is_identical_to(NA_real_))
+  expect_that(g$variance,  is_identical_to(NA_real_))
+  expect_that(g$log_scale, is_identical_to(NA_real_))
+  expect_that(g$valid,     is_false())
+})
+
 test_that("Gaussian creation", {
   x <- c(mean=1, variance=2, log_scale=3)
   g <- new(forest:::gaussian, x[["mean"]], x[["variance"]],

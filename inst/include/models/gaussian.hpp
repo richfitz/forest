@@ -9,6 +9,8 @@ namespace forest {
 namespace models {
 
 struct gaussian {
+  gaussian()
+    : mean(NA_REAL), variance(NA_REAL), log_scale(NA_REAL) {}
   gaussian(double mean_, double variance_, double log_scale_)
     : mean(mean_), variance(variance_), log_scale(log_scale_) {}
   // Useful from R:

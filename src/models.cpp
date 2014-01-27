@@ -12,6 +12,7 @@ RCPP_MODULE(models) {
 #pragma clang diagnostic pop
 #endif
   Rcpp::class_<forest::models::gaussian>("gaussian")
+    .constructor()
     .constructor<double, double, double>()
     .constructor<std::vector<double> >()
     .method("times",             &forest::models::gaussian::operator*)
