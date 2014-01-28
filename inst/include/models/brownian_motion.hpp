@@ -21,6 +21,7 @@ namespace models {
 // nonzero mean.  Doing it this way will further simplify the code
 // below.
 struct brownian_motion { // no drift
+  typedef gaussian data;
   brownian_motion() : s2(NA_REAL) {}
   gaussian forward(gaussian y, double t) const {
     y.variance += t * s2;

@@ -75,6 +75,8 @@ test_that("tree_copy_ctor", {
   expect_that(tr, is_different_tree_to(tr2)) # (extra)
 })
 
+gc()
+
 # tree_assignment -- not done because not how R works
 
 test_that("tree_subtr_assignment", {

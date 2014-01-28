@@ -10,6 +10,7 @@ typedef treetree::tree<gpnode>                 gptree;
 
 // Also requiring module export below.
 RCPP_EXPOSED_CLASS_NODECL(forest::tree_wrapped<gpnode>)
+RCPP_EXPOSED_CLASS_NODECL(forest::models::brownian_motion)
 
 gnode test_convert_node(forest::rnode::node_type nd);
 gnode test_convert_node(forest::rnode::node_type nd) {
@@ -60,4 +61,7 @@ RCPP_MODULE(models) {
   Rcpp::function("test_convert_node",  &test_convert_node);
   Rcpp::function("build_gaussian_tree",
                  &forest::models::build_gaussian_tree<forest::rnode::node_type>);
+  Rcpp::function("all_branches_bm",
+                 &forest::models::all_branches<forest::models::brownian_motion>);
+
 }

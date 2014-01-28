@@ -117,7 +117,6 @@ test_that("Brownian motion combine", {
 })
 
 test_that("Push Gaussians onto tree", {
-  source("helper-forest.R")
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
@@ -156,6 +155,41 @@ test_that("Push Gaussians onto tree", {
               is_identical_to(rep_len(NA_real_, tr$size)))
   expect_that(sapply(gg, function(x) x$rootward$log_scale),
               is_identical_to(rep_len(NA_real_, tr$size)))
+})
+
+test_that("BM calculations work", {
+  set.seed(1)
+  phy <- rtree(100)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  tr <- forest.from.ape(phy)
+  states <- structure(as.list(runif(tr$tips)), names=tr$tip_labels)
+  tr$associate_data(states, TRUE, FALSE)
+  gtr <- forest:::build_gaussian_tree(tr)
+
+  bm <- new(forest:::brownian_motion)
+  s2 <- exp(1)
+  bm$parameters <- s2
+
+  g.root <- forest:::all_branches_bm(gtr, bm)
+
+  ## Copare against diversitree's calculations:
+  lik <- make.bm(phy, unlist(states), control=list(method="pruning"))
+  res <- attr(lik(s2, intermediates=TRUE), "intermediates")
+
+  d.root <- res$vals
+
+  expect_that(g.root$mean,      equals(d.root[[1]]))
+  expect_that(g.root$variance,  equals(d.root[[2]]))
+  expect_that(g.root$log_scale, equals(sum(res$lq) + d.root[[3]]))
+
+  ## Compare all the intermediates.
+  ##
+  ## This suggests we're doing a copy somewhere we should not; the
+  ## tree did not end up modified.
+  cmp <- gtr$to_rtree()
+  gg <- treeapply(cmp, function(x) x$data)
+  expect_that(all(is.na(sapply(gg, function(x) x$rootward$mean))),
+              is_true())
 })
 
 gc()

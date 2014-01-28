@@ -3,6 +3,7 @@ library(Rcpp)
 library(testthat)
 library(forest)
 library(ape)
+library(diversitree)
 
 # Oops; there's namespace confict here.
 rtree <- forest::rtree
