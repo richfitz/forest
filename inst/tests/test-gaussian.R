@@ -182,6 +182,13 @@ test_that("BM calculations work", {
   expect_that(g.root$variance,  equals(d.root[[2]]))
   expect_that(g.root$log_scale, equals(sum(res$lq) + d.root[[3]]))
 
+  calculator <- new(forest:::calculator_bm, bm, gtr)
+  c.root <- calculator$all_branches()
+
+  expect_that(c.root$mean,      is_identical_to(g.root$mean))
+  expect_that(c.root$variance,  is_identical_to(g.root$variance))
+  expect_that(c.root$log_scale, is_identical_to(g.root$log_scale))
+
   ## Compare all the intermediates.
   ##
   ## This suggests we're doing a copy somewhere we should not; the

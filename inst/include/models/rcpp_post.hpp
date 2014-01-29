@@ -7,6 +7,7 @@
 #include <Rcpp.h>
 
 RCPP_EXPOSED_CLASS_NODECL(forest::models::gaussian)
+RCPP_EXPOSED_CLASS_NODECL(forest::models::brownian_motion)
 
 namespace {
 template <typename T>

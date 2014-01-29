@@ -1,5 +1,5 @@
-#ifndef _FOREST_MODELS_UTIL_HPP_
-#define _FOREST_MODELS_UTIL_HPP_
+#ifndef _FOREST_MODELS_CALCULATOR_HPP_
+#define _FOREST_MODELS_CALCULATOR_HPP_
 
 namespace forest {
 namespace models {
@@ -70,7 +70,7 @@ typename Model::data combine(const Model& model,
 template <typename Model>
 typename Model::data
 all_branches(treetree::tree<node<branch_pair<typename Model::data> > >& tree,
-                  const Model& model) {
+             const Model& model) {
   typedef treetree::tree<node<branch_pair<typename Model::data> > > tree_type;
 
   typename tree_type::sub_post_iterator sub = tree.begin_sub_post();
@@ -86,6 +86,24 @@ all_branches(treetree::tree<node<branch_pair<typename Model::data> > >& tree,
   }
   return tree.root().data_.tipward;
 }
+
+// We need a tree and model fairly closely associated so that we can
+// push around a likelihood calculator to MCMC functions and the like.
+template <typename Model>
+class calculator {
+  typedef typename Model::data                           data_type;
+  typedef treetree::tree<node<branch_pair<data_type> > > tree_type;
+public:
+  calculator(Model model_, tree_type tree_)
+    : model(model_), tree(tree_) {}
+  data_type all_branches() {
+    return models::all_branches(tree, model);}
+  void set_parameters(const std::vector<double>& parameters) {
+    model.set_parameters(parameters);}
+private:
+  Model     model;
+  tree_type tree;
+};
 
 }
 }

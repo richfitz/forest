@@ -8,9 +8,12 @@ typedef forest::models::branch_pair<forest::models::gaussian> gpair;
 typedef forest::node<gpair>                    gpnode;
 typedef treetree::tree<gpnode>                 gptree;
 
+// For now:
+typedef forest::models::calculator<forest::models::brownian_motion>
+calculator_bm;
+
 // Also requiring module export below.
 RCPP_EXPOSED_CLASS_NODECL(forest::tree_wrapped<gpnode>)
-RCPP_EXPOSED_CLASS_NODECL(forest::models::brownian_motion)
 
 gnode test_convert_node(forest::rnode::node_type nd);
 gnode test_convert_node(forest::rnode::node_type nd) {
@@ -51,6 +54,13 @@ RCPP_MODULE(models) {
             &forest::models::brownian_motion::backward)
     .method("combine",
             &forest::models::brownian_motion::combine)
+    ;
+
+  // Just one type for now, but eventually this will be generic.
+  Rcpp::class_<calculator_bm>("calculator_bm")
+    .constructor<forest::models::brownian_motion, gptree>()
+    .method("all_branches", &calculator_bm::all_branches)
+    .method("set_parameters", &calculator_bm::set_parameters)
     ;
 
   // Also requiring EXPOSED_CLASS above.

@@ -3,7 +3,7 @@
 
 #include "models/gaussian.hpp"
 #include "models/brownian_motion.hpp"
-#include "models/util.hpp"
+#include "models/calculator.hpp"
 
 #include "models/rcpp_pre.hpp"
 

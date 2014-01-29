@@ -1,7 +1,7 @@
 #ifndef _FOREST_MODELS_RCPP_PRE_HPP_
 #define _FOREST_MODELS_RCPP_PRE_HPP_
 
-#include "models/util.hpp" // branch_pair
+#include "models/calculator.hpp" // branch_pair
 #include <RcppCommon.h>
 
 namespace Rcpp {
