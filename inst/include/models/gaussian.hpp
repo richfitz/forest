@@ -1,7 +1,7 @@
 #ifndef _FOREST_MODELS_GAUSSIAN_HPP_
 #define _FOREST_MODELS_GAUSSIAN_HPP_
 
-#include <R.h>      // M_PI
+#include <R.h>      // M_PI, NA_REAL
 #include <vector>   // std::vector
 #include "../util.hpp" // stop
 

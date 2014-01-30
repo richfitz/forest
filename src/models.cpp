@@ -43,6 +43,19 @@ RCPP_MODULE(models) {
     .field_readonly("log_scale", &forest::models::gaussian::log_scale)
     ;
 
+  Rcpp::class_<forest::models::discrete>("discrete")
+    .constructor()
+    .constructor<std::vector<double>, double>()
+    .constructor<std::vector<double> >()
+    .method("times",             &forest::models::discrete::operator*)
+    .property("valid",           &forest::models::discrete::valid)
+    .property("size",            &forest::models::discrete::size)
+    .method("resize",            &forest::models::discrete::resize)
+    .field_readonly("probabilities",
+                    &forest::models::discrete::probabilities)
+    .field_readonly("log_scale", &forest::models::discrete::log_scale)
+    ;
+
   Rcpp::class_<forest::models::brownian_motion>("brownian_motion")
     .constructor()
     .property("parameters",
