@@ -51,6 +51,7 @@ RCPP_MODULE(models) {
     .property("valid",           &forest::models::discrete::valid)
     .property("size",            &forest::models::discrete::size)
     .method("resize",            &forest::models::discrete::resize)
+    .method("[[",                &forest::models::discrete::r_at)
     .field_readonly("probabilities",
                     &forest::models::discrete::probabilities)
     .field_readonly("log_scale", &forest::models::discrete::log_scale)

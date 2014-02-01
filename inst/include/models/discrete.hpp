@@ -55,8 +55,18 @@ struct discrete {
     }
     return ok;
   }
+
+  double& operator[](size_t i) {return probabilities[i];}
   void resize(size_t n) {probabilities.resize(n, NA_REAL);}
   size_t size() const {return probabilities.size();}
+
+  double r_at(size_t idx) {
+    // TODO: implement bounds checking and then can use
+    //   return operator[](idx - 1);
+    // which avoids different code paths.
+    return probabilities.at(idx - 1);
+  }
+
   std::vector<double> probabilities;
   double log_scale;
 };

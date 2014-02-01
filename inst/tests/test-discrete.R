@@ -15,6 +15,7 @@ test_that("Discrete defaults", {
   expect_that(d$probabilities, equals(numeric(0)))
   expect_that(d$log_scale,     is_identical_to(NA_real_))
   expect_that(d$valid,         is_false())
+  expect_that(d[[1]],          throws_error())
 })
 
 test_that("Discrete resize", {
@@ -24,6 +25,7 @@ test_that("Discrete resize", {
   expect_that(d$probabilities, equals(rep(NA_real_, 2)))
   expect_that(d$log_scale,     is_identical_to(NA_real_))
   expect_that(d$valid,         is_false())
+  expect_that(d[[1]],          equals(NA_real_))
 })
 
 test_that("Discrete creation (vector + scale)", {
@@ -35,6 +37,10 @@ test_that("Discrete creation (vector + scale)", {
   expect_that(d$probabilities, is_identical_to(p))
   expect_that(d$log_scale,     is_identical_to(s))
   expect_that(d$valid,         is_true())
+  expect_that(d[[1]],          is_identical_to(p[[1]]))
+  expect_that(d[[2]],          is_identical_to(p[[2]]))
+  expect_that(d[[0]],          throws_error())
+  expect_that(d[[3]],          throws_error())
 
   d <- new(forest:::discrete, c(-p, s))
   expect_that(d$size,          equals(2))
