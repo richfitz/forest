@@ -70,6 +70,19 @@ RCPP_MODULE(models) {
             &forest::models::brownian_motion::combine)
     ;
 
+  Rcpp::class_<forest::models::mk2>("mk2")
+    .constructor()
+    .property("parameters",
+              &forest::models::mk2::parameters,
+              &forest::models::mk2::set_parameters)
+    .method("forward",
+            &forest::models::mk2::forward)
+    .method("backward",
+            &forest::models::mk2::backward)
+    .method("combine",
+            &forest::models::mk2::combine)
+    ;
+
   // Just one type for now, but eventually this will be generic.
   Rcpp::class_<calculator_bm>("calculator_bm")
     .constructor<forest::models::brownian_motion, gptree>()
