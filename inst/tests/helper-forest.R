@@ -4,6 +4,8 @@ library(testthat)
 library(forest)
 library(ape)
 library(diversitree)
+library(deSolve)
+suppressMessages(library(expm))
 
 # Oops; there's namespace confict here.
 rtree <- forest::rtree

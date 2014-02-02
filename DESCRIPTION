@@ -14,5 +14,5 @@ Depends:
 Suggests:
     testthat,
     ape,
-    diversitree
+    diversitree, expm, deSolve
 LinkingTo: Rcpp, BH
