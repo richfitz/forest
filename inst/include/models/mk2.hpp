@@ -77,8 +77,8 @@ struct mk2 {
     return ret;
   }
   void set_parameters(std::vector<double> parameters) {
-    // TODO: check length 2
     // TODO: validate parameters
+    util::check_length(parameters.size(), 2);
     q01 = parameters[0];
     q10 = parameters[1];
   }

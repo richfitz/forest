@@ -40,8 +40,8 @@ struct brownian_motion { // no drift
     return std::vector<double>(1, s2);
   }
   void set_parameters(std::vector<double> parameters) {
-    // TODO: check length 1
     // TODO: validate parameters
+    util::check_length(parameters.size(), 1);
     s2 = parameters.front();
   }
   // TODO: r_parameters() that returns named parameter vector?

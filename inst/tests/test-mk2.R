@@ -10,6 +10,10 @@ test_that("Mk2", {
   pars <- runif(2)
   m$parameters <- pars
   expect_that(m$parameters, is_identical_to(pars))
+
+  expect_that(m$parameters <- runif(1), throws_error())
+  expect_that(m$parameters <- runif(3), throws_error())
+  expect_that(m$parameters, is_identical_to(pars))
 })
 
 ## Basic check; just run some random data forwards and backwards with

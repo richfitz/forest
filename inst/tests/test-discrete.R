@@ -103,4 +103,9 @@ test_that("Probability product", {
   ## Multiplication is commutative:
   expect_that(as.R.discrete(d1$times(d2)),
               is_identical_to(as.R.discrete(d2$times(d1))))
+
+  ## Incompatible sizes cannot be multiplied:
+  d3 <- new(forest:::discrete, c(p1, p2), s1)
+  expect_that(d1$times(d3), throws_error())
+  expect_that(d3$times(d1), throws_error())
 })

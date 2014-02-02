@@ -76,12 +76,10 @@ public:
   void insert_at(size_t idx, const subtree_type& value) {
     tree_[idx] = value;}
   // NOTE: Base-1 access/set methods for R use.
-  //
-  // TODO: Need range checks here -- will crash R if out-of-bounds
-  // iterators are used.
-  subtree_type r_at(size_t idx) {return at(idx-1);}
+  subtree_type r_at(size_t idx) {
+    return at(util::check_bounds_r(idx, arity()));}
   void r_insert_at(size_t idx, const subtree_type& value) {
-    insert_at(idx-1, value);}
+    insert_at(util::check_bounds_r(idx, arity()), value);}
 
   // 3. Iterators
   pre_iterator       begin()           {return tree_.begin();          }
@@ -252,12 +250,11 @@ public:
   void insert_at(size_t idx, const subtree_type& value) {
     subtree_[idx] = value; }
   // NOTE: Base-1 access/set methods for R use.
-  // TODO: Need range checks here -- will crash R if out-of-bounds
-  // iterators are used.
   // TODO: insert is unexported and untested.
-  subtree_type r_at(size_t idx) { return at(idx-1); }
+  subtree_type r_at(size_t idx) {
+    return at(util::check_bounds_r(idx, arity()));}
   void r_insert_at(size_t idx, const subtree_type& value) {
-    insert_at(idx-1, value); }
+    insert_at(util::check_bounds_r(idx, arity()), value);}
 
   // 3. Iterators
   pre_iterator       begin()           {return subtree_.begin();      }

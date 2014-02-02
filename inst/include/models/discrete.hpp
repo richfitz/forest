@@ -35,9 +35,11 @@ struct discrete {
               probabilities.begin());
     log_scale = pars.back();
   }
+  static discrete from_R(SEXP obj) {
+    return discrete(Rcpp::as<std::vector<double> >(obj));
+  }
   discrete operator*(const discrete& rhs) const {
-    if (size() != rhs.size())
-      stop("Incompatible sizes");
+    util::check_length(rhs.size(), size());
     discrete ret(size());
     for (size_t i = 0; i < probabilities.size(); ++i)
       ret.probabilities[i] = probabilities[i] * rhs.probabilities[i];
@@ -61,10 +63,7 @@ struct discrete {
   size_t size() const {return probabilities.size();}
 
   double r_at(size_t idx) {
-    // TODO: implement bounds checking and then can use
-    //   return operator[](idx - 1);
-    // which avoids different code paths.
-    return probabilities.at(idx - 1);
+    return operator[](util::check_bounds_r(idx, size()));
   }
 
   std::vector<double> probabilities;
