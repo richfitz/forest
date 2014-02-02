@@ -7,6 +7,6 @@
 #include "models/rcpp_post.hpp" // and of model structures
 
 // Below here; things that can deal with Rcpp being included already:
-#include "models/continuous.hpp"
+#include "models/translation.hpp"
 
 #endif

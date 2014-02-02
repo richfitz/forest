@@ -8,6 +8,17 @@
 namespace forest {
 namespace models {
 
+// NOTE: The 'from_R' method could be set up as a constructor -- replace
+//   'static gaussian from_R'
+// with
+//   'gaussian'
+// thoug that will enable implcit type conversions for as/wrap, and
+// may not play nicely with RCPP_EXPOSED_CLASS in
+// models/rcpp_post.hpp
+//
+// It potentially also interferes with using different constructors
+// from R.
+
 struct gaussian {
   gaussian()
     : mean(NA_REAL), variance(NA_REAL), log_scale(NA_REAL) {}
@@ -18,6 +29,16 @@ struct gaussian {
     : mean(pars.at(0)), variance(pars.at(1)), log_scale(pars.at(2)) {
     if (pars.size() != 3) // NOTE: Only > 3 will throw here
       stop("Expected exactly three parameters");
+  }
+  // This implicitly sets variance = 0 and log_scale = 0 if not
+  // given.
+  static gaussian from_R(SEXP obj) {
+    std::vector<double> p = Rcpp::as<std::vector<double> >(obj);
+    if (p.size() == 0)
+      stop("Missing a mean");
+    else if (p.size() < 3)
+      p.resize(3, 0.0); // variance, log_scale
+    return gaussian(p[0], p[1], p[2]);
   }
   // Also add convolve here?
   gaussian operator*(const gaussian& rhs) const {

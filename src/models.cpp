@@ -1,22 +1,22 @@
 #include "models.hpp"
 
 // Testing only
-typedef forest::node<forest::models::gaussian> gnode;
+typedef forest::node<forest::models::gaussian> gnode_test;
 
 // Actually used
 typedef forest::models::branch_pair<forest::models::gaussian> gpair;
-typedef forest::node<gpair>                    gpnode;
-typedef treetree::tree<gpnode>                 gptree;
+typedef forest::node<gpair>   gnode;
+typedef treetree::tree<gnode> gtree;
 
 // For now:
 typedef forest::models::calculator<forest::models::brownian_motion>
 calculator_bm;
 
 // Also requiring module export below.
-RCPP_EXPOSED_CLASS_NODECL(forest::tree_wrapped<gpnode>)
+RCPP_EXPOSED_CLASS_NODECL(forest::tree_wrapped<gnode>)
 
-gnode test_convert_node(forest::rnode::node_type nd);
-gnode test_convert_node(forest::rnode::node_type nd) {
+gnode_test test_convert_node(forest::rnode::node_type nd);
+gnode_test test_convert_node(forest::rnode::node_type nd) {
   return forest::duplicate_node<forest::models::gaussian>(nd);
 }
 
@@ -85,19 +85,19 @@ RCPP_MODULE(models) {
 
   // Just one type for now, but eventually this will be generic.
   Rcpp::class_<calculator_bm>("calculator_bm")
-    .constructor<forest::models::brownian_motion, gptree>()
+    .constructor<forest::models::brownian_motion, gtree>()
     .method("all_branches", &calculator_bm::all_branches)
     .method("set_parameters", &calculator_bm::set_parameters)
     ;
 
   // Also requiring EXPOSED_CLASS above.
-  Rcpp::class_<forest::tree_wrapped<gpnode> >("gptree")
-    .method("to_rtree", &forest::tree_wrapped<gpnode>::to_rtree)
+  Rcpp::class_<forest::tree_wrapped<gnode> >("gtree")
+    .method("to_rtree", &forest::tree_wrapped<gnode>::to_rtree)
     ;
 
   Rcpp::function("test_convert_node",  &test_convert_node);
   Rcpp::function("build_gaussian_tree",
-                 &forest::models::build_gaussian_tree<forest::rnode::node_type>);
+                 &forest::models::build_model_tree<forest::models::gaussian>);
   Rcpp::function("all_branches_bm",
                  &forest::models::all_branches<forest::models::brownian_motion>);
 
