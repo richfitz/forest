@@ -34,7 +34,6 @@ RCPP_MODULE(models) {
   Rcpp::class_<forest::models::gaussian>("gaussian")
     .constructor()
     .constructor<double, double, double>()
-    .constructor<std::vector<double> >()
     .method("times",             &forest::models::gaussian::operator*)
     .property("valid",           &forest::models::gaussian::valid)
     // Might make these read/write?  Not sure.
@@ -46,7 +45,6 @@ RCPP_MODULE(models) {
   Rcpp::class_<forest::models::discrete>("discrete")
     .constructor()
     .constructor<std::vector<double>, double>()
-    .constructor<std::vector<double> >()
     .method("times",             &forest::models::discrete::operator*)
     .property("valid",           &forest::models::discrete::valid)
     .property("size",            &forest::models::discrete::size)

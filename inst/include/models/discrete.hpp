@@ -21,31 +21,32 @@ namespace forest {
 namespace models {
 
 struct discrete {
-  discrete()
-    : log_scale(NA_REAL) {}
-  discrete(size_t n)
-    : probabilities(n, NA_REAL), log_scale(NA_REAL) {}
+  discrete() : log_scale(NA_REAL) {}
   discrete(const std::vector<double>& probabilities_, double log_scale_)
     : probabilities(probabilities_), log_scale(log_scale_) {}
-  discrete(const std::vector<double>& pars) {
-    if (pars.size() < 1)
-      stop("Need at least one elements"); // really 3?
-    probabilities.resize(pars.size() - 1);
-    std::copy(pars.begin(), boost::prior(pars.end()),
-              probabilities.begin());
-    log_scale = pars.back();
-  }
+
   static discrete from_R(SEXP obj) {
-    return discrete(Rcpp::as<std::vector<double> >(obj));
+    std::vector<double> pars = Rcpp::as<std::vector<double> >(obj);
+    if (pars.size() < 1)
+      stop("Need at least one elements");
+    std::vector<double> p(pars.begin(), boost::prior(pars.end()));
+    return discrete(p, pars.back());
   }
+
+  // This also makes me think that a reference or iterator-based
+  // approach would be better as this is going to involve a lot of
+  // vector creation.  But avoid doing this until I know that is the
+  // case.
   discrete operator*(const discrete& rhs) const {
     util::check_length(rhs.size(), size());
-    discrete ret(size());
+    discrete ret;
+    ret.probabilities.reserve(size());
     for (size_t i = 0; i < probabilities.size(); ++i)
-      ret.probabilities[i] = probabilities[i] * rhs.probabilities[i];
+      ret.probabilities.push_back(probabilities[i] * rhs.probabilities[i]);
     ret.log_scale = log_scale + rhs.log_scale;
     return ret;
   }
+
   // Invalid if any element is negative or if no element is positive.
   bool valid() const {
     bool ok = false;

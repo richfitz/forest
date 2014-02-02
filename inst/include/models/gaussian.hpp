@@ -24,12 +24,7 @@ struct gaussian {
     : mean(NA_REAL), variance(NA_REAL), log_scale(NA_REAL) {}
   gaussian(double mean_, double variance_, double log_scale_)
     : mean(mean_), variance(variance_), log_scale(log_scale_) {}
-  // Useful from R:
-  gaussian(const std::vector<double>& pars)
-    : mean(pars.at(0)), variance(pars.at(1)), log_scale(pars.at(2)) {
-    if (pars.size() != 3) // NOTE: Only > 3 will throw here
-      stop("Expected exactly three parameters");
-  }
+
   // This implicitly sets variance = 0 and log_scale = 0 if not
   // given.
   static gaussian from_R(SEXP obj) {
@@ -40,6 +35,7 @@ struct gaussian {
       p.resize(3, 0.0); // variance, log_scale
     return gaussian(p[0], p[1], p[2]);
   }
+
   // Also add convolve here?
   gaussian operator*(const gaussian& rhs) const {
     const double vv = variance + rhs.variance;

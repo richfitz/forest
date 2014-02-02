@@ -32,7 +32,7 @@ test_that("Discrete creation (vector + scale)", {
   p <- c(.1, .2)
   s <- 3
 
-  d <- new(forest:::discrete, c(p, s))
+  d <- new(forest:::discrete, p, s)
   expect_that(d$size,          equals(2))
   expect_that(d$probabilities, is_identical_to(p))
   expect_that(d$log_scale,     is_identical_to(s))
@@ -41,29 +41,6 @@ test_that("Discrete creation (vector + scale)", {
   expect_that(d[[2]],          is_identical_to(p[[2]]))
   expect_that(d[[0]],          throws_error())
   expect_that(d[[3]],          throws_error())
-
-  d <- new(forest:::discrete, c(-p, s))
-  expect_that(d$size,          equals(2))
-  expect_that(d$probabilities, is_identical_to(-p))
-  expect_that(d$log_scale,     is_identical_to(s))
-  expect_that(d$valid,         is_false())
-
-  d <- new(forest:::discrete, c(rep(0, 2), s)  )
-  expect_that(d$valid,         is_false())
-
-  d <- new(forest:::discrete, c(c(1e-8, 0), s))
-  expect_that(d$valid,         is_true())
-})
-
-test_that("Discrete creation (vector + scale)", {
-  p <- c(.1, .2)
-  s <- 3
-
-  d <- new(forest:::discrete, p, s)
-  expect_that(d$size,          equals(2))
-  expect_that(d$probabilities, is_identical_to(p))
-  expect_that(d$log_scale,     is_identical_to(s))
-  expect_that(d$valid,         is_true())
 
   d <- new(forest:::discrete, -p, s)
   expect_that(d$size,          equals(2))
@@ -76,15 +53,6 @@ test_that("Discrete creation (vector + scale)", {
 
   d <- new(forest:::discrete, c(1e-8, 0), s)
   expect_that(d$valid,         is_true())
-
-  ## Coerner cases:
-  expect_that(new(forest:::discrete, numeric(0)), throws_error())
-
-  d <- new(forest:::discrete, s)
-  expect_that(d$size,          equals(0))
-  expect_that(d$probabilities, equals(numeric(0)))
-  expect_that(d$log_scale,     is_identical_to(s))
-  expect_that(d$valid,         is_false())
 })
 
 test_that("Probability product", {

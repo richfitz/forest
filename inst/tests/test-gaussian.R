@@ -38,16 +38,9 @@ test_that("Gaussian creation", {
   expect_that(g$log_scale, is_identical_to(x[["log_scale"]]))
   expect_that(g$valid,     is_true())
 
-  g <- new(forest:::gaussian, x)
-  expect_that(as.vector.gaussian(g), is_identical_to(x))
-
   g <- new(forest:::gaussian, x[["mean"]], -x[["variance"]],
            x[["log_scale"]])
   expect_that(g$valid,     is_false())
-
-  # This does throw an error, but it is obscure (Error: vector)
-  expect_that(new(forest:::gaussian, x[-1]),        throws_error())
-  expect_that(new(forest:::gaussian, x[c(1, 1:3)]), throws_error())
 })
 
 test_that("Gaussian product", {
@@ -56,8 +49,8 @@ test_that("Gaussian product", {
   y <- runif(3)
   names(x) <- names(y) <- c("mean", "variance", "log_scale")
 
-  gx <- new(forest:::gaussian, x)
-  gy <- new(forest:::gaussian, y)
+  gx <- new(forest:::gaussian, x[1], x[2], x[3])
+  gy <- new(forest:::gaussian, y[1], y[2], y[3])
 
   expect_that(as.vector.gaussian(gx$times(gy)),
               equals(gaussian.product(x, y)))
@@ -77,7 +70,7 @@ test_that("Brownian motion", {
   t <- pi
 
   ## Starting from delta function
-  x <- new(forest:::gaussian, c(mean=0, variance=0, log_scale=0))
+  x <- new(forest:::gaussian, 0, 0, 0)
   cmp <- c(mean=x$mean, variance=x$variance + t * s2,
            log_scale=x$log_scale)
 
@@ -89,8 +82,7 @@ test_that("Brownian motion", {
   ## Starting from gaussian
   v0 <- sqrt(2)
   set.seed(1)
-  x <- new(forest:::gaussian,
-           c(mean=runif(1), variance=v0, log_scale=runif(1)))
+  x <- new(forest:::gaussian, runif(1), v0, runif(1))
   cmp <- c(mean=x$mean, variance=x$variance + t * s2,
            log_scale=x$log_scale)
 
@@ -109,8 +101,8 @@ test_that("Brownian motion combine", {
   y <- runif(3)
   names(x) <- names(y) <- c("mean", "variance", "log_scale")
 
-  gx <- new(forest:::gaussian, x)
-  gy <- new(forest:::gaussian, y)
+  gx <- new(forest:::gaussian, x[1], x[2], x[3])
+  gy <- new(forest:::gaussian, y[1], y[2], y[3])
 
   expect_that(as.vector.gaussian(bm$combine(gx, gy)),
               equals(gaussian.product(x, y)))
