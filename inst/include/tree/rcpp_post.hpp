@@ -12,10 +12,7 @@ typedef rtree::subtree_wrapped_type rsubtree;
 
 // This is all we're defining for now.  Will grow over time though.
 // Really this one should only work for T_in = Rcpp::RObject and
-// Rcpp::List.  It might be that some need to go through
-//   Rcpp::as<T_out>(Rcpp::wrap(obj))
-// to work though.  That could be too much though, so only allowing
-// things that will implicitly convert to SEXP at the moment.
+// Rcpp::List.
 
 // NOTE: This does not quite do what is wanted yet; I think that it is
 // being over-eager in what is being converted.  In particular, I'd
@@ -35,7 +32,7 @@ typedef rtree::subtree_wrapped_type rsubtree;
 // this without an Rcpp type as T_in).
 template <typename T_out, typename T_in>
 T_out data_convert(const T_in& obj) {
-  return Rcpp::as<T_out>(obj);
+  return Rcpp::as<T_out>(Rcpp::wrap(obj));
 }
 
 }

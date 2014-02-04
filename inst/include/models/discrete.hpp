@@ -6,7 +6,7 @@
 //
 // I'd really like to be able to get some sort of run time static
 // sizing.  Removing the ability to resize would get me there though.
-// That would require the duplicate_topology type code to allow a
+// That would require the copy_structure type code to allow a
 // "default" value so that we don't default construct the data (which
 // leads to a zero-length case).  Ignore this issue for now though.
 // Can probably uncover all the places that this is needed by

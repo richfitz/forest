@@ -29,15 +29,7 @@ void associate_data(treetree::tree<node<T> >& tr, SEXP data,
 
 template <typename T>
 SEXP to_rtree(const treetree::const_subtree<node<T> >& tr) {
-  typedef node<Rcpp::RObject> node_target;
-  typedef node<T>             node_source;
-  treetree::tree<node_target> ret = duplicate_topology<node_target>(tr);
-  typename treetree::tree<node_target>::pre_iterator it_to = ret.begin();
-  typename treetree::tree<node_source>::const_pre_iterator it = tr.begin();
-  while (it != tr.end()) {
-    (it_to++)->data_ = Rcpp::wrap((it++)->data_);
-  }
-  return Rcpp::wrap(ret);
+  return Rcpp::wrap(copy_convert<node<Rcpp::RObject> >(tr));
 }
 
 }

@@ -85,7 +85,7 @@ test_that("associate_data", {
   expect_that(cmp[names(states.nodes)], equals(states.nodes))
 })
 
-test_that("duplicate_topology", {
+test_that("copy_structure", {
   states.tips <- structure(as.list(runif(tr$tips)),
                            names=tr$tip_labels)
   states.nodes <- structure(as.list(runif(tr$nodes)),
@@ -93,7 +93,7 @@ test_that("duplicate_topology", {
   states.all <- c(states.tips, states.nodes)
   tr$associate_data(states.all, TRUE, TRUE)
 
-  tr2 <- tr$duplicate_topology()
+  tr2 <- tr$copy_structure()
   expect_that(tr2$representation, is_identical_to(tr$representation))
   expect_that(to.newick.string(tr2),
               is_identical_to(to.newick.string(tr)))

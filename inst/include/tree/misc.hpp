@@ -286,22 +286,36 @@ SEXP to_rtree(const treetree::const_subtree<node<T> >& tr);
 //
 // The other option is to do this recursively, unfortunately.  I think
 // that the from_newick() approch might be the best.
-template <typename T_out, typename T_in>
-forest::node<T_out> duplicate_node(const forest::node<T_in>& nd) {
-  return nd.template copy_structure<T_out>();
-}
 
 template <typename T_out, typename T_in>
 treetree::tree<T_out>
-duplicate_topology(const treetree::const_subtree<T_in>& tr) {
+copy_structure(const treetree::const_subtree<T_in>& tr) {
+  typedef typename T_out::data_type data_type;
   if (tr.size() == 0)
     return treetree::tree<T_out>();
-  treetree::tree<T_out>
-    ret(duplicate_node<typename T_out::data_type>(tr.root()));
+  treetree::tree<T_out> ret(tr.root().template copy_structure<data_type>());
   if (!tr.childless()) {
     for (typename treetree::const_subtree<T_in>::const_sub_child_iterator
            it = tr.begin_sub_child(); it != tr.end_sub_child(); ++it) {
-      ret.insert(ret.end_child(), duplicate_topology<T_out>(*it));
+      ret.insert(ret.end_child(), copy_structure<T_out>(*it));
+    }
+  }
+  return ret;
+}
+
+// This is identical to copy_structure, but also does the data
+// conversion.
+template <typename T_out, typename T_in>
+treetree::tree<T_out>
+copy_convert(const treetree::const_subtree<T_in>& tr) {
+  typedef typename T_out::data_type data_type;
+  if (tr.size() == 0)
+    return treetree::tree<T_out>();
+  treetree::tree<T_out> ret(tr.root().template copy_convert<data_type>());
+  if (!tr.childless()) {
+    for (typename treetree::const_subtree<T_in>::const_sub_child_iterator
+           it = tr.begin_sub_child(); it != tr.end_sub_child(); ++it) {
+      ret.insert(ret.end_child(), copy_convert<T_out>(*it));
     }
   }
   return ret;
@@ -309,8 +323,14 @@ duplicate_topology(const treetree::const_subtree<T_in>& tr) {
 
 template <typename T_out, typename T_in>
 treetree::tree<T_out>
-duplicate_topology(const treetree::tree<T_in>& tr) {
-  return duplicate_topology<T_out>(treetree::const_subtree<T_in>(tr));
+copy_structure(const treetree::tree<T_in>& tr) {
+  return copy_structure<T_out>(treetree::const_subtree<T_in>(tr));
+}
+
+template <typename T_out, typename T_in>
+treetree::tree<T_out>
+copy_convert(const treetree::tree<T_in>& tr) {
+  return copy_convert<T_out>(treetree::const_subtree<T_in>(tr));
 }
 
 }

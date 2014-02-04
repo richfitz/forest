@@ -42,7 +42,7 @@ test_that("Construct with root node", {
 
   expect_that(tr$is_binary, throws_error()) # not defined
 
-  tr2 <- tr$duplicate_topology()
+  tr2 <- tr$copy_structure()
   expect_that(tr2$root_node$label,  is_identical_to(tr$root_node$label))
   expect_that(tr2$root_node$length, is_identical_to(tr$root_node$length))
   expect_that(tr2$root_node$data,   equals(NULL))

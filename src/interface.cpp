@@ -45,7 +45,7 @@ RCPP_MODULE(forest) {
     .field_readonly("height",    &rnode::height_)
     .field_readonly("depth",     &rnode::depth_)
 
-    .method("copy",              &rnode::copy<Rcpp::RObject>)
+    .method("copy",              &rnode::copy_convert<Rcpp::RObject>)
     .method("equals",            &rnode::operator==)
     ;
 
@@ -96,7 +96,7 @@ RCPP_MODULE(forest) {
 
     .method("check_names",       &rtree::check_names)
     .method("associate_data",    &rtree::associate_data)
-    .method("duplicate_topology",&rtree::duplicate_topology)
+    .method("copy_structure",    &rtree::copy_structure)
     ;
 
   Rcpp::class_<rsubtree>("rsubtree")

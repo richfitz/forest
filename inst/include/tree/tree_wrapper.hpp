@@ -189,8 +189,8 @@ public:
     forest::associate_data(tree_, data, tip, node);}
 
   // This version returns only the same type of tree back:
-  treetree::tree<T> duplicate_topology() const {
-    return forest::duplicate_topology<T,T>(treetree::const_subtree<T>(tree_));
+  treetree::tree<T> copy_structure() const {
+    return forest::copy_structure<T,T>(treetree::const_subtree<T>(tree_));
   }
 
   treetree::subtree<T> get_subtree(const std::string& label) {

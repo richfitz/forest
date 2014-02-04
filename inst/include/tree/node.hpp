@@ -73,7 +73,7 @@ struct node {
     return ret;
   }
   template <typename U>
-  node<U> copy() const {
+  node<U> copy_convert() const {
     node<U> ret(label_, length_, data_convert<U>(data_));
     ret.height_ = height_;
     ret.depth_  = depth_;
