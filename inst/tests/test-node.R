@@ -139,23 +139,3 @@ test_that("Node equality", {
   ## Though they differ from nodes with an edge length:
   expect_that(nd7$equals(nd1), is_false())
 })
-
-test_that("Testing wrapping function", {
-  nd.i <- forest:::node_with_twice_length_int(pi)
-  expect_that(nd.i$data, is_identical_to(6L))
-  nd.d <- forest:::node_with_twice_length_double(pi)
-  expect_that(nd.d$data, is_identical_to(2*pi))
-
-  expect_that(forest:::node_data_int(nd.i), is_identical_to(6L))
-  expect_that(forest:::node_data_double(nd.d), is_identical_to(2 * pi))
-
-  nd.i2 <- forest:::combine_int(nd.i, nd.i)
-  nd.d2 <- forest:::combine_double(nd.d, nd.d)
-  expect_that(nd.i2$length, is_identical_to(4*pi))
-  expect_that(nd.d2$length, is_identical_to(4*pi))
-  expect_that(nd.i2$data, is_identical_to(12L))
-  expect_that(nd.d2$data, is_identical_to(4*pi))
-
-  nd.g <- forest:::node_with_twice_length_general(pi)
-  expect_that(nd.g$data, is_identical_to(NULL))
-})

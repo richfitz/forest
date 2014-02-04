@@ -15,11 +15,6 @@ calculator_bm;
 // Also requiring module export below.
 RCPP_EXPOSED_CLASS_NODECL(forest::tree_wrapped<gnode>)
 
-gnode_test test_convert_node(forest::rnode::node_type nd);
-gnode_test test_convert_node(forest::rnode::node_type nd) {
-  return nd.copy_structure<forest::models::gaussian>();
-}
-
 #ifdef __clang__
 #pragma clang diagnostic push
 // These I have no control over because they're Rcpp issues.
@@ -93,7 +88,6 @@ RCPP_MODULE(models) {
     .method("to_rtree", &forest::tree_wrapped<gnode>::to_rtree)
     ;
 
-  Rcpp::function("test_convert_node",  &test_convert_node);
   Rcpp::function("build_gaussian_tree",
                  &forest::models::build_model_tree<forest::models::gaussian>);
   Rcpp::function("all_branches_bm",
