@@ -30,6 +30,15 @@
 
 namespace forest {
 
+// This is needed to deal with the conversion of 'data' elements.
+// However, the actual definition is deferred until after Rcpp is
+// loaded because we're going to make use of that code there quite
+// extensively.
+//
+// NOTE: This might be better in a utility file?
+template <typename T_out, typename T_in>
+T_out data_convert(const T_in& obj);
+
 // NOTE: The constructor dance below is a bit annoying; I assume that
 // it makes the least sense to initialise a node without a label, then
 // an edge length, and then some data.  That's not always going to be
@@ -51,6 +60,25 @@ struct node {
   node(const std::string& label, double length, const data_type& data)
     : label_(label), length_(length),  data_(data),
       height_(NA_REAL), depth_(NA_REAL) {}
+
+  // Note that these are not done via a runtime argument because that
+  // would require that T *is* convertable to U, and I don't know that
+  // is the case for sure.  One of these might be slightly better as a
+  // copy constructor though (probably the with-data version).
+  template <typename U>
+  node<U> copy_structure() const {
+    node<U> ret(label_, length_);
+    ret.height_ = height_;
+    ret.depth_  = depth_;
+    return ret;
+  }
+  template <typename U>
+  node<U> copy() const {
+    node<U> ret(label_, length_, data_convert<U>(data_));
+    ret.height_ = height_;
+    ret.depth_  = depth_;
+    return ret;
+  }
 
   bool operator==(const node<data_type>& rhs) const {
     return (label_       == rhs.label_       &&

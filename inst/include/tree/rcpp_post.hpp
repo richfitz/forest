@@ -9,6 +9,35 @@ namespace forest {
 typedef forest::node_wrapped<Rcpp::RObject>    rnode;
 typedef forest::tree_wrapped<rnode::node_type> rtree;
 typedef rtree::subtree_wrapped_type            rsubtree;
+
+// This is all we're defining for now.  Will grow over time though.
+// Really this one should only work for T_in = Rcpp::RObject and
+// Rcpp::List.  It might be that some need to go through
+//   Rcpp::as<T_out>(Rcpp::wrap(obj))
+// to work though.  That could be too much though, so only allowing
+// things that will implicitly convert to SEXP at the moment.
+
+// NOTE: This does not quite do what is wanted yet; I think that it is
+// being over-eager in what is being converted.  In particular, I'd
+// like to specialise this so that we only go down this route when
+// T_in is Rcpp::RObject, but using the definition
+//
+//   template <typename T_out>
+//   T_out data_convert(const Rcpp::RObject& obj) {
+//     return Rcpp::as<T_out>(obj);
+//   }
+//
+// gives a linker error.
+//
+// At the least it would be nice to specialise the T_out = T_in case
+// to avoid a bunch of allocations.  This will have to do for now
+// though (also, without careful tests I don't know when or if we use
+// this without an Rcpp type as T_in).
+template <typename T_out, typename T_in>
+T_out data_convert(const T_in& obj) {
+  return Rcpp::as<T_out>(obj);
+}
+
 }
 
 RCPP_EXPOSED_CLASS_NODECL(forest::rnode)
@@ -25,9 +54,7 @@ RCPP_EXPOSED_CLASS_NODECL(forest::rsubtree)
 namespace {
 template <typename T>
 forest::node<T> helper_node_wrapped(SEXP obj) {
-  forest::node<Rcpp::RObject> nd =
-    Rcpp::as<forest::node_wrapped<Rcpp::RObject> >(obj).node_;
-  return forest::node<T>(nd.label_, nd.length_, Rcpp::as<T>(nd.data_));
+  return Rcpp::as<forest::node_wrapped<Rcpp::RObject> >(obj).node_.copy<T>();
 }
 }
 

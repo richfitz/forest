@@ -288,7 +288,7 @@ SEXP to_rtree(const treetree::const_subtree<node<T> >& tr);
 // that the from_newick() approch might be the best.
 template <typename T_out, typename T_in>
 forest::node<T_out> duplicate_node(const forest::node<T_in>& nd) {
-  return forest::node<T_out>(nd.label_, nd.length_);
+  return nd.template copy_structure<T_out>();
 }
 
 template <typename T_out, typename T_in>
@@ -305,6 +305,12 @@ duplicate_topology(const treetree::const_subtree<T_in>& tr) {
     }
   }
   return ret;
+}
+
+template <typename T_out, typename T_in>
+treetree::tree<T_out>
+duplicate_topology(const treetree::tree<T_in>& tr) {
+  return duplicate_topology<T_out>(treetree::const_subtree<T_in>(tr));
 }
 
 }

@@ -17,7 +17,7 @@ RCPP_EXPOSED_CLASS_NODECL(forest::tree_wrapped<gnode>)
 
 gnode_test test_convert_node(forest::rnode::node_type nd);
 gnode_test test_convert_node(forest::rnode::node_type nd) {
-  return forest::duplicate_node<forest::models::gaussian>(nd);
+  return nd.copy_structure<forest::models::gaussian>();
 }
 
 #ifdef __clang__
