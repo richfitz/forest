@@ -2,6 +2,7 @@
 
 #include "tree/ape.hpp"
 #include "tree/newick.hpp"
+#include "tree/plotting.hpp"
 
 // Temporary -- used in treeapply
 template <typename T>
@@ -144,4 +145,7 @@ RCPP_MODULE(forest) {
                  &forest::to_ape_internal<rtree::node_type>);
 
   Rcpp::function("drain_tree",   &drain_tree<rtree::node_type>);
+
+  Rcpp::function("plotting_coordinates",
+                 &forest::plotting::coordinates);
 }

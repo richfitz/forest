@@ -1,5 +1,5 @@
 SOURCES_TEST = test_iterator_wrapper.cpp test_tree.cpp
-SOURCES_REAL = interface.cpp models.cpp util.cpp
+SOURCES_REAL = interface.cpp models.cpp util.cpp plotting.cpp
 SOURCES = $(SOURCES_REAL) $(SOURCES_TEST)
 
 TARGETS = forest.so

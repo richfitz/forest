@@ -30,9 +30,22 @@ typedef rtree::subtree_wrapped_type rsubtree;
 // to avoid a bunch of allocations.  This will have to do for now
 // though (also, without careful tests I don't know when or if we use
 // this without an Rcpp type as T_in).
+//
+// There is also the real possibility that we'll end up running into
+// issues with having return-value overloading.  I might have to
+// overload something like the exporter interface within Rcpp to make
+// this work nicely.  This is actually a totally non-trivial piece of
+// code.  The only thing guaranteed is that it is going to copy.
 template <typename T_out, typename T_in>
 T_out data_convert(const T_in& obj) {
   return Rcpp::as<T_out>(Rcpp::wrap(obj));
+}
+// An Rcpp::List *is* an Rcpp::RObject (this holds for other types
+// too, and it is possible that the above templating would expand to
+// basically do this).  But this seems like a good idea at least.
+template <>
+inline Rcpp::RObject data_convert(const Rcpp::List& obj) {
+  return static_cast<Rcpp::RObject>(obj);
 }
 
 }
@@ -54,6 +67,13 @@ SEXP wrap(const treetree::tree<T>& obj) {
 template <typename T>
 SEXP wrap(const treetree::subtree<T>& obj) {
   return Rcpp::wrap(forest::subtree_wrapped<T>(obj));
+}
+
+template<>
+inline SEXP wrap(const treetree::tree<forest::node<Rcpp::List> >& obj) {
+  typedef forest::node<Rcpp::List>    T_in;
+  typedef forest::node<Rcpp::RObject> T_out;
+  return Rcpp::wrap(forest::copy_convert<T_out,T_in>(obj));
 }
 
 namespace traits {
