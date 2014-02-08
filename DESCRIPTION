@@ -8,11 +8,15 @@ Description: Still working this out.  Based on treetree r6, itself
     licenced under the Apache licence
     (https://code.google.com/p/treetree/source/list)
 License: BSD_2_clause + file LICENSE
+Imports:
+    grid
 Depends:
     methods,
     Rcpp (>= 0.10.6)
 Suggests:
     testthat,
     ape,
-    diversitree, expm, deSolve
+    diversitree,
+    expm,
+    deSolve
 LinkingTo: Rcpp, BH

@@ -5,6 +5,7 @@ library(forest)
 library(ape)
 library(diversitree)
 library(deSolve)
+library(grid)
 suppressMessages(library(expm))
 
 # Oops; there's namespace confict here.
