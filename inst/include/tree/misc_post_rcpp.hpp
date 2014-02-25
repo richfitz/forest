@@ -32,6 +32,24 @@ SEXP to_rtree(const treetree::const_subtree<node<T> >& tr) {
   return Rcpp::wrap(copy_convert<node<Rcpp::RObject> >(tr));
 }
 
+// TODO: This splits into two parts I think, so that the pulling
+// things out of the integer tree can be recycled.
+template <typename T>
+Rcpp::IntegerVector r_classify(const treetree::tree<T>& tr,
+                               const std::string& label) {
+  treetree::tree<forest::node<int> > tmp = classify(tr, label);
+  Rcpp::IntegerVector ret;
+  std::vector<std::string> names;
+  names.reserve(tr.size());
+  for (treetree::tree<forest::node<int> >::const_pre_iterator
+         it = tmp.begin(); it != tmp.end(); ++it) {
+    ret.push_back(it->data_);
+    names.push_back(it->label_);
+  }
+  ret.attr("names") = names;
+  return ret;
+}
+
 }
 
 #endif

@@ -145,6 +145,8 @@ RCPP_MODULE(forest) {
                  &forest::to_ape_internal<rtree::node_type>);
 
   Rcpp::function("drain_tree",   &drain_tree<rtree::node_type>);
+  Rcpp::function("classify",
+                 &forest::r_classify<rtree::node_type>);
 
   Rcpp::function("plotting_coordinates",
                  &forest::plotting::coordinates);

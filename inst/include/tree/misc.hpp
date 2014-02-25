@@ -333,6 +333,26 @@ copy_convert(const treetree::tree<T_in>& tr) {
   return copy_convert<T_out>(treetree::const_subtree<T_in>(tr));
 }
 
+// Classify a tree according to node labels.  Eventually becomes the
+// MEDUSA classification algorithm.
+//
+// TODO: Generalise by using const_subtree<T>& tr, I think.
+template <typename T>
+treetree::tree<forest::node<int> > classify(const treetree::tree<T>& tr,
+                                            const std::string& label) {
+  typedef forest::node<int>     inode;
+  typedef treetree::tree<inode> itree;
+  typedef itree::pre_iterator   iterator;
+  // This should initialise all the node data to zero.  Check though.
+  treetree::tree<inode> itr = copy_structure<inode>(tr);
+
+  treetree::subtree<inode> sub = subtree_at_label(itr, label);
+  for (iterator it = sub.begin(); it != sub.end(); ++it) {
+    it->data_ = 1;
+  }
+  return itr;
+}
+
 }
 
 #endif
