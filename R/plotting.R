@@ -53,17 +53,11 @@ treeGrob <- function(tree, direction="right",
     xy[spacing_cols] <- spacing_to_angle(xy[spacing_cols], n=sum(xy$is_tip))
   }
 
-  seg_t <- tree_seg_timeGrob(xy$time_rootward, xy$time_tipward,
-                             xy$spacing_mid, label=rownames(xy),
-                             is_tip=xy$is_tip, name="seg_t",
-                             direction=direction, gp=gp, vp=cvp$name)
-  seg_s <- tree_seg_spacingGrob(xy$spacing_min, xy$spacing_max,
-                                xy$time_tipward, label=rownames(xy),
-                                is_tip=xy$is_tip, name="seg_s",
-                                direction=direction, gp=gp, vp=cvp$name)
+  branches <- tree_branchesGrob(xy, direction=direction,
+                                name="branches", gp=gp, vp=cvp$name)
 
   gTree(tree=tree, direction=direction,
-        children=gList(seg_t, seg_s),
+        children=gList(branches),
         childrenvp=cvp, name=name, gp=gp, vp=vp, cl="tree")
 }
 
@@ -113,10 +107,11 @@ add_tree_labels_internal <- function(tree_grob,
                                      tip=FALSE, node=FALSE, rot=0,
                                      name=NULL, gp=gpar()) {
   offset_t <- normalise_time(offset, tree_grob$direction)
-  seg_t <- tree_grob$children$seg_t
-  i <- (seg_t$is_tip & tip) | (!seg_t$is_tip & node)
-  add_tree_labels(tree_grob, seg_t$label[i],
-                  native(seg_t$t1[i]) + offset_t, seg_t$s[i], rot,
+  branches <- tree_grob$children$branches
+  i <- (branches$is_tip & tip) | (!branches$is_tip & node)
+  add_tree_labels(tree_grob, branches$label[i],
+                  native(branches$time_tipward[i]) + offset_t,
+                  branches$spacing_mid[i], rot,
                   name=name, gp=gp)
 }
 
@@ -167,17 +162,20 @@ scaling_viewport <- function(lim_t, lim_s, direction, ...) {
 }
 
 ## The two types of tree component lines; along  time (time grobs) and
-## along spacing (spacing grobs)
-tree_seg_timeGrob <- function(t0, t1, s, label, is_tip, direction,
+## along spacing (spacing grobs).  It might be better to store this as
+## a gList, but that requires some care about storing different
+## graphical parameters.
+tree_branchesGrob <- function(xy, direction,
                               name=NULL, gp=NULL, vp=NULL) {
-  grob(t0=t0, t1=t1, s=s, label=label, is_tip=is_tip, direction=direction,
-       name=name, gp=gp, vp=vp, cl="tree_seg_time")
+  grob(label=rownames(xy),
+       time_tipward=xy$time_tipward, time_rootward=xy$time_rootward,
+       spacing_min=xy$spacing_min,   spacing_max=xy$spacing_max,
+       spacing_mid=xy$spacing_mid,
+       is_tip=xy$is_tip,
+       direction=direction, name=name, gp=gp, vp=vp,
+       cl="tree_branches")
 }
-tree_seg_spacingGrob <- function(s0, s1, t, label, is_tip, direction,
-                                 name=NULL, gp=NULL, vp=NULL) {
-  grob(s0=s0, s1=s1, t=t, label=label, is_tip=is_tip, direction=direction,
-       name=name, gp=gp, vp=vp, cl="tree_seg_spacing")
-}
+
 ## This is basically the same as a textGrob, but the units are in
 ## terms of spacing and time.
 ##
@@ -199,25 +197,33 @@ tree_labelGrob <- function(label, t, s, direction, rot=0,
        name=name, gp=gp, vp=vp, cl="tree_label")
 }
 
-##' @S3method drawDetails tree_seg_time
-drawDetails.tree_seg_time <- function(x, recording=TRUE) {
+##' @S3method drawDetails tree_branches
+drawDetails.tree_branches <- function(x, recording=TRUE) {
   if (x$direction == "circle") {
-    grid.ray(native(x$t0), native(x$t1), x$s)
+    # time
+    grid.ray(native(x$time_rootward), native(x$time_tipward),
+             x$spacing_mid, gp=x$gp)
+    # spacing
+    grid.arc(native(x$time_tipward), x$spacing_min,
+             x$spacing_max, gp=x$gp)
   } else if (x$direction %in% c("left", "right")) {
-    grid.segments(x$t0, x$s, x$t1, x$s, gp=x$gp, default.units="native")
+    # time
+    grid.segments(x$time_rootward, x$spacing_mid,
+                  x$time_tipward, x$spacing_mid,
+                  gp=x$gp, default.units="native")
+    # spacing
+    grid.segments(x$time_tipward, x$spacing_min,
+                  x$time_tipward, x$spacing_max,
+                  gp=x$gp, default.units="native")
   } else {
-    grid.segments(x$s, x$t0, x$s, x$t1, gp=x$gp, default.units="native")
-  }
-}
-
-##' @S3method drawDetails tree_seg_spacing
-drawDetails.tree_seg_spacing <- function(x, recording=TRUE) {
-  if (x$direction == "circle") {
-    grid.arc(native(x$t), x$s0, x$s1)
-  } else if (x$direction %in% c("left", "right")) {
-    grid.segments(x$t, x$s0, x$t, x$s1, gp=x$gp, default.units="native")
-  } else {
-    grid.segments(x$s0, x$t, x$s1, x$t, gp=x$gp, default.units="native")
+    # time:
+    grid.segments(x$spacing_mid, x$time_rootward,
+                  x$spacing_mid, x$time_tipward,
+                  gp=x$gp, default.units="native")
+    # spacing
+    grid.segments(x$spacing_min, x$time_tipward,
+                  x$spacing_max, x$time_tipward,
+                  gp=x$gp, default.units="native")
   }
 }
 

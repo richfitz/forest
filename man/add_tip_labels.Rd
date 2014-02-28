@@ -3,9 +3,9 @@
 \alias{add_tip_labels}
 \title{Add Tip and Node Labels to a Plotted Tree}
 \usage{
-add_tip_labels(tree_grob, ...)
+add_tip_labels(tree_grob, name = "tip_labels", ...)
 
-add_node_labels(tree_grob, ...)
+add_node_labels(tree_grob, name = "node_labels", ...)
 }
 \arguments{
   \item{tree_grob}{A tree grob, created by

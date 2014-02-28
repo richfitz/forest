@@ -85,24 +85,17 @@ test_that("treeGrob construction", {
     ## There is a viewport for scaling:
     expect_that(tg$childrenvp$name, equals("scaling"))
 
-    ## These possibly could get relaxed:
-    expect_that(names(tg$children), equals(c("seg_t", "seg_s")))
-
-    expect_that(tg$children$seg_t, is_a("tree_seg_time"))
-    expect_that(tg$children$seg_s, is_a("tree_seg_spacing"))
-
-    expect_that(tg$children$seg_t$vp, is_identical_to(vpPath("scaling")))
-    expect_that(tg$children$seg_s$vp, is_identical_to(vpPath("scaling")))
+    expect_that(names(tg$children), equals("branches"))
+    expect_that(tg$children$branches, is_a("tree_branches"))
+    expect_that(tg$children$branches$vp, is_identical_to(vpPath("scaling")))
 
     ## Probably worth testing here that everything is good within
     ## these, but that could get hard.  These are relatively
     ## unmodified though.
-    expect_that(names(tg$children$seg_t),
-                equals(c("t0", "t1", "s", "label", "is_tip",
-                         "direction", "name", "gp", "vp")))
-    expect_that(names(tg$children$seg_s),
-                equals(c("s0", "s1", "t", "label", "is_tip",
-                         "direction", "name", "gp", "vp")))
+    expect_that(names(tg$children$branches),
+                equals(c("label", "time_tipward", "time_rootward",
+                         "spacing_min", "spacing_max", "spacing_mid",
+                         "is_tip", "direction", "name", "gp", "vp")))
     if (interactive()) {
       grid.newpage()
       popViewport(0)
@@ -129,8 +122,7 @@ test_that("Labels", {
     tg <- add_node_labels(tg, gp=gp.node)
 
     expect_that(names(tg$children),
-                equals(c("seg_t", "seg_s",
-                         "tip_labels", "node_labels")))
+                equals(c("branches", "tip_labels", "node_labels")))
     expect_that(tg$children$tip_labels,  is_a("tree_label"))
     expect_that(tg$children$node_labels, is_a("tree_label"))
     expect_that(tg$children$tip_labels$gp, is_identical_to(gp.tip))
