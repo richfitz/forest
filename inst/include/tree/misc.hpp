@@ -333,17 +333,21 @@ copy_convert(const treetree::tree<T_in>& tr) {
 //
 // TODO: Generalise by using const_subtree<T>& tr, I think.
 template <typename T>
-treetree::tree<forest::node<int> > classify(const treetree::tree<T>& tr,
-                                            const std::string& label) {
+treetree::tree<forest::node<int> >
+classify(const treetree::tree<T>& tr,
+         const std::vector<std::string>& labels) {
   typedef forest::node<int>     inode;
   typedef treetree::tree<inode> itree;
   typedef itree::pre_iterator   iterator;
-  // This should initialise all the node data to zero.  Check though.
+  if (labels.size() > 1)
+    stop("Can't process multiple labels yet");
+  // This initialises all the node data to zero.
   treetree::tree<inode> itr = copy_structure<inode>(tr);
-
-  treetree::subtree<inode> sub = subtree_at_label(itr, label);
-  for (iterator it = sub.begin(); it != sub.end(); ++it) {
-    it->data_ = 1;
+  for (int i = 0; i < static_cast<int>(labels.size()); ++i) {
+    treetree::subtree<inode> sub = subtree_at_label(itr, labels[i]);
+    for (iterator it = sub.begin(); it != sub.end(); ++it) {
+      it->data_ = i;
+    }
   }
   return itr;
 }

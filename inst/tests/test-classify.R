@@ -15,10 +15,9 @@ label <- unlist(treeapply(tr, function(x) x$label))
 ## subtree as an argument properly and simply crashes.  That's going
 ## to be entertaining to fix.
 
-## TODO: This should return vector of zeros.
 test_that("Classification of empty tree fails", {
   expect_that(classify(tr, character(0)),
-              throws_error())
+              equals(structure(rep(0L, tr$size), names=label)))
 })
 
 test_that("Classification of a single clade", {
@@ -35,3 +34,7 @@ test_that("Classification of a single clade", {
 })
 
 ## TODO: Multi-regime cases.
+test_that("Classification of a pair of clades", {
+  expect_that(classify(tr, c("n5", "n6")),
+              throws_error())
+})

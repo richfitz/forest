@@ -32,12 +32,13 @@ SEXP to_rtree(const treetree::const_subtree<node<T> >& tr) {
   return Rcpp::wrap(copy_convert<node<Rcpp::RObject> >(tr));
 }
 
-// TODO: This splits into two parts I think, so that the pulling
-// things out of the integer tree can be recycled.
+// Tree classification.  See misc.hpp for the actual meat here; this
+// just wraps it up so that we end up with a named integer vector,
+// rather than a bunch of numbers in pre-order traversal order.
 template <typename T>
 Rcpp::IntegerVector r_classify(const treetree::tree<T>& tr,
-                               const std::string& label) {
-  treetree::tree<forest::node<int> > tmp = classify(tr, label);
+                               const std::vector<std::string>& labels) {
+  treetree::tree<forest::node<int> > tmp = classify(tr, labels);
   Rcpp::IntegerVector ret;
   std::vector<std::string> names;
   names.reserve(tr.size());
