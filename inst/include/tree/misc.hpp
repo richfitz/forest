@@ -339,14 +339,18 @@ classify(const treetree::tree<T>& tr,
   typedef forest::node<int>     inode;
   typedef treetree::tree<inode> itree;
   typedef itree::pre_iterator   iterator;
-  if (labels.size() > 1)
-    stop("Can't process multiple labels yet");
+  if (!util::is_unique(labels))
+    stop("Labels must be unique");
+
   // This initialises all the node data to zero.
   treetree::tree<inode> itr = copy_structure<inode>(tr);
-  for (int i = 0; i < static_cast<int>(labels.size()); ++i) {
+  for (size_t i = 0; i < labels.size(); ++i) {
     treetree::subtree<inode> sub = subtree_at_label(itr, labels[i]);
+    int base = sub.root().data_, regime = i + 1;
     for (iterator it = sub.begin(); it != sub.end(); ++it) {
-      it->data_ = i;
+      if (it->data_ == base) {
+        it->data_ = regime;
+      }
     }
   }
   return itr;

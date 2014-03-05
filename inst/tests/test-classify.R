@@ -23,8 +23,8 @@ test_that("Classification of empty tree fails", {
 test_that("Classification of a single clade", {
   classify1.manual <- function(nd) {
     base <- structure(rep(0L, tr$size), names=label)
-    sub.n5 <- tr$get_subtree(nd)
-    base[c(sub.n5$tip_labels, sub.n5$node_labels)] <- 1L
+    sub <- tr$get_subtree(nd)
+    base[c(sub$tip_labels, sub$node_labels)] <- 1L
     base
   }
 
@@ -35,6 +35,28 @@ test_that("Classification of a single clade", {
 
 ## TODO: Multi-regime cases.
 test_that("Classification of a pair of clades", {
-  expect_that(classify(tr, c("n5", "n6")),
-              throws_error())
+  classify.manual <- function(nd) {
+    base <- structure(rep(0L, tr$size), names=label)
+    for (i in nd) {
+      sub <- tr$get_subtree(i)
+      j <- c(sub$tip_labels, sub$node_labels)
+      base[j][base[j] == base[[sub$root_node$label]]] <- max(base) + 1L
+    }
+    base
+  }
+
+  ## TODO: This is quite slow (1.5s), but I like that it's
+  ## exhaustive.  The slowness is almost entirely the .manual
+  ## version and a good chunk of that is the various overheads (Rcpp
+  ## and S4).  There are 384 tests being done here, so that's a lot!
+  for (i in label) {
+    for (j in label) {
+      if (i == j) {
+        expect_that(classify(tr, c(i, j)), throws_error())
+      } else {
+        expect_that(classify(tr, c(i, j)),
+                    equals(classify.manual(c(i, j))))
+      }
+    }
+  }
 })

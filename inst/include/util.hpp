@@ -4,6 +4,8 @@
 #include <string>
 #include <algorithm> // std::swap
 #include <sstream>
+#include <vector>
+#include <set>
 
 namespace forest {
 
@@ -18,6 +20,13 @@ inline double string_to_double(const std::string& str) {
   if (!(i >> x))
     stop("failed to convert " + str + " to double");
   return x;
+}
+
+// From http://stackoverflow.com/questions/2769174/determining-if-an-unordered-vectort-has-all-unique-elements
+template <class T>
+bool is_unique(const std::vector<T>& x) {
+  std::set<T> y(x.begin(), x.end());
+  return x.size() == y.size();
 }
 
 template<typename T>
