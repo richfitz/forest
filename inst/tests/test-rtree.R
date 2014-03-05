@@ -133,7 +133,6 @@ test_that("get_subtree", {
   str <- tr$representation
 
   expect_that(tr$get_subtree("not_in_tree"), throws_error())
-  expect_that(tr$get_subtree("t1"),          throws_error())
 
   target <- "n2"
   sub2 <- tr$get_subtree(target)
@@ -148,7 +147,6 @@ test_that("get_subtree", {
   expect_that(tr$representation, is_identical_to(str2))
 
   expect_that(sub2$get_subtree("not_in_tree"), throws_error())
-  expect_that(sub2$get_subtree("t6"),          throws_error())
   # Node exists, but not within this subtree, so error:
   expect_that(sub2$get_subtree("n8"),          throws_error())
 
@@ -173,6 +171,12 @@ test_that("get_subtree", {
   sub4$root_node = nd4
   ## This change has *not* propagated up to the main tree:
   expect_that(tr$representation, is_identical_to(str3))
+
+  ## Terminal subtrees:
+  sub1 <- tr$get_subtree("t1")
+  expect_that(sub1$representation, equals("t1"))
+  expect_that(sub1$tips,  equals(1))
+  expect_that(sub1$nodes, equals(0))
 })
 
 test_that("is_tree_ultrametric", {

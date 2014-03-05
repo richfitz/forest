@@ -191,7 +191,10 @@ struct label_finder {
 template <typename T, typename Iterator>
 Iterator locate_node_by_label(Iterator first, Iterator last,
                               const std::string& label) {
-  return std::find_if(first, last, label_finder<T>(label));
+  Iterator ret = std::find_if(first, last, label_finder<T>(label));
+  if (ret == last)
+    stop("Did not find node " + label + " in tree\n");
+  return ret;
 }
 
 template <typename T, typename Iterator>
@@ -205,40 +208,32 @@ template <typename T, typename Iterator>
 Iterator locate_tip_by_label(Iterator first, Iterator last,
                              const std::string& label) {
   Iterator ret = locate_node_by_label<T>(first, last, label);
-  if (ret == last)
-    stop("Did not find tip " + label + " in tree\n");
   if (!is_terminal<T>(ret))
     stop("The label " + label + " is not terminal\n");
   return ret;
 }
 
-// TODO: Repetition with above; combine with flags perhaps?
 template <typename T, typename Iterator>
 Iterator locate_internal_by_label(Iterator first, Iterator last,
                                   const std::string& label) {
   Iterator ret = locate_node_by_label<T>(first, last, label);
-  if (ret == last)
-    stop("Did not find node " + label + " in tree\n");
   if (is_terminal<T>(ret))
     stop("The label " + label + " is not internal\n");
   return ret;
 }
 
-// NOTE: Currently, will refuse to return a subtree of a terminal
-// node; not sure if that is the best behaviour or not, actually.
-// Could be useful in some contexts.
 template <typename T>
 treetree::subtree<T> subtree_at_label(treetree::subtree<T>& tr,
                                       const std::string& label) {
-  return *locate_internal_by_label<T>(tr.begin_sub(), tr.end_sub(),
-                                      label);
+  return *locate_node_by_label<T>(tr.begin_sub(), tr.end_sub(),
+                                  label);
 }
 
 template <typename T>
 treetree::subtree<T> subtree_at_label(treetree::tree<T>& tr,
                                       const std::string& label) {
-  return *locate_internal_by_label<T>(tr.begin_sub(), tr.end_sub(),
-                                      label);
+  return *locate_node_by_label<T>(tr.begin_sub(), tr.end_sub(),
+                                  label);
 }
 
 // Check that all tip and/or node labels are present in the vector
