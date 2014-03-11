@@ -342,3 +342,65 @@ normalise_time <- function(unit, direction) {
     stop("Invalid argument")
   }
 }
+
+##' Apply graphics parameters to parts of a tree, varying based on
+##' parent nodes.  The tree gets split into different regimes; there
+##' is a base regime starting at the root, and then a series of
+##' regimes painted onto the tree using the MEDUSA algorithm.  These
+##' regimes can be nested.
+##'
+##' Generally, use the wrapper functions (\code{style_branches},
+##' \code{style_tip_labels}, \code{style_node_labels}) but the
+##' low-level \code{style_thing} allows changing graphical parameters
+##' of any member of the tree grob with a \code{labels} member.
+##' @title Style Tree By Node
+##' @param tree_grob A tree grob, created by \code{\link{treeGrob}}
+##' @param what The child member of \code{tree_grob} to style.  At
+##' present, values of "branches", "tip_labels" and "node_labels" are
+##' supported, but any child member of \code{tree_grob} could be used
+##' here.  A vector of names is allowed.
+##' @param ... Named graphical parameters.  E.g., pass in
+##' \code{node5=gpar(col="red")} will colour all descendents of "node5"
+##' red.
+##' @param base Base graphical parameters (by default \code{gpar()}).
+##' @return A tree grob
+##' @author Rich FitzJohn
+##' @export
+##' @rdname style
+style_thing <- function(tree_grob, what, ..., base=NULL) {
+  targets <- list(...)
+  if (length(targets) != 1) # should be easy with 0, ok with >1
+    stop("Can't do anything with this yet")
+  cl <- forest:::classify(tree_grob$tree, names(targets)) + 1L
+
+  for (w in what) {
+    if (!(w %in% names(tree_grob$children)))
+      stop("No child member ", w, " within this tree")
+    thing <- tree_grob$children[[w]]
+    if (!("label" %in% names(thing)))
+      stop("Tree member ", w, " does not have a label member")
+    base.w <- if (is.null(base)) thing$gp else base
+    # It might be best here to delay this till the drawDetails part,
+    # or at least retrigger base lookup.
+    tree_grob$children[[w]]$gp <-
+      combine_gpars(c(list(base.w), targets), unname(cl[thing$label]))
+  }
+  invisible(tree_grob)
+}
+
+## Simple helper functions:
+##' @export
+##' @rdname style
+style_branches <- function(tree_grob, ...) {
+  style_thing(tree_grob, "branches", ...)
+}
+##' @export
+##' @rdname style
+style_tip_labels <- function(tree_grob, ...) {
+  style_thing(tree_grob, "tip_labels", ...)
+}
+##' @export
+##' @rdname style
+style_node_labels <- function(tree_grob, ...) {
+  style_thing(tree_grob, "node_labels", ...)
+}

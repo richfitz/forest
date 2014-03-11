@@ -31,7 +31,7 @@
 ##' validation: each element is a scalar.
 ##' @title Combine Graphical Parameters
 ##' @author Rich FitzJohn
-##' @param list An R list (not a \codeg{gpar} list), each element of
+##' @param list An R list (not a \code{gpar} list), each element of
 ##' which is a \code{gpar} list).  The first element is taken as the
 ##' "base" parameters.
 ##' @param index
@@ -45,6 +45,7 @@ combine_gpars <- function(list, index) {
     stop("Need at least a base set of graphics parameters")
   if (min(index) < 1 || max(index) > length(list))
     stop("Invalid indices in index")
+  list <- lapply(list, check_gpar)
   if (length(list) == 1)
     return(list[[1]])
 
@@ -60,4 +61,17 @@ combine_gpars <- function(list, index) {
   names(ret) <- keys
   class(ret) <- "gpar"
   ret
+}
+
+## This checks that an object is a gpar (or if is NULL creates an
+## empty gpar because that's what grid implicitly assumes).  It's used
+## in combine_gpars() above, but I'm not sure if it's generally useful.
+check_gpar <- function(gp) {
+  if (is.null(gp))
+    gp <- gpar()
+  else if (!inherits(gp, "gpar"))
+    stop("Argument is not a gpar or NULL")
+  if (length(gp) > 1 && any(sapply(gp, length) != 1))
+    stop("All elements of 'gp' must be scalar")
+  gp
 }

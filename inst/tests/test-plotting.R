@@ -137,3 +137,53 @@ test_that("Labels", {
     }
   }
 })
+
+test_that("Branch styling", {
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  phy$tip.label <- paste0(phy$tip.label, "abcde")
+  tr <- forest.from.ape(phy)
+
+  tg <- treeGrob(tr, name="mytree", direction="right", vp=NULL, gp=gpar())
+  tg <- add_tip_labels(tg)
+  tg <- add_node_labels(tg)
+
+  tg2 <- style_branches(tg, n5=gpar(col="red"))
+
+  gp2 <- tg2$children$branches$gp
+  expect_that(gp2, is_a("gpar"))
+  expect_that(names(gp2), equals("col"))
+  expect_that(length(gp2$col), equals(tr$size))
+  cl2 <- forest:::classify(tr, "n5")
+  cl2 <- cl2[match(tg$children$branches$label, names(cl2))]
+  expect_that(gp2$col, equals(c("black", "red")[cl2 + 1L]))
+
+  tg3 <- style_tip_labels(tg2, n2=gpar(col="blue"))
+  gp3 <- tg3$children$tip_labels$gp
+  expect_that(gp3, is_a("gpar"))
+  expect_that(names(gp3), equals("col"))
+  expect_that(length(gp3$col), equals(tr$tips))
+  cl3 <- forest:::classify(tr, "n2")
+  cl3 <- cl3[match(tg$children$tip_labels$label, names(cl3))]
+  expect_that(gp3$col, equals(c("black", "blue")[cl3 + 1L]))
+
+  tg4 <- style_node_labels(tg3, n4=gpar(col="green4"))
+  gp4 <- tg4$children$node_labels$gp
+  expect_that(gp4, is_a("gpar"))
+  expect_that(names(gp4), equals("col"))
+  expect_that(length(gp4$col), equals(tr$nodes))
+  cl4 <- forest:::classify(tr, "n4")
+  cl4 <- cl4[match(tg$children$node_labels$label, names(cl4))]
+  expect_that(gp4$col, equals(c("black", "green4")[cl4 + 1L]))
+
+  if (FALSE) {
+    grid.newpage()
+    popViewport(0)
+    pushViewport(viewport(width=.8, height=.8, name="spacing"))
+    grid.rect(gp=gpar(col="grey", lty=2))
+    grid.draw(tg4)
+  }
+})
+
+## TODO: classify on root note?

@@ -5,7 +5,7 @@
 combine_gpars(list, index)
 }
 \arguments{
-  \item{list}{An R list (not a \codeg{gpar} list), each
+  \item{list}{An R list (not a \code{gpar} list), each
   element of which is a \code{gpar} list).  The first
   element is taken as the "base" parameters.}
 
