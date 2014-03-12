@@ -178,7 +178,7 @@ test_that("Initial angle argument for circle plots", {
   }
 })
 
-test_that("Branch styling", {
+test_that("Branch styling (single regime)", {
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
@@ -225,5 +225,24 @@ test_that("Branch styling", {
     grid.draw(tg4)
   }
 })
+
+test_that("Branch styling (corner cases)", {
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  phy$tip.label <- paste0(phy$tip.label, "abcde")
+  tr <- forest.from.ape(phy)
+
+  tg <- treeGrob(tr, name="mytree", direction="right", vp=NULL, gp=gpar())
+  tg2 <- style_branches(tg)
+  expect_that(tg2$children$branches$gp,
+              equals(tg$children$branches$gp))
+
+  gp_base <- gpar(col="red")
+  tg3 <- style_branches(tg, base=gp_base)
+  expect_that(tg3$children$branches$gp,
+              equals(gp_base))
+})
+
 
 ## TODO: classify on root note?

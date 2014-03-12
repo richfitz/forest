@@ -374,8 +374,10 @@ normalise_time <- function(unit, direction) {
 ##' @rdname style
 style_thing <- function(tree_grob, what, ..., base=NULL) {
   targets <- list(...)
-  if (length(targets) != 1) # should be easy with 0, ok with >1
-    stop("Can't do anything with this yet")
+  if (length(targets) == 0)
+    names(targets) <- character(0) # corner case.
+  if (is.null(names(targets)))
+    stop("Targets must be named")
   cl <- classify(tree_grob$tree, names(targets)) + 1L
 
   for (w in what) {
