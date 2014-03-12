@@ -34,7 +34,8 @@
 ##' @param list An R list (not a \code{gpar} list), each element of
 ##' which is a \code{gpar} list).  The first element is taken as the
 ##' "base" parameters.
-##' @param index
+##' @param index Integer index indicating how the parameters should be
+##' expanded.
 combine_gpars <- function(list, index) {
   ## TODO: If something is invariant, then record it as a scalar;
   ## don't expand out.

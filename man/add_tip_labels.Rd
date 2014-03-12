@@ -11,6 +11,8 @@ add_node_labels(tree_grob, name = "node_labels", ...)
   \item{tree_grob}{A tree grob, created by
   \code{\link{treeGrob}}}
 
+  \item{name}{Name of the tip labels grob}
+
   \item{...}{Additional arguments passed through to
   underlying functions (NB: interface may change!).  Useful
   things include \code{offset}, which is a \code{unit}

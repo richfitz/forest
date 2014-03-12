@@ -71,6 +71,7 @@ treeGrob <- function(tree, direction="right",
 ##'
 ##' @title Add Tip and Node Labels to a Plotted Tree
 ##' @param tree_grob A tree grob, created by \code{\link{treeGrob}}
+##' @param name Name of the tip labels grob
 ##' @param ... Additional arguments passed through to underlying
 ##' functions (NB: interface may change!).  Useful things include
 ##' \code{offset}, which is a \code{unit} object describing offset in

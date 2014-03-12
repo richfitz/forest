@@ -27,7 +27,8 @@ style_node_labels(tree_grob, ...)
   \code{node5=gpar(col="red")} will colour all descendents
   of "node5" red.}
 
-  \item{base}{}
+  \item{base}{Base graphical parameters (by default
+  \code{gpar()}).}
 }
 \value{
 A tree grob

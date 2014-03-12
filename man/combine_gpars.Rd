@@ -9,7 +9,8 @@ combine_gpars(list, index)
   element of which is a \code{gpar} list).  The first
   element is taken as the "base" parameters.}
 
-  \item{index}{}
+  \item{index}{Integer index indicating how the parameters
+  should be expanded.}
 }
 \description{
 Combine a list of graphical parameters.
