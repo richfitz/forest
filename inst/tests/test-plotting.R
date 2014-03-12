@@ -55,7 +55,7 @@ test_that("Coordinate calculation", {
   expect_that(xy_nodes$spacing_max, equals(unname(cmp_spacing_range[o,2])))
 
   ## This is all way nicer to look at than to compare directly.
-  if (FALSE) {
+  if (interactive()) {
     plot(phy)
     points(spacing_mid ~ time_tipward,  xy, col="red")
     points(spacing_mid ~ time_rootward, xy, col="blue")
@@ -71,7 +71,7 @@ test_that("treeGrob construction", {
   phy$tip.label <- paste0(phy$tip.label, "abcde")
   tr <- forest.from.ape(phy)
 
-  for (direction in c("right", "left", "up", "down", "circle")) {
+  for (direction in forest:::tree_directions()) {
     vp <- viewport(name="extra", width=.5)
     tg <- treeGrob(tr, name="mytree", direction=direction, vp=vp)
 

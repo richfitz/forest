@@ -38,8 +38,7 @@
 ##' @import grid
 treeGrob <- function(tree, direction="right",
                      name=NULL, gp=NULL, vp=NULL) {
-  direction <- match.arg(direction,
-                         c("right", "left", "up", "down", "circle"))
+  direction <- match.arg(direction, tree_directions())
 
   xy <- plotting_prepare(tree)
   lim_t <- range(xy$time_rootward, xy$time_tipward, na.rm=TRUE)
@@ -47,10 +46,11 @@ treeGrob <- function(tree, direction="right",
 
   cvp <- scaling_viewport(lim_t, lim_s, direction, name="scaling")
 
-  ## Possibly rewrite spacing_to_angle to take all of xy?
+  spacing_cols <- c("spacing_mid", "spacing_min", "spacing_max")
   if (direction == "circle") {
-    spacing_cols <- c("spacing_mid", "spacing_min", "spacing_max")
     xy[spacing_cols] <- spacing_to_angle(xy[spacing_cols], n=sum(xy$is_tip))
+  } else if (direction == "semicircle") {
+    xy[spacing_cols] <- spacing_to_angle(xy[spacing_cols], theta=pi)
   }
 
   branches <- tree_branchesGrob(xy, direction=direction,
@@ -132,11 +132,8 @@ plotting_prepare <- function(tree) {
   xy
 }
 
-## I'm not sure that this is actually the best way of handling the
-## spacing, really.  It might be better to put a function within the
-## object so that we provide a *translation* and so the original
-## spacing can be relied on.  Not sure.
-spacing_to_angle <- function(s, theta0=0, theta1=pi * 2 * (n-1) / n, n) {
+spacing_to_angle <- function(s, theta0=0, theta=pi * 2 * (n-1) / n, n) {
+  theta1 <- theta0 + theta
   theta0 + s * (theta1 - theta0)
 }
 
@@ -146,10 +143,13 @@ spacing_to_angle <- function(s, theta0=0, theta1=pi * 2 * (n-1) / n, n) {
 ## this also sets the aspect to be 1 so that the circle does not
 ## become an ellipse.
 scaling_viewport <- function(lim_t, lim_s, direction, ...) {
-  if (direction == "circle") {
+  if (direction %in% "circle") {
     lim <- c(-1, 1) * lim_t[2]
     viewport(xscale=lim, yscale=lim,
              width=unit(1, "snpc"), height=unit(1, "snpc"), ...)
+  } else if (direction == "semicircle") {
+    viewport(xscale=c(-1, 1) * lim_t[2], yscale=lim_t,
+             width=unit(1, "snpc"), height=unit(0.5, "snpc"), ...)
   } else {
     if (direction %in% c("left", "right")) {
       xscale <- if (direction == "right") lim_t else rev(lim_t)
@@ -200,7 +200,7 @@ tree_labelGrob <- function(label, t, s, direction, rot=0,
 
 ##' @S3method drawDetails tree_branches
 drawDetails.tree_branches <- function(x, recording=TRUE) {
-  if (x$direction == "circle") {
+  if (x$direction %in% c("circle", "semicircle")) {
     # time
     grid.ray(native(x$time_rootward), native(x$time_tipward),
              x$spacing_mid, gp=x$gp)
@@ -230,7 +230,7 @@ drawDetails.tree_branches <- function(x, recording=TRUE) {
 
 ##' @S3method drawDetails tree_label
 drawDetails.tree_label <- function(x, recording=TRUE) {
-  if (x$direction == "circle") {
+  if (x$direction %in% c("circle", "semicircle")) {
     rot <- x$rot + to_degrees(x$s)
     i <- rot > 90 & rot < 270
     rot[i] <- (rot[i] + 180) %% 360
@@ -372,7 +372,7 @@ style_thing <- function(tree_grob, what, ..., base=NULL) {
   targets <- list(...)
   if (length(targets) != 1) # should be easy with 0, ok with >1
     stop("Can't do anything with this yet")
-  cl <- forest:::classify(tree_grob$tree, names(targets)) + 1L
+  cl <- classify(tree_grob$tree, names(targets)) + 1L
 
   for (w in what) {
     if (!(w %in% names(tree_grob$children)))
@@ -404,4 +404,8 @@ style_tip_labels <- function(tree_grob, ...) {
 ##' @rdname style
 style_node_labels <- function(tree_grob, ...) {
   style_thing(tree_grob, "node_labels", ...)
+}
+
+tree_directions <- function() {
+  c("right", "left", "up", "down", "circle", "semicircle")
 }
