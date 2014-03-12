@@ -138,6 +138,46 @@ test_that("Labels", {
   }
 })
 
+test_that("Initial angle argument for circle plots", {
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  phy$tip.label <- paste0(phy$tip.label, "abcde")
+  tr <- forest.from.ape(phy)
+
+  set.seed(1)
+  theta <- runif(1, 0, 2*pi)
+  tg0 <- treeGrob(tr, name="mytree", direction="circle")
+  tg1 <- treeGrob(tr, name="mytree", direction="circle", theta0=theta)
+
+  expect_that(tg1$children$branches$spacing_mid,
+              equals(tg0$children$branches$spacing_mid + theta))
+  expect_that(tg1$children$branches$spacing_min,
+              equals(tg0$children$branches$spacing_min + theta))
+  expect_that(tg1$children$branches$spacing_max,
+              equals(tg0$children$branches$spacing_max + theta))
+
+  if (FALSE) {
+    f <- function(theta0) {
+      tg <- treeGrob(tr, name="mytree", direction="circle", theta0=theta0)
+      tg <- add_tip_labels(tg)
+      tg <- add_node_labels(tg)
+
+      grid.newpage()
+      popViewport(0)
+      pushViewport(viewport(width=.8, height=.7, name="spacing"))
+      grid.rect(gp=gpar(col="grey", lty=2))
+      grid.draw(tg)
+    }
+
+    pdf("plotting-circle-angle.pdf")
+    for (i in seq(0, 2*pi, length=50)) {
+      f(i)
+    }
+    dev.off()
+  }
+})
+
 test_that("Branch styling", {
   set.seed(1)
   phy <- rtree(10)

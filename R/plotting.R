@@ -20,6 +20,9 @@
 ##' options are \dQuote{right} (the default), \dQuote{left},
 ##' \dQuote{up}, \dQuote{down} and \code{circle}.  The circle version
 ##' plots a tree very similar to ape's \dQuote{fan} style.
+##' @param theta0 Starting point when drawing trees of direction
+##' "circle" only.  May eventually be supported for "semicircle" too.
+##' Silently ignored for all other directions.
 ##' @param name Name of the grob (optional)
 ##' @param gp Graphical parameters that the segments will take.  This
 ##' one is \emph{really} up for grabs.  I'd suggest being fairly tame
@@ -36,7 +39,7 @@
 ##' @author Rich FitzJohn
 ##' @export
 ##' @import grid
-treeGrob <- function(tree, direction="right",
+treeGrob <- function(tree, direction="right", theta0=0,
                      name=NULL, gp=NULL, vp=NULL) {
   direction <- match.arg(direction, tree_directions())
 
@@ -48,7 +51,8 @@ treeGrob <- function(tree, direction="right",
 
   spacing_cols <- c("spacing_mid", "spacing_min", "spacing_max")
   if (direction == "circle") {
-    xy[spacing_cols] <- spacing_to_angle(xy[spacing_cols], n=sum(xy$is_tip))
+    xy[spacing_cols] <- spacing_to_angle(xy[spacing_cols],
+                                         theta0=theta0, n=sum(xy$is_tip))
   } else if (direction == "semicircle") {
     xy[spacing_cols] <- spacing_to_angle(xy[spacing_cols], theta=pi)
   }
@@ -232,6 +236,7 @@ drawDetails.tree_branches <- function(x, recording=TRUE) {
 drawDetails.tree_label <- function(x, recording=TRUE) {
   if (x$direction %in% c("circle", "semicircle")) {
     rot <- x$rot + to_degrees(x$s)
+    rot <- rot %% 360
     i <- rot > 90 & rot < 270
     rot[i] <- (rot[i] + 180) %% 360
 
