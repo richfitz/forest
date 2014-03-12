@@ -281,7 +281,6 @@ polar_y <- function(r, theta)
 ## draw methods of them.  No code that uses these should particularly
 ## care about this change, which is nice.
 grid.ray <- function(r0, r1, theta, ...) {
-  grid.rect(gp=gpar(lty=3, col="grey"))
   grid.segments(polar_x(r0, theta), polar_y(r0, theta),
                 polar_x(r1, theta), polar_y(r1, theta),
                 ...)
