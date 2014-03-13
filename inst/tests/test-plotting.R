@@ -226,6 +226,9 @@ test_that("Branch styling (single regime)", {
   }
 })
 
+## TODO: check vector of things
+## TODO: check can't restyle things (yet)
+
 test_that("Branch styling (corner cases)", {
   set.seed(1)
   phy <- rtree(10)
@@ -242,6 +245,58 @@ test_that("Branch styling (corner cases)", {
   tg3 <- style_branches(tg, base=gp_base)
   expect_that(tg3$children$branches$gp,
               equals(gp_base))
+})
+
+test_that("Branch styling (multiple regimes)", {
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  phy$tip.label <- paste0(phy$tip.label, "abcde")
+  tr <- forest.from.ape(phy)
+
+  tg <- treeGrob(tr, name="mytree", direction="right", vp=NULL, gp=gpar())
+  tg <- add_tip_labels(tg)
+  tg <- add_node_labels(tg)
+
+  tg2 <- style_thing(tg, c("branches", "tip_labels"),
+                     n4=gpar(col="blue"),
+                     n5=gpar(col="green4", lwd=2),
+                     n2=gpar(col="orange"),
+                     base=gpar(col="red"))
+
+  cl <- forest:::classify(tr, c("n4", "n5", "n2")) + 1L
+  gpp <- forest:::combine_gpars(list(gpar(col="red"), # base
+                                     gpar(col="blue"),
+                                     gpar(col="green4", lwd=2),
+                                     gpar(col="orange")),
+                                cl)
+
+  i.b <- match(tg$children$branches$label,   names(cl))
+  i.t <- match(tg$children$tip_labels$label, names(cl))
+
+  gp.b <- tg2$children$branches$gp
+  expect_that(length(gp.b), equals(2))
+  expect_that(names(gp.b), equals(c("col", "lwd")))
+  expect_that(gp.b$col, equals(gpp$col[i.b]))
+  expect_that(gp.b$lwd, equals(gpp$lwd[i.b]))
+
+  gp.t <- tg2$children$tip_labels$gp
+  expect_that(length(gp.t), equals(2))
+  expect_that(names(gp.t), equals(c("col", "lwd")))
+  expect_that(gp.t$col, equals(gpp$col[i.t]))
+  expect_that(gp.t$lwd, equals(gpp$lwd[i.t]))
+
+  # Node parameters unchanged.
+  gp.n <- tg2$children$node_labels$gp
+  expect_that(gp.n, is_identical_to(gpar()))
+
+  if (interactive()) {
+    grid.newpage()
+    popViewport(0)
+    pushViewport(viewport(width=.8, height=.8, name="spacing"))
+    grid.rect(gp=gpar(col="grey", lty=2))
+    grid.draw(tg2)
+  }
 })
 
 
