@@ -97,11 +97,14 @@ test_that("treeGrob construction", {
                          "spacing_min", "spacing_max", "spacing_mid",
                          "is_tip", "direction", "name", "gp", "vp")))
     if (interactive()) {
-      grid.newpage()
-      popViewport(0)
-      pushViewport(viewport(width=.8, height=.8, name="spacing"))
+      vp.spacing <- viewport(width=.8, height=.8, name="spacing")
+      print(tg, vp=vp.spacing)
+      seekViewport("spacing")
       grid.rect(gp=gpar(col="grey", lty=2))
-      grid.draw(tg)
+      seekViewport("extra")
+      grid.rect(gp=gpar(col="steelblue3", lty=3))
+      seekViewport("scaling")
+      grid.rect(gp=gpar(col="red", lty=4))
     }
   }
 })
@@ -115,11 +118,12 @@ test_that("Labels", {
   tr <- forest.from.ape(phy)
   gp.tip <- gpar(col="red")
   gp.node <- gpar(col="blue")
-  for (direction in c("right", "left", "up", "down", "circle")) {
+
+  for (direction in forest:::tree_directions()) {
     vp <- viewport(name="extra", width=.5)
-    tg <- treeGrob(tr, name="mytree", direction=direction, vp=vp)
-    tg <- add_tip_labels(tg,  gp=gp.tip)
-    tg <- add_node_labels(tg, gp=gp.node)
+    tg <- treeGrob(tr, name="mytree", direction=direction, vp=vp) +
+      tree_labels("tips",  gp=gp.tip) +
+      tree_labels("nodes", gp=gp.node)
 
     expect_that(names(tg$children),
                 equals(c("branches", "tip_labels", "node_labels")))
@@ -129,11 +133,8 @@ test_that("Labels", {
     expect_that(tg$children$node_labels$gp, is_identical_to(gp.node))
 
     if (interactive()) {
-      grid.newpage()
-      popViewport(0)
-      pushViewport(viewport(width=.8, height=.8, name="spacing"))
-      grid.rect(gp=gpar(col="grey", lty=2))
-      grid.draw(tg)
+      vp.spacing <- viewport(width=.8, height=.8, name="spacing")
+      print(tg, vp=vp.spacing)
     }
   }
 })
@@ -157,24 +158,22 @@ test_that("Initial angle argument for circle plots", {
   expect_that(tg1$children$branches$spacing_max,
               equals(tg0$children$branches$spacing_max + theta))
 
-  if (FALSE) {
+  if (interactive()) {
     f <- function(theta0) {
-      tg <- treeGrob(tr, name="mytree", direction="circle", theta0=theta0)
-      tg <- add_tip_labels(tg)
-      tg <- add_node_labels(tg)
-
-      grid.newpage()
-      popViewport(0)
-      pushViewport(viewport(width=.8, height=.7, name="spacing"))
-      grid.rect(gp=gpar(col="grey", lty=2))
-      grid.draw(tg)
+      tg <- treeGrob(tr, name="mytree", direction="circle",
+                     theta0=theta0) +
+                       tree_labels("tips") + tree_labels("nodes")
+      vp <- viewport(width=.8, height=.7, name="spacing")
+      print(tg, vp=vp)
     }
 
-    pdf("plotting-circle-angle.pdf")
-    for (i in seq(0, 2*pi, length=50)) {
-      f(i)
+    if (FALSE) {
+      pdf("plotting-circle-angle.pdf")
+      for (i in seq(0, 2*pi, length=50)) {
+        f(i)
+      }
+      dev.off()
     }
-    dev.off()
   }
 })
 
@@ -185,10 +184,7 @@ test_that("Branch styling (single regime)", {
   phy$tip.label <- paste0(phy$tip.label, "abcde")
   tr <- forest.from.ape(phy)
 
-  tg <- treeGrob(tr, name="mytree", direction="right", vp=NULL, gp=gpar())
-  tg <- add_tip_labels(tg)
-  tg <- add_node_labels(tg)
-
+  tg <- treeGrob(tr) + tree_labels("tips") + tree_labels("nodes")
   tg2 <- style_branches(tg, n5=gpar(col="red"))
 
   gp2 <- tg2$children$branches$gp
@@ -218,11 +214,8 @@ test_that("Branch styling (single regime)", {
   expect_that(gp4$col, equals(c("black", "green4")[cl4 + 1L]))
 
   if (FALSE) {
-    grid.newpage()
-    popViewport(0)
-    pushViewport(viewport(width=.8, height=.8, name="spacing"))
-    grid.rect(gp=gpar(col="grey", lty=2))
-    grid.draw(tg4)
+    vp <- viewport(width=.8, height=.8, name="spacing")
+    print(tg2, vp=vp)
   }
 })
 
@@ -236,8 +229,9 @@ test_that("Branch styling (corner cases)", {
   phy$tip.label <- paste0(phy$tip.label, "abcde")
   tr <- forest.from.ape(phy)
 
-  tg <- treeGrob(tr, name="mytree", direction="right", vp=NULL, gp=gpar())
+  tg <- treeGrob(tr) + tree_labels("tips") + tree_labels("nodes")
   tg2 <- style_branches(tg)
+
   expect_that(tg2$children$branches$gp,
               equals(tg$children$branches$gp))
 
@@ -254,9 +248,7 @@ test_that("Branch styling (multiple regimes)", {
   phy$tip.label <- paste0(phy$tip.label, "abcde")
   tr <- forest.from.ape(phy)
 
-  tg <- treeGrob(tr, name="mytree", direction="right", vp=NULL, gp=gpar())
-  tg <- add_tip_labels(tg)
-  tg <- add_node_labels(tg)
+  tg <- treeGrob(tr) + tree_labels("tips") + tree_labels("nodes")
 
   tg2 <- style_thing(tg, c("branches", "tip_labels"),
                      n4=gpar(col="blue"),
@@ -291,11 +283,8 @@ test_that("Branch styling (multiple regimes)", {
   expect_that(gp.n, is_identical_to(gpar()))
 
   if (interactive()) {
-    grid.newpage()
-    popViewport(0)
-    pushViewport(viewport(width=.8, height=.8, name="spacing"))
-    grid.rect(gp=gpar(col="grey", lty=2))
-    grid.draw(tg2)
+    vp <- viewport(width=.8, height=.8, name="spacing")
+    print(tg2, vp=vp)
   }
 })
 

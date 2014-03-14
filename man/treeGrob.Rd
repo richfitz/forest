@@ -2,8 +2,8 @@
 \alias{treeGrob}
 \title{Create a Tree Grob}
 \usage{
-treeGrob(tree, direction = "right", theta0 = 0, name = NULL, gp = NULL,
-  vp = NULL)
+treeGrob(tree, direction = "right", theta0 = 0, name = NULL,
+  gp = gpar(), vp = NULL)
 }
 \arguments{
   \item{tree}{A forest tree.  The underlying data do not

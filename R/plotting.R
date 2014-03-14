@@ -40,7 +40,7 @@
 ##' @export
 ##' @import grid
 treeGrob <- function(tree, direction="right", theta0=0,
-                     name=NULL, gp=NULL, vp=NULL) {
+                     name=NULL, gp=gpar(), vp=NULL) {
   direction <- match.arg(direction, tree_directions())
 
   xy <- plotting_prepare(tree)
@@ -86,38 +86,40 @@ treeGrob <- function(tree, direction="right", theta0=0,
 ##' (relative to the time axis).
 ##' @author Rich FitzJohn
 ##' @export
-add_tip_labels <- function(tree_grob, name="tip_labels", ...) {
-  add_tree_labels_internal(tree_grob, tip=TRUE, node=FALSE, name=name,
-                           ...)
-}
-##' @rdname add_tip_labels
+
 ##' @export
-add_node_labels <- function(tree_grob, name="node_labels", ...) {
-  add_tree_labels_internal(tree_grob, tip=FALSE, node=TRUE, name=name,
-                           ...)
+tree_labels <- function(type, offset=unit(0.5, "lines"), rot=0,
+                        name=NULL, gp=gpar()) {
+  type  <- match.arg(type, c("tips", "nodes"))
+  # TODO: with nonstandard names, tip and node labels become
+  # unaddressable.  We'll need to get some semantics in there to allow
+  # them to be restyled.  That's particularly important if we want to
+  # add a handful of labels and then restyle them later...
+  if (!is.null(name))
+    stop("Not yet supported")
+  name <- sprintf("%s_labels", sub("s$", "", type))
+  object <- list(tips=type == "tips", nodes=type == "nodes",
+                 offset=offset, rot=rot,
+                 name=name, gp=gp)
+  class(object) <- "tree_labels"
+  object
 }
 
-add_tree_labels <- function(tree_grob, label, t, s, rot=0,
-                            name=NULL, gp=gpar()) {
-  lab <- tree_labelGrob(label, t, s, tree_grob$direction, rot,
-                        name=name, gp=gp, vp=tree_grob$childrenvp)
-  addGrob(tree_grob, lab)
-}
-
-## This one pulls names and locations out of the tree object and runs
-## creates a tree_labelGrob out of it.  It might be a level of
-## redirection too far, but it avoids a bunch of repetition.
-add_tree_labels_internal <- function(tree_grob,
-                                     offset=unit(0.5, "lines"),
-                                     tip=FALSE, node=FALSE, rot=0,
-                                     name=NULL, gp=gpar()) {
-  offset_t <- normalise_time(offset, tree_grob$direction)
+add_labels <- function(tree_grob, tree_labels) {
+  direction <- tree_grob$direction
+  offset_t <- normalise_time(tree_labels$offset, direction)
   branches <- tree_grob$children$branches
-  i <- (branches$is_tip & tip) | (!branches$is_tip & node)
-  add_tree_labels(tree_grob, branches$label[i],
-                  native(branches$time_tipward[i]) + offset_t,
-                  branches$spacing_mid[i], rot,
-                  name=name, gp=gp)
+  i <- ( branches$is_tip & tree_labels$tip) |
+       (!branches$is_tip & tree_labels$node)
+
+  label <- branches$label[i]
+  t <- native(branches$time_tipward[i]) + offset_t
+  s <- branches$spacing_mid[i]
+
+  lab <- tree_labelGrob(label, t, s, direction, tree_labels$rot,
+                        name=tree_labels$name, gp=tree_labels$gp,
+                        vp=tree_grob$childrenvp)
+  addGrob(tree_grob, lab)
 }
 
 ## Lower level functions that are not exported:
@@ -171,7 +173,7 @@ scaling_viewport <- function(lim_t, lim_s, direction, ...) {
 ## a gList, but that requires some care about storing different
 ## graphical parameters.
 tree_branchesGrob <- function(xy, direction,
-                              name=NULL, gp=NULL, vp=NULL) {
+                              name=NULL, gp=gpar(), vp=NULL) {
   grob(label=rownames(xy),
        time_tipward=xy$time_tipward, time_rootward=xy$time_rootward,
        spacing_min=xy$spacing_min,   spacing_max=xy$spacing_max,
@@ -414,4 +416,34 @@ style_node_labels <- function(tree_grob, ...) {
 
 tree_directions <- function() {
   c("right", "left", "up", "down", "circle", "semicircle")
+}
+
+## The ideas in this section borrow *very* heavily from ggplot2.
+##' @S3method + tree
+`+.tree` <- function(e1, e2) {
+  add_tree(e1, e2)
+}
+
+## This is going to be better do do through partial application and S3
+## methods, which will avoid the big mess of if/else statements and
+## simultaneously be more extensible.  Once that's done, the two
+## separate (+.tree and add_tree) can roll back together.
+add_tree <- function(tg, object) {
+  if (inherits(object, "tree_labels")) {
+    add_labels(tg, object)
+  } else {
+    stop("Can't add that sort of thing...")
+  }
+}
+
+##' @S3method print tree
+print.tree <- function(x, newpage=TRUE, vp=NULL, ...) {
+  if (newpage)
+    grid.newpage()
+  if (!is.null(vp)) {
+    pushViewport(vp)
+    on.exit(upViewport())
+  }
+  grid.draw(x)
+  invisible(x)
 }
