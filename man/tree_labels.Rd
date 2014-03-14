@@ -1,0 +1,39 @@
+\name{tree_labels}
+\alias{tree_labels}
+\alias{tree_node_labels}
+\alias{tree_tip_labels}
+\title{Add tip and node labels to a plotted tree.  The idea is to take a
+tree that is created by \code{\link{treeGrob}} and add tip labels
+into it.}
+\usage{
+tree_labels(type, offset = unit(0.5, "lines"), rot = 0, name = NULL,
+  gp = gpar())
+
+tree_tip_labels(...)
+
+tree_node_labels(...)
+}
+\arguments{
+  \item{type}{Either \code{tips} or \code{nodes} (or an
+  abbreviation of either).}
+
+  \item{offset}{A \code{unit} object describing offset in
+  the \emph{time} axis (positive is forward in time away
+  from the tip/node).}
+
+  \item{rot}{Rotation, relative to the \emph{time} axis.}
+
+  \item{name}{Name of the tip labels grob}
+
+  \item{gp}{Graphical parameters (a \code{gpar} object) for
+  the labels.}
+
+  \item{...}{Arguments passed through to
+  \code{tree_labels}.}
+}
+\description{
+Add tip and node labels to a plotted tree.  The idea is to
+take a tree that is created by \code{\link{treeGrob}} and
+add tip labels into it.
+}
+

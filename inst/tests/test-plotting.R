@@ -122,8 +122,8 @@ test_that("Labels", {
   for (direction in forest:::tree_directions()) {
     vp <- viewport(name="extra", width=.5)
     tg <- treeGrob(tr, name="mytree", direction=direction, vp=vp) +
-      tree_labels("tips",  gp=gp.tip) +
-      tree_labels("nodes", gp=gp.node)
+      tree_tip_labels(gp=gp.tip) +
+      tree_node_labels(gp=gp.node)
 
     expect_that(names(tg$children),
                 equals(c("branches", "tip_labels", "node_labels")))
@@ -162,7 +162,7 @@ test_that("Initial angle argument for circle plots", {
     f <- function(theta0) {
       tg <- treeGrob(tr, name="mytree", direction="circle",
                      theta0=theta0) +
-                       tree_labels("tips") + tree_labels("nodes")
+                       tree_tip_labels() + tree_node_labels()
       vp <- viewport(width=.8, height=.7, name="spacing")
       print(tg, vp=vp)
     }
@@ -184,7 +184,7 @@ test_that("Branch styling (single regime)", {
   phy$tip.label <- paste0(phy$tip.label, "abcde")
   tr <- forest.from.ape(phy)
 
-  tg <- treeGrob(tr) + tree_labels("tips") + tree_labels("nodes")
+  tg <- treeGrob(tr) + tree_tip_labels() + tree_node_labels()
   tg2 <- style_branches(tg, n5=gpar(col="red"))
 
   gp2 <- tg2$children$branches$gp
@@ -229,7 +229,7 @@ test_that("Branch styling (corner cases)", {
   phy$tip.label <- paste0(phy$tip.label, "abcde")
   tr <- forest.from.ape(phy)
 
-  tg <- treeGrob(tr) + tree_labels("tips") + tree_labels("nodes")
+  tg <- treeGrob(tr) + tree_tip_labels() + tree_node_labels()
   tg2 <- style_branches(tg)
 
   expect_that(tg2$children$branches$gp,
@@ -248,7 +248,7 @@ test_that("Branch styling (multiple regimes)", {
   phy$tip.label <- paste0(phy$tip.label, "abcde")
   tr <- forest.from.ape(phy)
 
-  tg <- treeGrob(tr) + tree_labels("tips") + tree_labels("nodes")
+  tg <- treeGrob(tr) + tree_tip_labels() + tree_node_labels()
 
   tg2 <- style_thing(tg, c("branches", "tip_labels"),
                      n4=gpar(col="blue"),

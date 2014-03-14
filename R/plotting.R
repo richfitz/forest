@@ -69,24 +69,15 @@ treeGrob <- function(tree, direction="right", theta0=0,
 ##' tree that is created by \code{\link{treeGrob}} and add tip labels
 ##' into it.
 ##'
-##' The interface will change here, and this function \emph{will}
-##' change and probably disappear.  Eventually we're working towards a
-##' \code{ggplot}-style \code{+} operators on tree graphical elements.
-##'
-##' @title Add Tip and Node Labels to a Plotted Tree
-##' @param tree_grob A tree grob, created by \code{\link{treeGrob}}
-##' @param name Name of the tip labels grob
-##' @param ... Additional arguments passed through to underlying
-##' functions (NB: interface may change!).  Useful things include
-##' \code{offset}, which is a \code{unit} object describing offset in
+##' @param type Either \code{tips} or \code{nodes} (or an abbreviation
+##' of either).
+##' @param offset A \code{unit} object describing offset in
 ##' the \emph{time} axis (positive is forward in time away from the
-##' tip/node), \code{gp}, which is a graphical parameters list
-##' (created by \code{gpar}; as with \code{\link{treeGrob}}, avoid
-##' passing in vectors here, \code{rot}, which is the rotation
-##' (relative to the time axis).
-##' @author Rich FitzJohn
-##' @export
-
+##' tip/node).
+##' @param rot Rotation, relative to the \emph{time} axis.
+##' @param name Name of the tip labels grob
+##' @param gp Graphical parameters (a \code{gpar} object) for the
+##' labels.
 ##' @export
 tree_labels <- function(type, offset=unit(0.5, "lines"), rot=0,
                         name=NULL, gp=gpar()) {
@@ -103,6 +94,18 @@ tree_labels <- function(type, offset=unit(0.5, "lines"), rot=0,
                  name=name, gp=gp)
   class(object) <- "tree_labels"
   object
+}
+
+##' @export
+##' @rdname tree_labels
+##' @param ... Arguments passed through to \code{tree_labels}.
+tree_tip_labels <- function(...) {
+  tree_labels("tips", ...)
+}
+##' @export
+##' @rdname tree_labels
+tree_node_labels <- function(...) {
+  tree_labels("nodes", ...)
 }
 
 add_labels <- function(tree_grob, tree_labels) {
