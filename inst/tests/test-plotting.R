@@ -184,8 +184,11 @@ test_that("Branch styling (single regime)", {
   phy$tip.label <- paste0(phy$tip.label, "abcde")
   tr <- forest.from.ape(phy)
 
+  ## TODO: Can now check tree_style_branches() directly.  Same in
+  ## tip_labels() too, actually.
+
   tg <- treeGrob(tr) + tree_tip_labels() + tree_node_labels()
-  tg2 <- style_branches(tg, n5=gpar(col="red"))
+  tg2 <- tg + tree_style_branches(n5=gpar(col="red"))
 
   gp2 <- tg2$children$branches$gp
   expect_that(gp2, is_a("gpar"))
@@ -195,7 +198,7 @@ test_that("Branch styling (single regime)", {
   cl2 <- cl2[match(tg$children$branches$label, names(cl2))]
   expect_that(gp2$col, equals(c("black", "red")[cl2 + 1L]))
 
-  tg3 <- style_tip_labels(tg2, n2=gpar(col="blue"))
+  tg3 <- tg2 + tree_style_tip_labels(n2=gpar(col="blue"))
   gp3 <- tg3$children$tip_labels$gp
   expect_that(gp3, is_a("gpar"))
   expect_that(names(gp3), equals("col"))
@@ -204,7 +207,7 @@ test_that("Branch styling (single regime)", {
   cl3 <- cl3[match(tg$children$tip_labels$label, names(cl3))]
   expect_that(gp3$col, equals(c("black", "blue")[cl3 + 1L]))
 
-  tg4 <- style_node_labels(tg3, n4=gpar(col="green4"))
+  tg4 <- tg3 + tree_style_node_labels(n4=gpar(col="green4"))
   gp4 <- tg4$children$node_labels$gp
   expect_that(gp4, is_a("gpar"))
   expect_that(names(gp4), equals("col"))
@@ -215,11 +218,10 @@ test_that("Branch styling (single regime)", {
 
   if (FALSE) {
     vp <- viewport(width=.8, height=.8, name="spacing")
-    print(tg2, vp=vp)
+    print(tg4, vp=vp)
   }
 })
 
-## TODO: check vector of things
 ## TODO: check can't restyle things (yet)
 
 test_that("Branch styling (corner cases)", {
@@ -230,13 +232,13 @@ test_that("Branch styling (corner cases)", {
   tr <- forest.from.ape(phy)
 
   tg <- treeGrob(tr) + tree_tip_labels() + tree_node_labels()
-  tg2 <- style_branches(tg)
+  tg2 <- tg + tree_style_branches()
 
   expect_that(tg2$children$branches$gp,
               equals(tg$children$branches$gp))
 
   gp_base <- gpar(col="red")
-  tg3 <- style_branches(tg, base=gp_base)
+  tg3 <- tg + tree_style_branches(base=gp_base)
   expect_that(tg3$children$branches$gp,
               equals(gp_base))
 })
@@ -250,11 +252,11 @@ test_that("Branch styling (multiple regimes)", {
 
   tg <- treeGrob(tr) + tree_tip_labels() + tree_node_labels()
 
-  tg2 <- style_thing(tg, c("branches", "tip_labels"),
-                     n4=gpar(col="blue"),
-                     n5=gpar(col="green4", lwd=2),
-                     n2=gpar(col="orange"),
-                     base=gpar(col="red"))
+  tg2 <- tg + tree_style(c("branches", "tip_labels"),
+                         n4=gpar(col="blue"),
+                         n5=gpar(col="green4", lwd=2),
+                         n2=gpar(col="orange"),
+                         base=gpar(col="red"))
 
   cl <- forest:::classify(tr, c("n4", "n5", "n2")) + 1L
   gpp <- forest:::combine_gpars(list(gpar(col="red"), # base

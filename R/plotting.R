@@ -108,7 +108,7 @@ tree_node_labels <- function(...) {
   tree_labels("nodes", ...)
 }
 
-add_labels <- function(tree_grob, tree_labels) {
+add_tree_labels <- function(tree_grob, tree_labels) {
   direction <- tree_grob$direction
   offset_t <- normalise_time(tree_labels$offset, direction)
   branches <- tree_grob$children$branches
@@ -353,70 +353,6 @@ normalise_time <- function(unit, direction) {
   }
 }
 
-##' Apply graphics parameters to parts of a tree, varying based on
-##' parent nodes.  The tree gets split into different regimes; there
-##' is a base regime starting at the root, and then a series of
-##' regimes painted onto the tree using the MEDUSA algorithm.  These
-##' regimes can be nested.
-##'
-##' Generally, use the wrapper functions (\code{style_branches},
-##' \code{style_tip_labels}, \code{style_node_labels}) but the
-##' low-level \code{style_thing} allows changing graphical parameters
-##' of any member of the tree grob with a \code{labels} member.
-##' @title Style Tree By Node
-##' @param tree_grob A tree grob, created by \code{\link{treeGrob}}
-##' @param what The child member of \code{tree_grob} to style.  At
-##' present, values of "branches", "tip_labels" and "node_labels" are
-##' supported, but any child member of \code{tree_grob} could be used
-##' here.  A vector of names is allowed.
-##' @param ... Named graphical parameters.  E.g., pass in
-##' \code{node5=gpar(col="red")} will colour all descendents of "node5"
-##' red.
-##' @param base Base graphical parameters (by default \code{gpar()}).
-##' @return A tree grob
-##' @author Rich FitzJohn
-##' @export
-##' @rdname style
-style_thing <- function(tree_grob, what, ..., base=NULL) {
-  targets <- list(...)
-  if (length(targets) == 0)
-    names(targets) <- character(0) # corner case.
-  if (is.null(names(targets)))
-    stop("Targets must be named")
-  cl <- classify(tree_grob$tree, names(targets)) + 1L
-
-  for (w in what) {
-    if (!(w %in% names(tree_grob$children)))
-      stop("No child member ", w, " within this tree")
-    thing <- tree_grob$children[[w]]
-    if (!("label" %in% names(thing)))
-      stop("Tree member ", w, " does not have a label member")
-    base.w <- if (is.null(base)) thing$gp else base
-    # It might be best here to delay this till the drawDetails part,
-    # or at least retrigger base lookup.
-    tree_grob$children[[w]]$gp <-
-      combine_gpars(c(list(base.w), targets), unname(cl[thing$label]))
-  }
-  invisible(tree_grob)
-}
-
-## Simple helper functions:
-##' @export
-##' @rdname style
-style_branches <- function(tree_grob, ...) {
-  style_thing(tree_grob, "branches", ...)
-}
-##' @export
-##' @rdname style
-style_tip_labels <- function(tree_grob, ...) {
-  style_thing(tree_grob, "tip_labels", ...)
-}
-##' @export
-##' @rdname style
-style_node_labels <- function(tree_grob, ...) {
-  style_thing(tree_grob, "node_labels", ...)
-}
-
 tree_directions <- function() {
   c("right", "left", "up", "down", "circle", "semicircle")
 }
@@ -433,7 +369,9 @@ tree_directions <- function() {
 ## separate (+.tree and add_tree) can roll back together.
 add_tree <- function(tg, object) {
   if (inherits(object, "tree_labels")) {
-    add_labels(tg, object)
+    add_tree_labels(tg, object)
+  } else if (inherits(object, "tree_style")) {
+    add_tree_style(tg, object)
   } else {
     stop("Can't add that sort of thing...")
   }
@@ -449,4 +387,83 @@ print.tree <- function(x, newpage=TRUE, vp=NULL, ...) {
   }
   grid.draw(x)
   invisible(x)
+}
+
+##' Apply graphics parameters to parts of a tree, varying based on
+##' parent nodes.  The tree gets split into different regimes; there
+##' is a base regime starting at the root, and then a series of
+##' regimes painted onto the tree using the MEDUSA algorithm.  These
+##' regimes can be nested.
+##'
+##' Generally, use the wrapper functions (\code{tree_style_branches},
+##' \code{tree_style_tip_labels}, \code{tree_style_node_labels}) but the
+##' low-level \code{style_thing} allows changing graphical parameters
+##' of any member of the tree grob with a \code{labels} member.
+##'
+##' @title Style Tree By Node
+##' @param what The child member of \code{tree_grob} to style.  At
+##' present, values of "branches", "tip_labels" and "node_labels" are
+##' supported, but any child member of \code{tree_grob} could be used
+##' here.  A vector of names is allowed.
+##' @param ... Named graphical parameters.  E.g., pass in
+##' \code{node5=gpar(col="red")} will colour all descendents of "node5"
+##' red.
+##' @param base Base graphical parameters (by default the style is the
+##' \code{gpar()}, but this will change).
+##' @export
+##' @rdname style
+tree_style <- function(what, ..., base=NULL) {
+  targets <- list(...)
+  if (length(targets) == 0)
+    names(targets) <- character(0) # corner case.
+  if (is.null(names(targets)) || any(names(targets) == ""))
+    stop("Targets must be named")
+  object <- list(what=what, targets=targets, base=base)
+  class(object) <- "tree_style"
+  object
+}
+
+##' @export
+##' @rdname style
+tree_style_branches <- function(..., base=NULL) {
+  tree_style("branches", ..., base=base)
+}
+##' @export
+##' @rdname style
+tree_style_tip_labels <- function(..., base=NULL) {
+  tree_style("tip_labels", ..., base=base)
+}
+##' @export
+##' @rdname style
+tree_style_node_labels <- function(..., base=NULL) {
+  tree_style("node_labels", ..., base=base)
+}
+
+add_tree_style <- function(tree_grob, tree_style) {
+  targets <- tree_style$targets
+  base <- tree_style$base
+  what <- tree_style$what
+  cl <- classify(tree_grob$tree, names(targets)) + 1L
+
+  for (w in what) {
+    if (!(w %in% names(tree_grob$children)))
+      stop("No child member ", w, " within this tree")
+    thing <- tree_grob$children[[w]]
+    if (!("label" %in% names(thing)))
+      stop("Tree member ", w, " does not have a label member")
+    base.w <- if (is.null(base)) thing$gp else base
+    # TODO: It might be best here to delay this till the drawDetails
+    # part, or at least retrigger base lookup.  That would not be hard
+    # to do, and actually allow restyling a bit more easily
+    # potentially.
+    #
+    # TODO: perhaps first look to the object's gpar?  Or would
+    # deferring to drawing solve this too?
+    tree_grob$children[[w]]$gp <-
+      combine_gpars(c(list(base.w), targets), unname(cl[thing$label]))
+  }
+
+  # TODO: Here, and in add_tree_labels, or in add_tree, should the
+  # return be invisible?
+  tree_grob
 }

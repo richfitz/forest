@@ -1,22 +1,19 @@
-\name{style_thing}
-\alias{style_branches}
-\alias{style_node_labels}
-\alias{style_thing}
-\alias{style_tip_labels}
+\name{tree_style}
+\alias{tree_style}
+\alias{tree_style_branches}
+\alias{tree_style_node_labels}
+\alias{tree_style_tip_labels}
 \title{Style Tree By Node}
 \usage{
-style_thing(tree_grob, what, ..., base = NULL)
+tree_style(what, ..., base = NULL)
 
-style_branches(tree_grob, ...)
+tree_style_branches(..., base = NULL)
 
-style_tip_labels(tree_grob, ...)
+tree_style_tip_labels(..., base = NULL)
 
-style_node_labels(tree_grob, ...)
+tree_style_node_labels(..., base = NULL)
 }
 \arguments{
-  \item{tree_grob}{A tree grob, created by
-  \code{\link{treeGrob}}}
-
   \item{what}{The child member of \code{tree_grob} to
   style.  At present, values of "branches", "tip_labels"
   and "node_labels" are supported, but any child member of
@@ -27,11 +24,8 @@ style_node_labels(tree_grob, ...)
   \code{node5=gpar(col="red")} will colour all descendents
   of "node5" red.}
 
-  \item{base}{Base graphical parameters (by default
-  \code{gpar()}).}
-}
-\value{
-A tree grob
+  \item{base}{Base graphical parameters (by default the
+  style is the \code{gpar()}, but this will change).}
 }
 \description{
 Apply graphics parameters to parts of a tree, varying based
@@ -42,12 +36,9 @@ MEDUSA algorithm.  These regimes can be nested.
 }
 \details{
 Generally, use the wrapper functions
-(\code{style_branches}, \code{style_tip_labels},
-\code{style_node_labels}) but the low-level
+(\code{tree_style_branches}, \code{tree_style_tip_labels},
+\code{tree_style_node_labels}) but the low-level
 \code{style_thing} allows changing graphical parameters of
 any member of the tree grob with a \code{labels} member.
-}
-\author{
-Rich FitzJohn
 }
 
