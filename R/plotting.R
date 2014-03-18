@@ -1,6 +1,10 @@
 ## NOTE: Coding standards here follow `package:grid` as much as
 ## possible; treeGrob, in camelCase, is a "tree graphical object" etc.
 
+## TODO: There is a mix of low level grid functions (e.g. grid.arc,
+## grid.ray), utility functions (e.g. spacing_to_angle) in addition to
+## the actually useful things in this file.  Reorganise.
+
 ## WARNING: Probably more than the rest of the package, the interface
 ## here will change massively as I work out what actually works
 ## nicely.
@@ -60,6 +64,10 @@ treeGrob <- function(tree, direction="right", theta0=0,
   branches <- tree_branchesGrob(xy, direction=direction,
                                 name="branches", gp=gp, vp=cvp$name)
 
+  ## NOTE: there is a double storage of information here; the tree
+  ## contains all the information that the branches grob contains.
+  ## But it's probably not desirable to pull that out of the tree
+  ## every time we want to use it.
   gTree(tree=tree, direction=direction,
         children=gList(branches),
         childrenvp=cvp, name=name, gp=gp, vp=vp, cl="tree")
@@ -86,6 +94,9 @@ tree_labels <- function(type, offset=unit(0.5, "lines"), rot=0,
   # unaddressable.  We'll need to get some semantics in there to allow
   # them to be restyled.  That's particularly important if we want to
   # add a handful of labels and then restyle them later...
+  #
+  # TODO: Check the gpar on entry here?  If it's non-scalar then
+  # updating style later is hard.
   if (!is.null(name))
     stop("Not yet supported")
   name <- sprintf("%s_labels", sub("s$", "", type))
@@ -128,8 +139,8 @@ add_tree_labels <- function(tree_grob, tree_labels) {
 ## Lower level functions that are not exported:
 
 ## TODO: This is all far uglier than it wants to be, and can probably
-## be done massively faster in native code.  Until things settle down
-## though, leave it as this.
+## be done massively faster in compiled code.  Until things settle
+## down though, leave it as this.
 plotting_prepare <- function(tree) {
   treeapply <- function(tr, f)
     lapply(drain_tree(tr), f)
