@@ -1,5 +1,56 @@
 ## Utilities for working with grid graphics.
 
+## Warning: these must be used in a drawDetails method for things to
+## accurately work across device resizing.
+polar_x <- function(r, theta)
+  convertWidth(r * cos(theta), "native")
+polar_y <- function(r, theta)
+  convertHeight(r * sin(theta), "native")
+
+## convertWidth here would be insensitive to resize unless it is drawn
+## during a drawDetails() method call.  Move this out to be a "ray"
+## grob (and similarly with the arc grob).
+##
+## As it currently is, this *should* be fine while used only for the
+## trees, but once we use these things more broadly within the tree
+## plotting it will get annoying.
+##
+## TODO: Convert these to a rayGrob and arcGrob and have these be the
+## draw methods of them.  No code that uses these should particularly
+## care about this change, which is nice.
+grid.ray <- function(r0, r1, theta, ...) {
+  grid.segments(polar_x(r0, theta), polar_y(r0, theta),
+                polar_x(r1, theta), polar_y(r1, theta),
+                ...)
+}
+
+## See comments about grid.ray and redrawing, which apply here.
+grid.arc <- function(r, theta0, theta1, ...) {
+  theta <-  abs(theta1 - theta0)
+  for (i in which(theta > 0 & convertWidth(r, "native", TRUE) > 0))
+    grid.arc.xy(polar_x(r[i], theta0[i]), polar_y(r[i], theta0[i]),
+                polar_x(r[i], theta1[i]), polar_y(r[i], theta1[i]),
+                theta[i], ...)
+}
+
+## TODO: The 33 control points here is arbitrary, and is going to be
+## higher than needed in some situations, lower in others.  Consider
+## scaling against how much of the full circle theta runs?
+grid.arc.xy <- function(x0, y0, x1, y1, theta=NULL, ncp=33, ...) {
+  if (is.null(theta))
+    theta <- atan2(y1 - y0, x1 - x0)
+  grid.curve(x0, y0, x1, y1, square=FALSE,
+             curvature=arcCurvature(to_degrees(theta)), ncp=ncp, ...)
+}
+
+## Shorthand and easier to read.
+native <- function(x)
+  unit(x, "native")
+
+## Grid tends to use degrees rather than radians
+to_degrees <- function(x)
+  x / pi * 180
+
 ##' Combine a list of graphical parameters.
 ##'
 ##' The idea is this; sometimes it makes sense to think of different
