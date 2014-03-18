@@ -119,23 +119,6 @@ tree_node_labels <- function(...) {
   tree_labels("nodes", ...)
 }
 
-add_tree_labels <- function(tree_grob, tree_labels) {
-  direction <- tree_grob$direction
-  offset_t <- normalise_time(tree_labels$offset, direction)
-  branches <- tree_grob$children$branches
-  i <- ( branches$is_tip & tree_labels$tip) |
-       (!branches$is_tip & tree_labels$node)
-
-  label <- branches$label[i]
-  t <- native(branches$time_tipward[i]) + offset_t
-  s <- branches$spacing_mid[i]
-
-  lab <- tree_labelGrob(label, t, s, direction, tree_labels$rot,
-                        name=tree_labels$name, gp=tree_labels$gp,
-                        vp=tree_grob$childrenvp)
-  addGrob(tree_grob, lab)
-}
-
 ## Lower level functions that are not exported:
 
 ## TODO: This is all far uglier than it wants to be, and can probably
@@ -371,21 +354,61 @@ tree_directions <- function() {
 ## The ideas in this section borrow *very* heavily from ggplot2.
 ##' @S3method + tree
 `+.tree` <- function(e1, e2) {
-  add_tree(e1, e2)
+  add_to_tree(e2, e1) # e1 is the tree!
 }
 
-## This is going to be better do do through partial application and S3
-## methods, which will avoid the big mess of if/else statements and
-## simultaneously be more extensible.  Once that's done, the two
-## separate (+.tree and add_tree) can roll back together.
-add_tree <- function(tg, object) {
-  if (inherits(object, "tree_labels")) {
-    add_tree_labels(tg, object)
-  } else if (inherits(object, "tree_style")) {
-    add_tree_style(tg, object)
-  } else {
-    stop("Can't add that sort of thing...")
+## Note that the tree_grob is the *second* argument, because dispatch
+## needs to happen on the class of object being added.  There is
+## probably nice mix of partial application and generic programming
+## that could be used here, but it really doesn't matter at this
+## point: this is all non-api.
+add_to_tree <- function(object, tree_grob, ...) {
+  UseMethod("add_to_tree")
+}
+
+add_to_tree.tree_labels <- function(object, tree_grob, ...) {
+  direction <- tree_grob$direction
+  offset_t <- normalise_time(object$offset, direction)
+  branches <- tree_grob$children$branches
+  i <- ( branches$is_tip & object$tip) |
+       (!branches$is_tip & object$node)
+
+  label <- branches$label[i]
+  t <- native(branches$time_tipward[i]) + offset_t
+  s <- branches$spacing_mid[i]
+
+  lab <- tree_labelGrob(label, t, s, direction, object$rot,
+                        name=object$name, gp=object$gp,
+                        vp=tree_grob$childrenvp)
+  addGrob(tree_grob, lab)
+}
+add_to_tree.tree_style <- function(object, tree_grob, ...) {
+  targets <- object$targets
+  base <- object$base
+  what <- object$what
+  cl <- classify(tree_grob$tree, names(targets)) + 1L
+
+  for (w in what) {
+    if (!(w %in% names(tree_grob$children)))
+      stop("No child member ", w, " within this tree")
+    thing <- tree_grob$children[[w]]
+    if (!("label" %in% names(thing)))
+      stop("Tree member ", w, " does not have a label member")
+    base.w <- if (is.null(base)) thing$gp else base
+    # TODO: It might be best here to delay this till the drawDetails
+    # part, or at least retrigger base lookup.  That would not be hard
+    # to do, and actually allow restyling a bit more easily
+    # potentially.
+    #
+    # TODO: perhaps first look to the object's gpar?  Or would
+    # deferring to drawing solve this too?
+    tree_grob$children[[w]]$gp <-
+      combine_gpars(c(list(base.w), targets), unname(cl[thing$label]))
   }
+
+  # TODO: Here, and in add_to_tree.tree_labels, or in add_to_tree, or
+  # in `+.tree`, should the return be invisible?
+  tree_grob
 }
 
 ##' @S3method print tree
@@ -455,33 +478,4 @@ tree_style_tip_labels <- function(..., base=NULL) {
 ##' @rdname style
 tree_style_node_labels <- function(..., base=NULL) {
   tree_style("node_labels", ..., base=base)
-}
-
-add_tree_style <- function(tree_grob, tree_style) {
-  targets <- tree_style$targets
-  base <- tree_style$base
-  what <- tree_style$what
-  cl <- classify(tree_grob$tree, names(targets)) + 1L
-
-  for (w in what) {
-    if (!(w %in% names(tree_grob$children)))
-      stop("No child member ", w, " within this tree")
-    thing <- tree_grob$children[[w]]
-    if (!("label" %in% names(thing)))
-      stop("Tree member ", w, " does not have a label member")
-    base.w <- if (is.null(base)) thing$gp else base
-    # TODO: It might be best here to delay this till the drawDetails
-    # part, or at least retrigger base lookup.  That would not be hard
-    # to do, and actually allow restyling a bit more easily
-    # potentially.
-    #
-    # TODO: perhaps first look to the object's gpar?  Or would
-    # deferring to drawing solve this too?
-    tree_grob$children[[w]]$gp <-
-      combine_gpars(c(list(base.w), targets), unname(cl[thing$label]))
-  }
-
-  # TODO: Here, and in add_tree_labels, or in add_tree, should the
-  # return be invisible?
-  tree_grob
 }
