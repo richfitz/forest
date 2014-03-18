@@ -413,11 +413,18 @@ print.tree <- function(x, newpage=TRUE, vp=NULL, ...) {
 ##' @export
 ##' @rdname style
 tree_style <- function(what, ..., base=NULL) {
+  # TODO: Potential issue: a node called 'base' cannot be set.  Deal
+  # with this by changing base to .base, perhaps
   targets <- list(...)
   if (length(targets) == 0)
     names(targets) <- character(0) # corner case.
   if (is.null(names(targets)) || any(names(targets) == ""))
     stop("Targets must be named")
+  # TODO: This means that check_gpar is happening twice (once here and
+  # once in combine_gpar()).  Not sure if that is actually a problem
+  # though.
+  targets <- lapply(targets, check_gpar)
+  base <- check_gpar(base)
   object <- list(what=what, targets=targets, base=base)
   class(object) <- "tree_style"
   object

@@ -119,6 +119,8 @@ test_that("Labels", {
   gp.tip <- gpar(col="red")
   gp.node <- gpar(col="blue")
 
+  # TODO: Test tip_labels() return values
+
   for (direction in forest:::tree_directions()) {
     vp <- viewport(name="extra", width=.5)
     tg <- treeGrob(tr, name="mytree", direction=direction, vp=vp) +
@@ -177,15 +179,48 @@ test_that("Initial angle argument for circle plots", {
   }
 })
 
+test_that("Branch styling (returned object)", {
+  # Empty style
+  sty <- tree_style("foo")
+  expect_that(sty, is_a("tree_style"))
+  expect_that(names(sty), equals(c("what", "targets", "base")))
+  expect_that(sty$what, equals("foo"))
+  expect_that(sty$targets, equals(structure(list(), names=character(0))))
+  expect_that(sty$base, is_identical_to(gpar()))
+
+  # List of targets:
+  g0 <- gpar(lwd=2)
+  g1 <- gpar(col="red")
+  g2 <- gpar(col="blue", lty=3)
+  sty <- tree_style("foo", n1=g1, n2=g2, base=g0)
+  expect_that(length(sty$targets), equals(2))
+  expect_that(names(sty$targets), equals(c("n1", "n2")))
+  expect_that(sty$targets$n1, equals(g1))
+  expect_that(sty$targets$n2, equals(g2))
+  expect_that(sty$base, equals(g0))
+
+  # Unnamed targets:
+  expect_that(tree_style("foo", g1, base=g0), throws_error())
+  expect_that(tree_style("foo", n1=g1, g2, base=g0), throws_error())
+  expect_that(tree_style("foo", n1=g1, n2=g2, g0), throws_error())
+  expect_that(tree_style("foo", g0), throws_error())
+
+  # NULL gpars are converted to gpar
+  expect_that(tree_style("foo", n1=NULL)$targets$n1, equals(gpar()))
+  expect_that(tree_style("foo", n1=gpar())$targets$n1, equals(gpar()))
+  expect_that(tree_style("foo", n1=gpar(), n2=g2)$targets$n1, equals(gpar()))
+
+  # Invalid input
+  expect_that(tree_style("foo", n1="red"), throws_error())
+  expect_that(tree_style("foo", n1=list(col="red")), throws_error())
+})
+
 test_that("Branch styling (single regime)", {
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
   phy$tip.label <- paste0(phy$tip.label, "abcde")
   tr <- forest.from.ape(phy)
-
-  ## TODO: Can now check tree_style_branches() directly.  Same in
-  ## tip_labels() too, actually.
 
   tg <- treeGrob(tr) + tree_tip_labels() + tree_node_labels()
   tg2 <- tg + tree_style_branches(n5=gpar(col="red"))
