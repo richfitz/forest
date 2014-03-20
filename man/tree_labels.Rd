@@ -2,9 +2,10 @@
 \alias{tree_labels}
 \alias{tree_node_labels}
 \alias{tree_tip_labels}
-\title{Add tip and node labels to a plotted tree.  The idea is to take a
-tree that is created by \code{\link{treeGrob}} and add tip labels
-into it.}
+\title{Add tip and node labels to a plotted tree.  These functions do not
+do anything except for specify which \emph{type} of labels might
+be added -- they need to be added to the tree with the addition
+operator.}
 \usage{
 tree_labels(type, offset = unit(0.5, "lines"), rot = 0, name = NULL,
   gp = gpar())
@@ -32,8 +33,9 @@ tree_node_labels(...)
   \code{tree_labels}.}
 }
 \description{
-Add tip and node labels to a plotted tree.  The idea is to
-take a tree that is created by \code{\link{treeGrob}} and
-add tip labels into it.
+Add tip and node labels to a plotted tree.  These functions
+do not do anything except for specify which \emph{type} of
+labels might be added -- they need to be added to the tree
+with the addition operator.
 }
 

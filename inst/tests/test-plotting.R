@@ -325,5 +325,107 @@ test_that("Branch styling (multiple regimes)", {
   }
 })
 
+test_that("tree_image", {
+  # Here is an image from within the png package.  It's not very
+  # inspiring but it's a start.
+  pic.filename <- system.file("img", "Rlogo.png", package="png")
+  pic <- readPNG(pic.filename)
+
+  ## Minimal set of options.
+  ti <- tree_image(pic, "t1")
+  expect_that(ti, is_a("tree_image"))
+  expect_that(names(ti),
+              equals(c("image", "label", "offset", "rot", "size",
+                       "name", "gp")))
+  # Check the defaults are as expected.
+  expect_that(ti$image,  is_a("raster"))
+  expect_that(ti$label,  is_identical_to("t1"))
+  expect_that(ti$offset, is_a("unit"))
+  expect_that(ti$offset, equals(unit(0.5, "lines")))
+  expect_that(ti$rot,    is_identical_to(0.0))
+  expect_that(ti$size,   equals(unit(1, "native")))
+
+  # Corner cases:
+  expect_that(tree_image(),   throws_error())  # picture and label missing
+  expect_that(tree_image(pic), throws_error()) # label missing
+
+  # Invalid image
+  expect_that(tree_image(NULL, "t1"),         throws_error())
+  expect_that(tree_image(pic.filename, "t1"), throws_error())
+
+  # Invalid label
+  expect_that(tree_image(NULL, c("t1", "t2")), throws_error())
+  # No type checking here though.  And we can't check being in the
+  # tree until it joins the tree.
+
+  # Invalid offset: needs to be an unit of length 1
+  expect_that(tree_image(pic, "t1", offset=1), throws_error())
+  expect_that(tree_image(pic, "t1", offset=unit(1:2, "lines")),
+              throws_error())
+
+  # Invalid rotation
+  expect_that(tree_image(pic, "t1", rot=c(1, 2)), throws_error())
+  expect_that(tree_image(pic, "t1", rot=NA),      throws_error())
+  expect_that(tree_image(pic, "t1", rot=NULL),    throws_error())
+  expect_that(tree_image(pic, "t1", rot="right"), throws_error())
+
+  # Invalid size
+  expect_that(tree_image(pic, "t1", size=1), throws_error())
+  expect_that(tree_image(pic, "t1", size=unit(1:2, "lines")),
+              throws_error())
+
+  # No validation is done on name or gp, though.
+
+  # Check that options passed through are actually recorded.  This has
+  # already been an issue a couple of times.  Might actually be better
+  # to build the lists through match.call()?
+  label <- "t1"
+  offset <- unit(1, "cm")
+  rot <- 90
+  size <- unit(2, "cm")
+  name <- "foo"
+  gp <- gpar(lwd=1)
+  tmp <- tree_image(pic, label, offset=offset, rot=rot, size=size,
+                    name=name, gp=gp)
+  expect_that(tmp$image,  is_identical_to(as.raster(pic)))
+  expect_that(tmp$label,  is_identical_to(label))
+  expect_that(tmp$offset, is_identical_to(offset))
+  expect_that(tmp$rot,    is_identical_to(rot))
+  expect_that(tmp$size,   is_identical_to(size))
+  expect_that(tmp$name,   is_identical_to(name))
+  expect_that(tmp$gp,     is_identical_to(gp))
+
+  # Check that native raster images are OK too.
+  pic.n <- readPNG(pic.filename, native=TRUE)
+  tmp <- tree_image(pic.n, "t1")
+  expect_that(tmp$image, is_a("nativeRaster"))
+})
+
+# This is not really a good test, except that it checks that it checks
+# that nothing terrible happens in associating the image and the
+# tree.  Work do be done for sure though.
+test_that("Add tree_image to a tree", {
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  tr <- forest.from.ape(phy)
+  tg <- treeGrob(tr, direction="right")
+
+  # Same picture as above
+  pic.filename <- system.file("img", "Rlogo.png", package="png")
+  pic <- readPNG(pic.filename)
+
+  tg2 <- tg + tree_image(pic, "t1", name="myimage", size=unit(1, "cm"))
+  expect_that(names(tg2$children), equals(c("branches", "myimage")))
+
+  # Now, painfully, go through and check that the location is correct?
+  # That seems like a lot of work.  Perhaps wait until we have the
+  # generalised location information code written.
+
+  if (interactive()) {
+    vp.spacing <- viewport(width=.8, height=.8, name="spacing")
+    print(tg2, vp=vp.spacing)
+  }
+})
 
 ## TODO: classify on root note?

@@ -18,5 +18,6 @@ Suggests:
     ape,
     diversitree,
     expm,
-    deSolve
+    deSolve,
+    png
 LinkingTo: Rcpp, BH

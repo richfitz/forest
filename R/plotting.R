@@ -237,18 +237,37 @@ tree_image <- function(image, label, offset=unit(0.5, "lines"),
   ## into the same structure, and that pretty much depends on how the
   ## arguments vectorise.  For now I'm ignoring that issue.
 
-  if (!inherits(image, "nativeRaster"))
-    image <- as.raster(image)
+  if (!inherits(image, "nativeRaster")) {
+    # TODO: This is ugly, but as.raster("foo") does not actually fail,
+    # surprisingly.  This check is needed so that filenames cause
+    # errors.
+    if (is.array(image)) {
+      image <- as.raster(image)
+    } else {
+      stop("Not something that can be converted into a raster")
+    }
+  }
 
   ## All of these might change
   if (length(label) != 1)
     stop("Need a scalar label at the moment")
   if (length(offset) != 1)
     stop("Need a scalar offset at the moment")
+  if (length(rot) != 1)
+    stop("Need a scalar offset at the moment")
   if (length(size) != 1)
     stop("Need a scalar size at the moment")
+
+  # Other checking that is more likely to be permanent
+  if (!is.unit(offset))
+    stop("offset must be a unit")
+  if (!(is.numeric(rot) || is.integer(rot)) || is.na(rot))
+    stop("rot must be numeric")
+  if (!is.unit(size))
+    stop("size must be a unit")
+
   object <- list(image=image, label=label, offset=offset, rot=rot,
-                 size=size)
+                 size=size, name=name, gp=gp)
   class(object) <- "tree_image"
   object
 }
