@@ -61,3 +61,28 @@ add_to_tree.tree_style <- function(object, tree_grob, ...) {
   # in `+.tree`, should the return be invisible?
   tree_grob
 }
+
+# TODO: At the moment, this is set up only for a single tip and not
+# for arbitrary plotting.  Lotsa changes coming.
+add_to_tree.tree_image <- function(object, tree_grob, ...) {
+  direction <- tree_grob$direction
+  at <- tree_label_coords(object$label, tree_grob)
+  offset_t <- normalise_time(object$offset, direction)
+  at$t <- native(at$t) + offset_t
+  img <- tree_imageGrob(object$image, at$t, at$s, direction=direction,
+                        size=object$size, rot=object$rot,
+                        name=object$name, gp=object$gp,
+                        vp=tree_grob$childrenvp)
+  addGrob(tree_grob, img)
+}
+
+tree_label_coords <- function(label, tree_grob) {
+  branches <- tree_grob$children$branches
+  i <- match(label, branches$label)
+  if (any(is.na(i))) {
+    stop(sprintf("labels %s not found in the tree",
+                 paste(label[is.na(i)])))
+  }
+  list(s=branches$spacing_mid[i],
+       t=branches$time_tip[i])
+}

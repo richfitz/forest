@@ -176,6 +176,83 @@ tree_style_node_labels <- function(..., base=NULL) {
   tree_style("node_labels", ..., base=base)
 }
 
+## TODO: For now just using label, but that should naturally expand
+## out to providing lower level t/s pairs.  That's what this is going
+## to use anyway.
+##
+## TODO: In the case where have labels in the tree already should this
+## detect that and add the strwidth of the label to the offset?  That
+## would actually be very easy.
+##
+## TODO: When providing multiple images, how do we provide them?  List
+## I guess.
+##
+## TODO: Is it ever useful to provide filenames?  Probably not.
+##
+## TODO: Handle both vector and bitmap images through the same
+## interface.  Users should not care.
+##
+## TODO: Order of arguments?  Probably picture first.  Others should
+## reflect tree_labels (especially rot)
+##
+## TODO: Recycling of pictures?  Probably never a good idea.
+##
+## TODO: Default sizing of images?  Because the size dimension is only
+## defined as 0..1 it varies depending on how many species are
+## plotted.  This is even worse for circle trees, where that unit will
+## vary depending on the time axis anyway.  Some sort of concept of
+## the between-branch-space might be useful to have here.
+
+##' Add images to the tree.
+##'
+##' Under heavy development at the moment, documentation pending.
+##' @title Add Image To Plotted Tree
+##' @param image A raster object, from \code{readPNG} or
+##' \code{readJPEG} most likely.  Both "native" and array-based raster
+##' objects are supported.  See \code{grid.raster} for scope and
+##' limitations.
+##' @param label The label indicating the tip or node to associate the
+##' image with.  This may change soon!
+##' @param offset Offset, in the time dimension.  Watch out for
+##' tip/node labels (this will happily draw on top of the labels).
+##' @param rot Rotation of the image.  Currently ignored.
+##' @param size Size of the image.  This is hard to nail down because
+##' different tree orientations differ in which dimension it will be
+##' convenient to size the image.  For now it's the width, but that
+##' will also change.
+##' @param name Name to give the image within the tree (may change
+##' soon if we depend on this)
+##' @param gp Graphical parameters.  I don't think any of these are
+##' immediately useful, but I could be wrong.
+##' @author Rich FitzJohn
+##' @export
+tree_image <- function(image, label, offset=unit(0.5, "lines"),
+                       rot=0, size=unit(1, "native"),
+                       name=NULL, gp=gpar()) {
+  ## TODO: Thinking about this, this would actually generalise nicely
+  ## to all grobs that we might want to add.  So pie charts at nodes,
+  ## things like that.  The requirements would probably be that we
+  ## need to be able to compute sizes and aspect ratios meaningfully.
+  ## It may or may not make sense to retrofit the existing tip labels
+  ## into the same structure, and that pretty much depends on how the
+  ## arguments vectorise.  For now I'm ignoring that issue.
+
+  if (!inherits(image, "nativeRaster"))
+    image <- as.raster(image)
+
+  ## All of these might change
+  if (length(label) != 1)
+    stop("Need a scalar label at the moment")
+  if (length(offset) != 1)
+    stop("Need a scalar offset at the moment")
+  if (length(size) != 1)
+    stop("Need a scalar size at the moment")
+  object <- list(image=image, label=label, offset=offset, rot=rot,
+                 size=size)
+  class(object) <- "tree_image"
+  object
+}
+
 ## Lower level: Grobs
 
 ## Tree branches (not stored as separate time and spacing grobs
@@ -212,6 +289,18 @@ tree_labelGrob <- function(label, t, s, direction, rot=0,
     stop("t must be a unit")
   grob(label=label, t=t, s=s, direction=direction, rot=rot,
        name=name, gp=gp, vp=vp, cl="tree_label")
+}
+
+tree_imageGrob <- function(image, t, s, direction, size, rot=0,
+                           name=NULL, gp=gpar(), vp=NULL) {
+  if (!is.numeric(s))
+    stop("s must be numeric")
+  if (!is.unit(t))
+    stop("t must be a unit")
+  if (!is.unit(size))
+    stop("size must be a unit")
+  grob(image=image, t=t, s=s, direction=direction, size=size, rot=rot,
+       name=name, gp=gp, vp=vp, cl="tree_image")
 }
 
 ## Low level: drawDetails methods to draw grobs
@@ -263,6 +352,43 @@ drawDetails.tree_label <- function(x, recording=TRUE) {
     if (x$direction %in% c("left", "right")) {
       xx    <- x$t
       yy    <- x$s
+      rot   <- 0 # TODO: x$rot?
+    } else {
+      xx    <- x$s
+      yy    <- x$t
+      rot   <- 90 # TODO: x$rot + 90
+    }
+    hjust <- if (x$direction %in% c("left", "down")) 1 else 0
+  }
+  vjust <- 0.5
+
+  ## First line debugs alignment.
+  # grid.points(xx, yy, gp=gpar(col="#ff000055"), pch=3)
+  grid.text(x$label, xx, yy, hjust=hjust, vjust=vjust, rot=rot, gp=x$gp)
+}
+
+##' @S3method drawDetails tree_image
+drawDetails.tree_image <- function(x, recording=TRUE) {
+  # TODO: This is directly copied from the above
+  # drawDetails.tree_label; that sort of duplication is not good!  We
+  # really want to make a list with
+  #   x, y, hjust, vjust and rot
+  # should be fairly easy.
+  if (x$direction %in% c("circle", "semicircle")) {
+    rot <- x$rot + to_degrees(x$s)
+    rot <- rot %% 360
+    i <- rot > 90 & rot < 270
+    rot[i] <- (rot[i] + 180) %% 360
+
+    hjust <- rep_len(0, length(rot))
+    hjust[i] <- 1
+
+    xx <- polar_x(x$t, x$s)
+    yy <- polar_y(x$t, x$s)
+  } else {
+    if (x$direction %in% c("left", "right")) {
+      xx    <- x$t
+      yy    <- x$s
       rot   <- 0
     } else {
       xx    <- x$s
@@ -273,9 +399,13 @@ drawDetails.tree_label <- function(x, recording=TRUE) {
   }
   vjust <- 0.5
 
-  ## First line debugs alignment.
-  # grid.points(xx, yy, gp=gpar(col="#ff000055"), pch=3)
-  grid.text(x$label, xx, yy, hjust=hjust, vjust=vjust, rot=rot, gp=x$gp)
+  # TODO: rot only works here via a viewport, so we'll ignore.
+  #
+  # TODO: for up/down, size should be on the width dimension, or
+  # convert the size -> width with convertWidth, etc.  We can work
+  # that out when building the image grob, perhaps.
+  grid.raster(x$image, xx, yy, hjust=hjust, vjust=vjust,
+              height=x$size, gp=x$gp)
 }
 
 ## Actually plot the tree
