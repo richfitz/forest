@@ -77,6 +77,10 @@ spacing_to_angle <- function(s, theta0=0, theta=pi * 2 * (n-1) / n, n) {
   theta0 + s * (theta1 - theta0)
 }
 
+## Only use this within a drawDetails method, or all bets are off on a
+## device resize.  I think that this is only an issue for the circular
+## trees though.  Problem cases are polar_x and polar_y which go
+## through convertWidth/convertHeight.
 tree_location_resolve <- function(object, rotate_to_time=TRUE) {
   # Here, object is a list that must contain these keys:
   keys <- c("s", "t", "direction")

@@ -76,7 +76,11 @@ add_to_tree.tree_image <- function(object, tree_grob, ...) {
   addGrob(tree_grob, img)
 }
 
+# TODO: Use this in the add_to_tree.tree_labels() functions.
 tree_label_coords <- function(label, tree_grob) {
+  if (any(is.na(label))) {
+    stop("label cannnot be missing")
+  }
   branches <- tree_grob$children$branches
   i <- match(label, branches$label)
   if (any(is.na(i))) {

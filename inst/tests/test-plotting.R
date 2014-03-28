@@ -109,6 +109,52 @@ test_that("treeGrob construction", {
   }
 })
 
+
+test_that("tree_label_coords", {
+  tree_label_coords <- forest:::tree_label_coords
+
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  tr <- forest.from.ape(phy)
+  tg <- treeGrob(tr, direction="right")
+
+  # Errors on invalid input
+  expect_that(tree_label_coords("not_in_tree", tg), throws_error())
+  # Empty input, empty output:
+  expect_that(tree_label_coords(character(0), tg),
+              equals(list(s=numeric(0), t=numeric(0))))
+
+  label <- "t1"
+  res <- tree_label_coords(label, tg)
+  i <- tg$children$branches$label == label
+  cmp <- list(s=tg$children$branches$spacing_mid[i],
+              t=tg$children$branches$time_tip[i])
+  expect_that(tree_label_coords(label, tg), equals(cmp))
+
+  # Multiple labels:
+  tip_labels <- tr$tip_labels
+  res <- tree_label_coords(tip_labels, tg)
+  i <- match(tip_labels, tg$children$branches$label)
+  cmp <- list(s=tg$children$branches$spacing_mid[i],
+              t=tg$children$branches$time_tip[i])
+  expect_that(tree_label_coords(tip_labels, tg), equals(cmp))
+
+  node_labels <- tr$node_labels
+  res <- tree_label_coords(node_labels, tg)
+  i <- match(node_labels, tg$children$branches$label)
+  cmp <- list(s=tg$children$branches$spacing_mid[i],
+              t=tg$children$branches$time_tip[i])
+  expect_that(tree_label_coords(node_labels, tg), equals(cmp))
+
+  # One label not in the tree within some that are:
+  labels <- c(label, "not_in_tree")
+  expect_that(tree_label_coords(labels, tg), throws_error())
+
+  # Missing label values:
+  expect_that(tree_label_coords(NA, tg), throws_error())
+})
+
 ## Node and tip labels:
 test_that("Labels", {
   set.seed(1)
