@@ -356,74 +356,23 @@ drawDetails.tree_branches <- function(x, recording=TRUE) {
 
 ##' @S3method drawDetails tree_label
 drawDetails.tree_label <- function(x, recording=TRUE) {
-  if (x$direction %in% c("circle", "semicircle")) {
-    rot <- x$rot + to_degrees(x$s)
-    rot <- rot %% 360
-    i <- rot > 90 & rot < 270
-    rot[i] <- (rot[i] + 180) %% 360
-
-    hjust <- rep_len(0, length(rot))
-    hjust[i] <- 1
-
-    xx <- polar_x(x$t, x$s)
-    yy <- polar_y(x$t, x$s)
-  } else {
-    if (x$direction %in% c("left", "right")) {
-      xx    <- x$t
-      yy    <- x$s
-      rot   <- 0 # TODO: x$rot?
-    } else {
-      xx    <- x$s
-      yy    <- x$t
-      rot   <- 90 # TODO: x$rot + 90
-    }
-    hjust <- if (x$direction %in% c("left", "down")) 1 else 0
-  }
-  vjust <- 0.5
+  loc <- tree_location_resolve(x, rotate_to_time=TRUE)
 
   ## First line debugs alignment.
   # grid.points(xx, yy, gp=gpar(col="#ff000055"), pch=3)
-  grid.text(x$label, xx, yy, hjust=hjust, vjust=vjust, rot=rot, gp=x$gp)
+  grid.text(x$label, loc$x, loc$y, hjust=loc$hjust, vjust=loc$vjust,
+            rot=loc$rot, gp=x$gp)
 }
 
 ##' @S3method drawDetails tree_image
 drawDetails.tree_image <- function(x, recording=TRUE) {
-  # TODO: This is directly copied from the above
-  # drawDetails.tree_label; that sort of duplication is not good!  We
-  # really want to make a list with
-  #   x, y, hjust, vjust and rot
-  # should be fairly easy.
-  if (x$direction %in% c("circle", "semicircle")) {
-    rot <- x$rot + to_degrees(x$s)
-    rot <- rot %% 360
-    i <- rot > 90 & rot < 270
-    rot[i] <- (rot[i] + 180) %% 360
-
-    hjust <- rep_len(0, length(rot))
-    hjust[i] <- 1
-
-    xx <- polar_x(x$t, x$s)
-    yy <- polar_y(x$t, x$s)
-  } else {
-    if (x$direction %in% c("left", "right")) {
-      xx    <- x$t
-      yy    <- x$s
-      rot   <- 0
-    } else {
-      xx    <- x$s
-      yy    <- x$t
-      rot   <- 90
-    }
-    hjust <- if (x$direction %in% c("left", "down")) 1 else 0
-  }
-  vjust <- 0.5
-
+  loc <- tree_location_resolve(x, rotate_to_time=FALSE)
   # TODO: rot only works here via a viewport, so we'll ignore.
   #
   # TODO: for up/down, size should be on the width dimension, or
   # convert the size -> width with convertWidth, etc.  We can work
   # that out when building the image grob, perhaps.
-  grid.raster(x$image, xx, yy, hjust=hjust, vjust=vjust,
+  grid.raster(x$image, loc$x, loc$y, hjust=loc$hjust, vjust=loc$vjust,
               height=x$size, gp=x$gp)
 }
 

@@ -76,3 +76,50 @@ spacing_to_angle <- function(s, theta0=0, theta=pi * 2 * (n-1) / n, n) {
   theta1 <- theta0 + theta
   theta0 + s * (theta1 - theta0)
 }
+
+tree_location_resolve <- function(object, rotate_to_time=TRUE) {
+  # Here, object is a list that must contain these keys:
+  keys <- c("s", "t", "direction")
+  if (!all(keys %in% names(object))) {
+    stop("Missing keys: ",
+         paste(setdiff(keys, names(object)), collapse=", "))
+  }
+
+  if (object$direction %in% c("circle", "semicircle")) {
+    if (rotate_to_time) {
+      rot <- object$rot + to_degrees(object$s)
+      rot <- rot %% 360
+      i <- rot > 90 & rot < 270
+      rot[i] <- (rot[i] + 180) %% 360
+      hjust <- rep_len(0, length(rot))
+      hjust[i] <- 1
+      vjust <- 0.5
+    } else {
+      # TODO: This case here is totally not worked out yet.  Basically
+      # we are going to have to slide the adjustment point around the
+      # circle or around the bounding box.  It won't actually be hard,
+      # but it will require changing both hjust and vjust
+      rot <- 0
+      hjust <- stop("Not yet implemented")
+      vjust <- stop("Not yet implemented")
+    }
+
+    x <- polar_x(object$t, object$s)
+    y <- polar_y(object$t, object$s)
+  } else {
+    if (object$direction %in% c("left", "right")) {
+      x   <- object$t
+      y   <- object$s
+      rot <- object$rot
+    } else {
+      x   <- object$s
+      y   <- object$t
+      # TODO: Should this depend on rotate_to_time?
+      rot <- object$rot + 90
+    }
+    hjust <- if (object$direction %in% c("left", "down")) 1 else 0
+    vjust <- 0.5
+  }
+
+  list(x=x, y=y, hjust=hjust, vjust=vjust, rot=rot)
+}
