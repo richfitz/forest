@@ -109,7 +109,6 @@ test_that("treeGrob construction", {
   }
 })
 
-
 test_that("tree_label_coords", {
   tree_label_coords <- forest:::tree_label_coords
 
@@ -153,6 +152,29 @@ test_that("tree_label_coords", {
 
   # Missing label values:
   expect_that(tree_label_coords(NA, tg), throws_error())
+})
+
+## NOTE: This is a basic test, but checks for the the simplest
+## possible cases of the offset function.  When it comes time to
+## offset in the spacing dimension too, this might be a a good place
+## to start.
+test_that("tree_label_coords_offset", {
+  tree_offset <- forest:::tree_offset
+
+  at <- list(s=1, t=1)
+  offset <- unit(1, "lines")
+  offset_reverse <- unit(-1, "lines")
+
+  cmp_normal <- list(s=at$s,  t=unit(at$t, "native") + offset)
+  cmp_reverse <- list(s=at$s, t=unit(at$t, "native") + offset_reverse)
+
+  expect_that(tree_offset(at, offset, "right"),      equals(cmp_normal))
+  expect_that(tree_offset(at, offset, "up"),         equals(cmp_normal))
+  expect_that(tree_offset(at, offset, "circle"),     equals(cmp_normal))
+  expect_that(tree_offset(at, offset, "semicircle"), equals(cmp_normal))
+
+  expect_that(tree_offset(at, offset, "left"), equals(cmp_reverse))
+  expect_that(tree_offset(at, offset, "down"), equals(cmp_reverse))
 })
 
 ## Node and tip labels:

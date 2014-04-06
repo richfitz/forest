@@ -17,17 +17,14 @@ add_to_tree <- function(object, tree_grob, ...) {
 }
 
 add_to_tree.tree_labels <- function(object, tree_grob, ...) {
-  direction <- tree_grob$direction
-  offset_t <- normalise_time(object$offset, direction)
   branches <- tree_grob$children$branches
   i <- ( branches$is_tip & object$tip) |
        (!branches$is_tip & object$node)
-
   label <- branches$label[i]
-  t <- native(branches$time_tipward[i]) + offset_t
-  s <- branches$spacing_mid[i]
-
-  lab <- tree_labelGrob(label, t, s, direction, object$rot,
+  at <- tree_offset(tree_label_coords(label, tree_grob),
+                    object$offset, tree_grob$direction)
+  lab <- tree_labelGrob(label, at$t, at$s,
+                        direction=tree_grob$direction, rot=object$rot,
                         name=object$name, gp=object$gp,
                         vp=tree_grob$childrenvp)
   addGrob(tree_grob, lab)
@@ -65,18 +62,16 @@ add_to_tree.tree_style <- function(object, tree_grob, ...) {
 # TODO: At the moment, this is set up only for a single tip and not
 # for arbitrary plotting.  Lotsa changes coming.
 add_to_tree.tree_image <- function(object, tree_grob, ...) {
-  direction <- tree_grob$direction
-  at <- tree_label_coords(object$label, tree_grob)
-  offset_t <- normalise_time(object$offset, direction)
-  at$t <- native(at$t) + offset_t
-  img <- tree_imageGrob(object$image, at$t, at$s, direction=direction,
+  at <- tree_offset(tree_label_coords(object$label, tree_grob),
+                    object$offset, tree_grob$direction)
+  img <- tree_imageGrob(object$image, at$t, at$s,
+                        direction=tree_grob$direction,
                         size=object$size, rot=object$rot,
                         name=object$name, gp=object$gp,
                         vp=tree_grob$childrenvp)
   addGrob(tree_grob, img)
 }
 
-# TODO: Use this in the add_to_tree.tree_labels() functions.
 tree_label_coords <- function(label, tree_grob) {
   if (any(is.na(label))) {
     stop("label cannnot be missing")
@@ -87,6 +82,27 @@ tree_label_coords <- function(label, tree_grob) {
     stop(sprintf("labels %s not found in the tree",
                  paste(label[is.na(i)])))
   }
+  # TODO: class this, and then depend on that class elsewhere?  This
+  # could then be the generic location object.
+  #
+  # TODO: Do we also need a label here for future lookup?  Could be
+  # too much?
+  #
+  # NOTE: Neither s nor t are units here, but are intrepreted as
+  # native units on a scale that is not directly related to the
+  # device.
   list(s=branches$spacing_mid[i],
        t=branches$time_tip[i])
+}
+
+tree_offset <- function(at, offset_t, direction) {
+  if (!is.unit(offset_t)) {
+    stop("offset_t must be a unit")
+  }
+  # NOTE: In contrast with tree_label_coords, this converts the 't'
+  # member into a native unit.  The 's' member stays as a non-unit
+  # though.  This is probably undesirable, and it might be better to
+  # convert to a native unit in tree_label_coords directly.
+  at$t <- native(at$t) + normalise_time(offset_t, direction)
+  at
 }
