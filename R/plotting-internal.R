@@ -72,9 +72,34 @@ normalise_time <- function(unit, direction) {
   }
 }
 
-spacing_to_angle <- function(s, theta0=0, theta=pi * 2 * (n-1) / n, n) {
-  theta1 <- theta0 + theta
-  theta0 + s * (theta1 - theta0)
+# Compute the separation between tips.  This is a slightly tricky
+# thing.  For left/right/up/down and semicircle plots, the domain
+# ([0,1] and [0,pi], respectively) is divided into n-1 sections.  For
+# circular plots the domain ([0,2pi]) is divided into n sections.
+#
+# Clade trees will break this entirely because there is a separation
+# between the number of tips and number of taxa, and the tips are of
+# varying size, so picking a good looking number will take a bit of
+# effort, and I will need to rethink this a little when I get there.
+#
+# NOTE: We might want a slightly larger gap to indicate where the
+# "beginning" of the tree is for the circle tree, but for now it is
+# worth one gap.
+spacing_info <- function(n_tips, direction) {
+  if (direction %in% c("left", "right", "down", "up")) {
+    size <- 1
+    gaps <- n_tips - 1
+  } else if (direction == "circle") {
+    size <- 2 * pi * (n_tips - 1) / n_tips
+    gaps <- n_tips - 1
+  } else if (direction == "semicircle") {
+    size <- pi
+    gaps <- n_tips - 1
+  } else { # should not get here except for development failure
+    stop("Unimplemented direction")
+  }
+
+  list(size=size, gaps=gaps, gap_size=size / gaps)
 }
 
 ## Only use this within a drawDetails method, or all bets are off on a

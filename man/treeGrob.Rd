@@ -19,8 +19,9 @@ treeGrob(tree, direction = "right", theta0 = 0, name = NULL,
 
   \item{theta0}{Starting point when drawing trees of
   direction "circle" only.  May eventually be supported for
-  "semicircle" too. Silently ignored for all other
-  directions.}
+  "semicircle" too. Specifying a nonzero value for
+  non-circle plots will generate an error (may eventually
+  be softened to a warning).}
 
   \item{name}{Name of the grob (optional)}
 

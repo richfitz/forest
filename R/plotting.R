@@ -25,7 +25,8 @@
 ##' plots a tree very similar to ape's \dQuote{fan} style.
 ##' @param theta0 Starting point when drawing trees of direction
 ##' "circle" only.  May eventually be supported for "semicircle" too.
-##' Silently ignored for all other directions.
+##' Specifying a nonzero value for non-circle plots will generate an
+##' error (may eventually be softened to a warning).
 ##' @param name Name of the grob (optional)
 ##' @param gp Graphical parameters that the segments will take.  This
 ##' one is \emph{really} up for grabs.  I'd suggest being fairly tame
@@ -47,17 +48,22 @@ treeGrob <- function(tree, direction="right", theta0=0,
   direction <- match.arg(direction, tree_directions())
 
   xy <- plotting_prepare(tree)
+
+  # TODO: The range calculations could be restricted to within the
+  # scaling_viewport code, perhaps?
   lim_t <- range(xy$time_rootward, xy$time_tipward, na.rm=TRUE)
   lim_s <- range(xy$spacing_min, xy$spacing_max) # NOTE: always [0,1]
-
   cvp <- scaling_viewport(lim_t, lim_s, direction, name="scaling")
 
-  spacing_cols <- c("spacing_mid", "spacing_min", "spacing_max")
-  if (direction == "circle") {
-    xy[spacing_cols] <- spacing_to_angle(xy[spacing_cols],
-                                         theta0=theta0, n=sum(xy$is_tip))
-  } else if (direction == "semicircle") {
-    xy[spacing_cols] <- spacing_to_angle(xy[spacing_cols], theta=pi)
+  spacing_info <- spacing_info(sum(xy$is_tip), direction)
+
+  if (theta0 != 0 && direction != "circle") {
+    stop("theta0 argument only valid for circle plots (at present)")
+  }
+
+  if (direction %in% c("circle", "semicircle")) {
+    spacing_cols <- c("spacing_mid", "spacing_min", "spacing_max")
+    xy[spacing_cols] <- theta0 + xy[spacing_cols] * spacing_info$size
   }
 
   branches <- tree_branchesGrob(xy, direction=direction,
@@ -67,7 +73,7 @@ treeGrob <- function(tree, direction="right", theta0=0,
   ## contains all the information that the branches grob contains.
   ## But it's probably not desirable to pull that out of the tree
   ## every time we want to use it.
-  gTree(tree=tree, direction=direction,
+  gTree(tree=tree, direction=direction, spacing_info=spacing_info,
         children=gList(branches),
         childrenvp=cvp, name=name, gp=gp, vp=vp, cl="tree")
 }

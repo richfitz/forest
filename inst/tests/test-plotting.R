@@ -82,6 +82,22 @@ test_that("treeGrob construction", {
     ## Direction is correct:
     expect_that(tg$direction, equals(direction))
 
+    ## Spacing info is included:
+    expect_that(tg$spacing_info, is_a("list"))
+    expect_that(tg$spacing_info$gaps, equals(tr$tips - 1))
+    if (direction == "circle") {
+      spacing_gap_size <- 2 * pi / tr$tips
+      spacing_size     <- 2 * pi - spacing_gap_size
+    } else if (direction == "semicircle") {
+      spacing_gap_size <- pi / tg$spacing_info$gaps
+      spacing_size     <- pi
+    } else {
+      spacing_gap_size <- 1 / tg$spacing_info$gaps
+      spacing_size     <- 1
+    }
+    expect_that(tg$spacing_info$size,     equals(spacing_size))
+    expect_that(tg$spacing_info$gap_size, equals(spacing_gap_size))
+
     ## There is a viewport for scaling:
     expect_that(tg$childrenvp$name, equals("scaling"))
 
@@ -244,6 +260,22 @@ test_that("Initial angle argument for circle plots", {
       }
       dev.off()
     }
+  }
+})
+
+test_that("Initial angle argument fails for non-circle plot types", {
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  phy$tip.label <- paste0(phy$tip.label, "abcde")
+  tr <- forest.from.ape(phy)
+
+  dirs <- setdiff(forest:::tree_directions(), "circle")
+  for (direction in dirs) {
+    expect_that(treeGrob(tr, name="t", direction=direction, theta0=0),
+                equals(treeGrob(tr, name="t", direction=direction)))
+    expect_that(treeGrob(tr, direction=direction, theta0=1),
+                throws_error())
   }
 })
 
