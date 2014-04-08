@@ -278,6 +278,52 @@ tree_image <- function(image, label, offset=unit(0.5, "lines"),
   object
 }
 
+##' Put a brace around a single clade.
+##'
+##' This is going to change, but exists as a holding place so that I
+##' can develop the lower level code.  Eventually this is going to be
+##' subsumed within things like the taxonomic alignment, but
+##' \emph{that} will probably work by using a series of clades anyway,
+##' so we're unlikely to be outrageously off.
+##'
+##' Eventually this has to handle a brace (type [straight line, square
+##' bracket, curly bracket], offset from tree, graphical styling
+##' [colour, line type, line thickness]) and a label for the brace
+##' (position [centred, top, bottom], graphical styling [colour, font,
+##' etc], text alignment, offset from brace).  So this function will
+##' break into pieces as development proceeds.  For now, starting with
+##' the simplest cases and moving forward.
+##' @title Add Brace To Plotted Tree
+##' @param label Label in the tree to attach the brace to.  The
+##' brace will span all descendents of the node (if internal) or just
+##' the single species (if terminal).  \emph{NB} this is \emph{not}
+##' the label that will be eventually drawn next to the brace.
+##' @author Rich FitzJohn
+##' @export
+tree_brace <- function(label, offset=unit(0.5, "lines"),
+                       name=NULL, gp=gpar()) {
+  # TODO: In circle tree, when theta0 > 0, check that we don't do mod
+  # 2*pi because that will break working out where the beginning and
+  # end points are for the contents of the clade.
+  #
+  # TODO: Going to need to work out how the labels are positioned to
+  # nail the offset here.
+
+  # All of these might change
+  if (length(label) != 1)
+    stop("Need a scalar label at the moment")
+  if (length(offset) != 1)
+    stop("Need a scalar offset at the moment")
+
+  # Other checking that is more likely to be permanent
+  if (!is.unit(offset))
+    stop("offset must be a unit")
+
+  object <- list(label=label, offset=offset, name=name, gp=gp)
+  class(object) <- "tree_brace"
+  object
+}
+
 ## Lower level: Grobs
 
 ## Tree branches (not stored as separate time and spacing grobs

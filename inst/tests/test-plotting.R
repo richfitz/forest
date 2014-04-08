@@ -1,5 +1,8 @@
 source("helper-forest.R")
 
+# Actually getting a good taxonomic alignment is hard.  Lots of things
+# don't play very well that way.
+
 context("Plotting")
 
 ## This is really hard to test; how do you tell if the plot has been
@@ -454,6 +457,7 @@ test_that("tree_image", {
   expect_that(tree_image(pic.filename, "t1"), throws_error())
 
   # Invalid label
+  expect_that(tree_image(NULL, character(0)),  throws_error())
   expect_that(tree_image(NULL, c("t1", "t2")), throws_error())
   # No type checking here though.  And we can't check being in the
   # tree until it joins the tree.
@@ -526,6 +530,46 @@ test_that("Add tree_image to a tree", {
     vp.spacing <- viewport(width=.8, height=.8, name="spacing")
     print(tg2, vp=vp.spacing)
   }
+})
+
+test_that("tree_brace", {
+  # Minimal set of options:
+  tb <- tree_brace("t1")
+  expect_that(tb,        is_a("tree_brace"))
+  expect_that(tb$label,  is_identical_to("t1"))
+  expect_that(tb$offset, is_a("unit"))
+  expect_that(tb$offset, equals(unit(0.5, "lines")))
+  expect_that(tb$name,   is_identical_to(NULL))
+  expect_that(tb$gp,     is_identical_to(gpar()))
+
+  # Corner cases:
+  expect_that(tree_brace(), throws_error())  # label missing
+
+  # Invalid label
+  expect_that(tree_brace(character(0)),  throws_error())
+  expect_that(tree_brace(c("t1", "t2")), throws_error())
+  # No type checking here though.  And we can't check being in the
+  # tree until it joins the tree.
+
+  # Invalid offset: needs to be an unit of length 1
+  expect_that(tree_label("t1", offset=1),                  throws_error())
+  expect_that(tree_label("t1", offset=unit(1:2, "lines")), throws_error())
+
+  # No validation is done on name or gp, though.
+
+  # Check that options passed through are actually recorded.  This has
+  # already been an issue a couple of times.  Might actually be better
+  # to build the lists through match.call()?
+  label <- "t1"
+  offset <- unit(1, "cm")
+  name <- "foo"
+  gp <- gpar(lwd=1)
+  tmp <- tree_brace(label, offset=offset, name=name, gp=gp)
+
+  expect_that(tmp$label,  is_identical_to(label))
+  expect_that(tmp$offset, is_identical_to(offset))
+  expect_that(tmp$name,   is_identical_to(name))
+  expect_that(tmp$gp,     is_identical_to(gp))
 })
 
 ## TODO: classify on root note?
