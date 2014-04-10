@@ -72,6 +72,36 @@ add_to_tree.tree_image <- function(object, tree_grob, ...) {
   addGrob(tree_grob, img)
 }
 
+add_to_tree.tree_brace <- function(object, tree_grob, ...) {
+  # Fraction of the gap we can use.  Hard coded for now.  Needs to be
+  # on [0,1]
+  p_gap <- 2/3
+
+  # Extend into the gap by this amount:
+  ds <- p_gap * tree_grob$spacing_info$gap_size / 2
+  # (the /2 is because the gap is shared with the neighbouring tips).
+
+  desc <- tree_grob$tree$get_subtree(object$label)$tip_labels
+  branches <- tree_grob$children$branches
+  i <- match(desc, branches$label)
+  # Here, even though min and max are the same for tips at the moment
+  # (and the same as mid) I'm using the min and max values
+  # separately.  This might be useful later for clade trees.
+  s <- c(min(branches$spacing_min[i]) - ds,
+         max(branches$spacing_max[i]) + ds)
+  t <- max(branches$time_tip[i])
+
+  # Ignoring the possibility of labels for now, but allowing for a
+  # user-specified offset:
+  at <- tree_offset(list(s=s, t=t), object$offset, tree_grob$direction)
+
+  brace <- tree_braceGrob(object$label, at$t, at$s,
+                          direction=tree_grob$direction,
+                          name=object$name, gp=object$gp,
+                          vp=tree_grob$childrenvp)
+  addGrob(tree_grob, brace)
+}
+
 tree_label_coords <- function(label, tree_grob) {
   if (any(is.na(label))) {
     stop("label cannnot be missing")

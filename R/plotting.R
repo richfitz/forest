@@ -374,6 +374,16 @@ tree_imageGrob <- function(image, t, s, direction, size, rot=0,
        name=name, gp=gp, vp=vp, cl="tree_image")
 }
 
+tree_braceGrob <- function(label, t, s, direction,
+                           name=NULL, gp=gpar(), vp=NULL) {
+  if (!is.numeric(s))
+    stop("s must be numeric")
+  if (!is.unit(t))
+    stop("t must be a unit")
+  grob(label=label, t=t, s=s, direction=direction,
+       name=name, gp=gp, vp=vp, cl="tree_brace")
+}
+
 ## Low level: drawDetails methods to draw grobs
 
 ##' @S3method drawDetails tree_branches
@@ -426,6 +436,23 @@ drawDetails.tree_image <- function(x, recording=TRUE) {
   # that out when building the image grob, perhaps.
   grid.raster(x$image, loc$x, loc$y, hjust=loc$hjust, vjust=loc$vjust,
               height=x$size, gp=x$gp)
+}
+
+##' @S3method drawDetails tree_brace
+drawDetails.tree_brace <- function(x, recording=TRUE) {
+  loc <- tree_location_resolve(x, rotate_to_time=FALSE)
+
+  t <- x$t
+  s_min <- x$s[[1]]
+  s_max <- x$s[[2]]
+
+  if (x$direction %in% c("circle", "semicircle")) {
+    grid.arc(t, s_min, s_max, gp=x$gp)
+  } else {
+    grid.segments(t, s_min, t, s_max, gp=x$gp)
+  }
+
+  # This is where a label would go if we knew what it would say.
 }
 
 ## Actually plot the tree

@@ -522,6 +522,7 @@ test_that("Add tree_image to a tree", {
   tg2 <- tg + tree_image(pic, "t1", name="myimage", size=unit(1, "cm"))
   expect_that(names(tg2$children), equals(c("branches", "myimage")))
 
+  # TODO:
   # Now, painfully, go through and check that the location is correct?
   # That seems like a lot of work.  Perhaps wait until we have the
   # generalised location information code written.
@@ -570,6 +571,28 @@ test_that("tree_brace", {
   expect_that(tmp$offset, is_identical_to(offset))
   expect_that(tmp$name,   is_identical_to(name))
   expect_that(tmp$gp,     is_identical_to(gp))
+})
+
+test_that("Add tree_brace to a tree", {
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  tr <- forest.from.ape(phy)
+  tg <- treeGrob(tr, direction="right") + tree_node_labels()
+
+  tb <- tree_brace("n4", name="brace")
+  tg2 <- tg + tb
+
+  expect_that(names(tg2$children),
+              equals(c("branches", "node_labels", "brace")))
+  expect_that(tg2$children$brace, is_a("tree_brace"))
+
+  # TODO: Check that location is correct.
+
+  if (interactive()) {
+    vp.spacing <- viewport(width=.8, height=.8, name="spacing")
+    print(tg2, vp=vp.spacing)
+  }
 })
 
 ## TODO: classify on root note?
