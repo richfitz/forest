@@ -561,7 +561,7 @@ test_that("tree_brace", {
   # Check that options passed through are actually recorded.  This has
   # already been an issue a couple of times.  Might actually be better
   # to build the lists through match.call()?
-  label <- "t1"
+  label <- c("t1", "t2")
   offset <- unit(1, "cm")
   name <- "foo"
   gp <- gpar(lwd=1)

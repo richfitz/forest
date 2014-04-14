@@ -102,6 +102,22 @@ spacing_info <- function(n_tips, direction) {
   list(size=size, gaps=gaps, gap_size=size / gaps)
 }
 
+tree_xy <- function(s, t, direction) {
+  if (direction %in% c("circle", "semicircle")) {
+    x <- polar_x(t, s)
+    y <- polar_y(t, s)
+  } else if (direction %in% c("left", "right")) {
+    x <- t
+    y <- s
+  } else if (direction %in% c("up", "down")) {
+    x <- s
+    y <- t
+  } else {
+    stop("Invalid direction")
+  }
+  list(x=x, y=y)
+}
+
 ## Only use this within a drawDetails method, or all bets are off on a
 ## device resize.  I think that this is only an issue for the circular
 ## trees though.  Problem cases are polar_x and polar_y which go
@@ -113,6 +129,8 @@ tree_location_resolve <- function(object, rotate_to_time=TRUE) {
     stop("Missing keys: ",
          paste(setdiff(keys, names(object)), collapse=", "))
   }
+
+  xy <- tree_xy(object$s, object$t, object$direction)
 
   if (object$direction %in% c("circle", "semicircle")) {
     if (rotate_to_time) {
@@ -132,17 +150,10 @@ tree_location_resolve <- function(object, rotate_to_time=TRUE) {
       hjust <- stop("Not yet implemented")
       vjust <- stop("Not yet implemented")
     }
-
-    x <- polar_x(object$t, object$s)
-    y <- polar_y(object$t, object$s)
   } else {
     if (object$direction %in% c("left", "right")) {
-      x   <- object$t
-      y   <- object$s
       rot <- object$rot
     } else {
-      x   <- object$s
-      y   <- object$t
       # TODO: Should this depend on rotate_to_time?
       rot <- object$rot + 90
     }
@@ -150,5 +161,5 @@ tree_location_resolve <- function(object, rotate_to_time=TRUE) {
     vjust <- 0.5
   }
 
-  list(x=x, y=y, hjust=hjust, vjust=vjust, rot=rot)
+  list(x=xy$x, y=xy$y, hjust=hjust, vjust=vjust, rot=rot)
 }

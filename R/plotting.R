@@ -310,14 +310,17 @@ tree_brace <- function(label, offset=unit(0.5, "lines"),
   # nail the offset here.
 
   # All of these might change
-  if (length(label) != 1)
-    stop("Need a scalar label at the moment")
   if (length(offset) != 1)
     stop("Need a scalar offset at the moment")
 
   # Other checking that is more likely to be permanent
+  if (length(label) == 0 || !is.character(label))
+    stop("label must be a non-empty character vector")
   if (!is.unit(offset))
     stop("offset must be a unit")
+
+  # TODO (and also elsewhere): check that gp elements are scalar so
+  # that style_thing will work correctly.
 
   object <- list(label=label, offset=offset, name=name, gp=gp)
   class(object) <- "tree_brace"
@@ -374,13 +377,13 @@ tree_imageGrob <- function(image, t, s, direction, size, rot=0,
        name=name, gp=gp, vp=vp, cl="tree_image")
 }
 
-tree_braceGrob <- function(label, t, s, direction,
+tree_braceGrob <- function(label, t, s_min, s_max, direction,
                            name=NULL, gp=gpar(), vp=NULL) {
-  if (!is.numeric(s))
-    stop("s must be numeric")
+  if (!is.numeric(s_min) || !is.numeric(s_max))
+    stop("s_min and s_max must be numeric")
   if (!is.unit(t))
     stop("t must be a unit")
-  grob(label=label, t=t, s=s, direction=direction,
+  grob(label=label, t=t, s_min=s_min, s_max=s_max, direction=direction,
        name=name, gp=gp, vp=vp, cl="tree_brace")
 }
 
@@ -440,18 +443,16 @@ drawDetails.tree_image <- function(x, recording=TRUE) {
 
 ##' @S3method drawDetails tree_brace
 drawDetails.tree_brace <- function(x, recording=TRUE) {
-  loc <- tree_location_resolve(x, rotate_to_time=FALSE)
-
-  t <- x$t
-  s_min <- x$s[[1]]
-  s_max <- x$s[[2]]
-
   if (x$direction %in% c("circle", "semicircle")) {
-    grid.arc(t, s_min, s_max, gp=x$gp)
-  } else {
-    grid.segments(t, s_min, t, s_max, gp=x$gp)
+    grid.arc(x$t, x$s_min, x$s_max, gp=x$gp)
+  } else if (x$direction %in% c("left", "right")) {
+    # TODO: Repetition with details in drawDetails.tree_branches() -
+    # replace with generic functions that draw lines along time or
+    # along spacing and use those instead.
+    grid.segments(x$t, x$s_min, x$t, x$s_max, gp=x$gp)
+  } else if (x$direction %in% c("up", "down")) {
+    grid.segments(x$s_min, x$t, x$s_max, x$t, gp=x$gp)
   }
-
   # This is where a label would go if we knew what it would say.
 }
 

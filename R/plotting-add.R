@@ -87,15 +87,16 @@ add_to_tree.tree_brace <- function(object, tree_grob, ...) {
   # Here, even though min and max are the same for tips at the moment
   # (and the same as mid) I'm using the min and max values
   # separately.  This might be useful later for clade trees.
-  s <- c(min(branches$spacing_min[i]) - ds,
-         max(branches$spacing_max[i]) + ds)
+  s_min <- min(branches$spacing_min[i]) - ds
+  s_max <- max(branches$spacing_max[i]) + ds
   t <- max(branches$time_tip[i])
 
   # Ignoring the possibility of labels for now, but allowing for a
   # user-specified offset:
-  at <- tree_offset(list(s=s, t=t), object$offset, tree_grob$direction)
+  at <- tree_offset(list(s_min=s_min, s_max=s_max, t=t),
+                    object$offset, tree_grob$direction)
 
-  brace <- tree_braceGrob(object$label, at$t, at$s,
+  brace <- tree_braceGrob(object$label, at$t, at$s_min, at$s_max,
                           direction=tree_grob$direction,
                           name=object$name, gp=object$gp,
                           vp=tree_grob$childrenvp)
