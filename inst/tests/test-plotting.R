@@ -597,4 +597,31 @@ test_that("Add tree_brace to a tree", {
   }
 })
 
+test_that("More than one brace", {
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  tr <- forest.from.ape(phy)
+
+  for (direction in forest:::tree_directions()) {
+    tg <- treeGrob(tr, direction=direction) + tree_node_labels()
+
+    at <- c("n8", "n5", "n2")
+    tb <- tree_brace(at, name="brace")
+    tg2 <- tg + tb
+
+    expect_that(names(tg2$children),
+                equals(c("branches", "node_labels", "brace")))
+    expect_that(tg2$children$brace, is_a("tree_brace"))
+    expect_that(tg2$children$brace$label, is_identical_to(at))
+
+    # TODO: Check that location is correct.
+
+    if (interactive()) {
+      vp.spacing <- viewport(width=.8, height=.8, name="spacing")
+      print(tg2, vp=vp.spacing)
+    }
+  }
+})
+
 ## TODO: classify on root note?

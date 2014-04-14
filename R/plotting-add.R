@@ -81,20 +81,25 @@ add_to_tree.tree_brace <- function(object, tree_grob, ...) {
   ds <- p_gap * tree_grob$spacing_info$gap_size / 2
   # (the /2 is because the gap is shared with the neighbouring tips).
 
-  desc <- tree_grob$tree$get_subtree(object$label)$tip_labels
-  branches <- tree_grob$children$branches
-  i <- match(desc, branches$label)
-  # Here, even though min and max are the same for tips at the moment
-  # (and the same as mid) I'm using the min and max values
-  # separately.  This might be useful later for clade trees.
-  s_min <- min(branches$spacing_min[i]) - ds
-  s_max <- max(branches$spacing_max[i]) + ds
-  t <- max(branches$time_tip[i])
+  brace_position <- function(label) {
+    desc <- tree_grob$tree$get_subtree(label)$tip_labels
+    branches <- tree_grob$children$branches
+    i <- match(desc, branches$label)
+    # Here, even though min and max are the same for tips at the moment
+    # (and the same as mid) I'm using the min and max values
+    # separately.  This might be useful later for clade trees.
+    s_min <- min(branches$spacing_min[i]) - ds
+    s_max <- max(branches$spacing_max[i]) + ds
+    t <- max(branches$time_tip[i])
+    c(s_min=s_min, s_max=s_max, t=t)
+  }
 
-  # Ignoring the possibility of labels for now, but allowing for a
-  # user-specified offset:
-  at <- tree_offset(list(s_min=s_min, s_max=s_max, t=t),
-                    object$offset, tree_grob$direction)
+  at <- sapply(object$label, brace_position)
+  at <- list(s_min=at["s_min",], s_max=at["s_max",], t=at["t",])
+
+  # Ignoring the possibility of placing outside of labels for now, but
+  # allowing for a user-specified offset:
+  at <- tree_offset(at, object$offset, tree_grob$direction)
 
   brace <- tree_braceGrob(object$label, at$t, at$s_min, at$s_max,
                           direction=tree_grob$direction,
