@@ -354,7 +354,7 @@ test_that("Branch styling (single regime)", {
   cl4 <- cl4[match(tg$children$node_labels$label, names(cl4))]
   expect_that(gp4$col, equals(c("black", "green4")[cl4 + 1L]))
 
-  if (FALSE) {
+  if (interactive()) {
     vp <- viewport(width=.8, height=.8, name="spacing")
     print(tg4, vp=vp)
   }
@@ -548,7 +548,6 @@ test_that("tree_brace", {
 
   # Invalid label
   expect_that(tree_brace(character(0)),  throws_error())
-  expect_that(tree_brace(c("t1", "t2")), throws_error())
   # No type checking here though.  And we can't check being in the
   # tree until it joins the tree.
 
@@ -578,20 +577,23 @@ test_that("Add tree_brace to a tree", {
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
   tr <- forest.from.ape(phy)
-  tg <- treeGrob(tr, direction="right") + tree_node_labels()
 
-  tb <- tree_brace("n4", name="brace")
-  tg2 <- tg + tb
+  for (direction in forest:::tree_directions()) {
+    tg <- treeGrob(tr, direction=direction) + tree_node_labels()
 
-  expect_that(names(tg2$children),
-              equals(c("branches", "node_labels", "brace")))
-  expect_that(tg2$children$brace, is_a("tree_brace"))
+    tb <- tree_brace("n4", name="brace")
+    tg2 <- tg + tb
 
-  # TODO: Check that location is correct.
+    expect_that(names(tg2$children),
+                equals(c("branches", "node_labels", "brace")))
+    expect_that(tg2$children$brace, is_a("tree_brace"))
 
-  if (interactive()) {
-    vp.spacing <- viewport(width=.8, height=.8, name="spacing")
-    print(tg2, vp=vp.spacing)
+    # TODO: Check that location is correct.
+
+    if (interactive()) {
+      vp.spacing <- viewport(width=.8, height=.8, name="spacing")
+      print(tg2, vp=vp.spacing)
+    }
   }
 })
 

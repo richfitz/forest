@@ -163,3 +163,26 @@ tree_location_resolve <- function(object, rotate_to_time=TRUE) {
 
   list(x=xy$x, y=xy$y, hjust=hjust, vjust=vjust, rot=rot)
 }
+
+tree_segments_time <- function(s, t0, t1, direction, ...) {
+  if (direction %in% c("circle", "semicircle")) {
+    # TODO: Should t* be convered to native() here?
+    grid.ray(t0, t1, s, ...)
+  } else if (direction %in% c("left", "right")) {
+    # TODO: Should we be using default.units="native" here?  Or t->native?
+    grid.segments(t0, s, t1, s, ...)
+  } else if (direction %in% c("up", "down")) {
+    grid.segments(s, t0, s, t1, ...)
+  }
+}
+
+tree_segments_spacing <- function(s0, s1, t, direction, ...) {
+  if (direction %in% c("circle", "semicircle")) {
+    # TODO: Should t* be convered to native() here?
+    grid.arc(t, s0, s1, ...)
+  } else if (direction %in% c("left", "right")) {
+    grid.segments(t, s0, t, s1, ...)
+  } else if (direction %in% c("up", "down")) {
+    grid.segments(s0, t, s1, t, ...)
+  }
+}

@@ -391,32 +391,12 @@ tree_braceGrob <- function(label, t, s_min, s_max, direction,
 
 ##' @S3method drawDetails tree_branches
 drawDetails.tree_branches <- function(x, recording=TRUE) {
-  if (x$direction %in% c("circle", "semicircle")) {
-    # time
-    grid.ray(native(x$time_rootward), native(x$time_tipward),
-             x$spacing_mid, gp=x$gp)
-    # spacing
-    grid.arc(native(x$time_tipward), x$spacing_min,
-             x$spacing_max, gp=x$gp)
-  } else if (x$direction %in% c("left", "right")) {
-    # time
-    grid.segments(x$time_rootward, x$spacing_mid,
-                  x$time_tipward, x$spacing_mid,
-                  gp=x$gp, default.units="native")
-    # spacing
-    grid.segments(x$time_tipward, x$spacing_min,
-                  x$time_tipward, x$spacing_max,
-                  gp=x$gp, default.units="native")
-  } else {
-    # time:
-    grid.segments(x$spacing_mid, x$time_rootward,
-                  x$spacing_mid, x$time_tipward,
-                  gp=x$gp, default.units="native")
-    # spacing
-    grid.segments(x$spacing_min, x$time_tipward,
-                  x$spacing_max, x$time_tipward,
-                  gp=x$gp, default.units="native")
-  }
+  tree_segments_time(x$spacing_mid,
+                     native(x$time_rootward), native(x$time_tipward),
+                     x$direction, gp=x$gp)
+  tree_segments_spacing(x$spacing_min, x$spacing_max,
+                        native(x$time_tipward),
+                        x$direction, gp=x$gp)
 }
 
 ##' @S3method drawDetails tree_label
@@ -443,16 +423,7 @@ drawDetails.tree_image <- function(x, recording=TRUE) {
 
 ##' @S3method drawDetails tree_brace
 drawDetails.tree_brace <- function(x, recording=TRUE) {
-  if (x$direction %in% c("circle", "semicircle")) {
-    grid.arc(x$t, x$s_min, x$s_max, gp=x$gp)
-  } else if (x$direction %in% c("left", "right")) {
-    # TODO: Repetition with details in drawDetails.tree_branches() -
-    # replace with generic functions that draw lines along time or
-    # along spacing and use those instead.
-    grid.segments(x$t, x$s_min, x$t, x$s_max, gp=x$gp)
-  } else if (x$direction %in% c("up", "down")) {
-    grid.segments(x$s_min, x$t, x$s_max, x$t, gp=x$gp)
-  }
+  tree_segments_spacing(x$s_min, x$s_max, x$t, x$direction, gp=x$gp)
   # This is where a label would go if we knew what it would say.
 }
 
