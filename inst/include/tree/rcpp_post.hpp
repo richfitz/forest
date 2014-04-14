@@ -40,13 +40,6 @@ template <typename T_out, typename T_in>
 T_out data_convert(const T_in& obj) {
   return Rcpp::as<T_out>(Rcpp::wrap(obj));
 }
-// An Rcpp::List *is* an Rcpp::RObject (this holds for other types
-// too, and it is possible that the above templating would expand to
-// basically do this).  But this seems like a good idea at least.
-template <>
-inline Rcpp::RObject data_convert(const Rcpp::List& obj) {
-  return static_cast<Rcpp::RObject>(obj);
-}
 
 }
 
