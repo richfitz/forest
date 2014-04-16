@@ -298,10 +298,24 @@ tree_image <- function(image, label, offset=unit(0.5, "lines"),
 ##' brace will span all descendents of the node (if internal) or just
 ##' the single species (if terminal).  \emph{NB} this is \emph{not}
 ##' the label that will be eventually drawn next to the brace.
+##' @param offset A \code{unit} object describing offset in
+##' the \emph{time} axis (positive is forward in time away from the
+##' tip/node).
+##' @param alignment Alignment of multiple braces, which has a visual
+##' effect only on non-ultrametric trees.  Possible options are "none"
+##' (the default; all braces are put 'offset' away from the longest
+##' tip for each brace), "set" (all braces are put 'offset' away from
+##' the longest tip among all tips spaned by braces in this set of
+##' braces) and "global" (all braces are put 'offset' away from the
+##' longest tip in the tree).
+##' @param name Name for the brace (optional)
+##' @param gp Graphical parameters (optional)
 ##' @author Rich FitzJohn
 ##' @export
 tree_brace <- function(label, offset=unit(0.5, "lines"),
+                       alignment="none",
                        name=NULL, gp=gpar()) {
+  alignment <- match.arg(alignment, c("none", "set", "global"))
   # TODO: In circle tree, when theta0 > 0, check that we don't do mod
   # 2*pi because that will break working out where the beginning and
   # end points are for the contents of the clade.
@@ -322,7 +336,8 @@ tree_brace <- function(label, offset=unit(0.5, "lines"),
   # TODO (and also elsewhere): check that gp elements are scalar so
   # that style_thing will work correctly.
 
-  object <- list(label=label, offset=offset, name=name, gp=gp)
+  object <- list(label=label, offset=offset, alignment=alignment,
+                 name=name, gp=gp)
   class(object) <- "tree_brace"
   object
 }

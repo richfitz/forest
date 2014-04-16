@@ -2,7 +2,8 @@
 \alias{tree_brace}
 \title{Add Brace To Plotted Tree}
 \usage{
-tree_brace(label, offset = unit(0.5, "lines"), name = NULL, gp = gpar())
+tree_brace(label, offset = unit(0.5, "lines"), alignment = "none",
+  name = NULL, gp = gpar())
 }
 \arguments{
   \item{label}{Label in the tree to attach the brace to.
@@ -10,6 +11,23 @@ tree_brace(label, offset = unit(0.5, "lines"), name = NULL, gp = gpar())
   internal) or just the single species (if terminal).
   \emph{NB} this is \emph{not} the label that will be
   eventually drawn next to the brace.}
+
+  \item{offset}{A \code{unit} object describing offset in
+  the \emph{time} axis (positive is forward in time away
+  from the tip/node).}
+
+  \item{alignment}{Alignment of multiple braces, which has
+  a visual effect only on non-ultrametric trees.  Possible
+  options are "none" (the default; all braces are put
+  'offset' away from the longest tip for each brace), "set"
+  (all braces are put 'offset' away from the longest tip
+  among all tips spaned by braces in this set of braces)
+  and "global" (all braces are put 'offset' away from the
+  longest tip in the tree).}
+
+  \item{name}{Name for the brace (optional)}
+
+  \item{gp}{Graphical parameters (optional)}
 }
 \description{
 Put a brace around a single clade.

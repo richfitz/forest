@@ -95,6 +95,14 @@ add_to_tree.tree_brace <- function(object, tree_grob, ...) {
   }
 
   at <- sapply(object$label, brace_position)
+
+  # Resolve the brace alignment:
+  if (object$alignment == "set") {
+    at["t",] <- max(at["t",])
+  } else if (object$alignment == "global") {
+    at["t",] <- max(tree_grob$children$branches$time_tip)
+  }
+
   at <- list(s_min=at["s_min",], s_max=at["s_max",], t=at["t",])
 
   # Ignoring the possibility of placing outside of labels for now, but
