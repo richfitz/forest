@@ -1,24 +1,28 @@
 \name{tree_style}
 \alias{tree_style}
+\alias{tree_style_brace}
 \alias{tree_style_branches}
 \alias{tree_style_node_labels}
 \alias{tree_style_tip_labels}
 \title{Style Tree By Node}
 \usage{
-tree_style(what, ..., base = NULL)
+tree_style(class, ..., base = NULL, name = NULL)
 
 tree_style_branches(..., base = NULL)
 
 tree_style_tip_labels(..., base = NULL)
 
 tree_style_node_labels(..., base = NULL)
+
+tree_style_brace(..., base = NULL, name = NULL)
 }
 \arguments{
-  \item{what}{The child member of \code{tree_grob} to
-  style.  At present, values of "branches", "tip_labels"
-  and "node_labels" are supported, but any child member of
-  \code{tree_grob} could be used here.  A vector of names
-  is allowed.}
+  \item{class}{The class of a child member of
+  \code{tree_grob} to style. This is passed through to
+  \code{\link{tree_match}} as \code{class}, so anything
+  that would be appropriate there is good here (e.g.,
+  \code{tree_branches}, \code{tree_label},
+  \code{tree_brace}.  It may be a vector.}
 
   \item{...}{Named graphical parameters.  E.g., pass in
   \code{node5=gpar(col="red")} will colour all descendents
@@ -26,6 +30,10 @@ tree_style_node_labels(..., base = NULL)
 
   \item{base}{Base graphical parameters (by default the
   style is the \code{gpar()}, but this will change).}
+
+  \item{name}{Passed through to \code{tree_match} - useful
+  to distinguish between multiple child members with the
+  same class (such as the tip and node labels).}
 }
 \description{
 Apply graphics parameters to parts of a tree, varying based
@@ -38,7 +46,7 @@ MEDUSA algorithm.  These regimes can be nested.
 Generally, use the wrapper functions
 (\code{tree_style_branches}, \code{tree_style_tip_labels},
 \code{tree_style_node_labels}) but the low-level
-\code{style_thing} allows changing graphical parameters of
+\code{tree_style} allows changing graphical parameters of
 any member of the tree grob with a \code{labels} member.
 }
 

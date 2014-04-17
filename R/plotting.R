@@ -133,22 +133,26 @@ tree_node_labels <- function(...) {
 ##'
 ##' Generally, use the wrapper functions (\code{tree_style_branches},
 ##' \code{tree_style_tip_labels}, \code{tree_style_node_labels}) but the
-##' low-level \code{style_thing} allows changing graphical parameters
+##' low-level \code{tree_style} allows changing graphical parameters
 ##' of any member of the tree grob with a \code{labels} member.
 ##'
 ##' @title Style Tree By Node
-##' @param what The child member of \code{tree_grob} to style.  At
-##' present, values of "branches", "tip_labels" and "node_labels" are
-##' supported, but any child member of \code{tree_grob} could be used
-##' here.  A vector of names is allowed.
+##' @param class The class of a child member of \code{tree_grob} to
+##' style. This is passed through to \code{\link{tree_match}} as
+##' \code{class}, so anything that would be appropriate there is good
+##' here (e.g., \code{tree_branches}, \code{tree_labels},
+##' \code{tree_brace}.
 ##' @param ... Named graphical parameters.  E.g., pass in
 ##' \code{node5=gpar(col="red")} will colour all descendents of "node5"
 ##' red.
 ##' @param base Base graphical parameters (by default the style is the
 ##' \code{gpar()}, but this will change).
+##' @param name Passed through to \code{tree_match} - useful to
+##' distinguish between multiple child members with the same class
+##' (such as the tip and node labels).
 ##' @export
 ##' @rdname style
-tree_style <- function(what, ..., base=NULL) {
+tree_style <- function(class, ..., base=NULL, name=NULL) {
   # TODO: Potential issue: a node called 'base' cannot be set.  Deal
   # with this by changing base to .base, perhaps
   targets <- list(...)
@@ -161,7 +165,7 @@ tree_style <- function(what, ..., base=NULL) {
   # though.
   targets <- lapply(targets, check_gpar)
   base <- check_gpar(base)
-  object <- list(what=what, targets=targets, base=base)
+  object <- list(class=class, name=name, targets=targets, base=base)
   class(object) <- "tree_style"
   object
 }
@@ -169,17 +173,22 @@ tree_style <- function(what, ..., base=NULL) {
 ##' @export
 ##' @rdname style
 tree_style_branches <- function(..., base=NULL) {
-  tree_style("branches", ..., base=base)
+  tree_style("tree_branches", ..., base=base)
 }
 ##' @export
 ##' @rdname style
 tree_style_tip_labels <- function(..., base=NULL) {
-  tree_style("tip_labels", ..., base=base)
+  tree_style("tree_labels", ..., base=base, name="tip_labels")
 }
 ##' @export
 ##' @rdname style
 tree_style_node_labels <- function(..., base=NULL) {
-  tree_style("node_labels", ..., base=base)
+  tree_style("tree_labels", ..., base=base, name="node_labels")
+}
+##' @export
+##' @rdname style
+tree_style_brace <- function(..., base=NULL, name=NULL) {
+  tree_style("tree_brace", ..., base=base, name=name)
 }
 
 ## TODO: For now just using label, but that should naturally expand
@@ -334,7 +343,7 @@ tree_brace <- function(label, offset=unit(0.5, "lines"),
     stop("offset must be a unit")
 
   # TODO (and also elsewhere): check that gp elements are scalar so
-  # that style_thing will work correctly.
+  # that tree_style will work correctly.
 
   object <- list(label=label, offset=offset, alignment=alignment,
                  name=name, gp=gp)
@@ -370,14 +379,14 @@ tree_branchesGrob <- function(xy, direction,
 ## Justification is not specifiable at the moment either, with
 ## apparent left justification and vertical centering being the only
 ## option.
-tree_labelGrob <- function(label, t, s, direction, rot=0,
-                           name=NULL, gp=gpar(), vp=NULL) {
+tree_labelsGrob <- function(label, t, s, direction, rot=0,
+                            name=NULL, gp=gpar(), vp=NULL) {
   if (!is.numeric(s))
     stop("s must be numeric")
   if (!is.unit(t))
     stop("t must be a unit")
   grob(label=label, t=t, s=s, direction=direction, rot=rot,
-       name=name, gp=gp, vp=vp, cl="tree_label")
+       name=name, gp=gp, vp=vp, cl="tree_labels")
 }
 
 tree_imageGrob <- function(image, t, s, direction, size, rot=0,
@@ -414,8 +423,8 @@ drawDetails.tree_branches <- function(x, recording=TRUE) {
                         x$direction, gp=x$gp)
 }
 
-##' @S3method drawDetails tree_label
-drawDetails.tree_label <- function(x, recording=TRUE) {
+##' @S3method drawDetails tree_labels
+drawDetails.tree_labels <- function(x, recording=TRUE) {
   loc <- tree_location_resolve(x, rotate_to_time=TRUE)
 
   ## First line debugs alignment.
@@ -492,11 +501,13 @@ print.tree <- function(x, newpage=TRUE, vp=NULL, ...) {
 ##' the name automatically for you (e.g., \code{tree_tip_labels}, but
 ##' others default to a \code{grid} provided name, which is varies
 ##' from use to use unless one is provided manually.
+##' @param warn_no_match Give a warning if no match is found.
 ##' @return A list of \code{gPath} objects that can be used to
 ##' reference children \emph{relative to} \code{tree_grob}
 ##' @author Rich FitzJohn
 ##' @export
-tree_match <- function(tree_grob, class=NULL, name=NULL) {
+tree_match <- function(tree_grob, class=NULL, name=NULL,
+                       warn_no_match=TRUE) {
   if (is.null(class) && is.null(name)) {
     stop("At least one of class and name must be given (and not NULL)")
   }
@@ -513,5 +524,12 @@ tree_match <- function(tree_grob, class=NULL, name=NULL) {
     ok.name <- names(tree_grob$children) == name
   }
 
-  lapply(names(tree_grob$children)[ok.name & ok.class], gPath)
+  kids <- lapply(names(tree_grob$children)[ok.name & ok.class], gPath)
+  if (warn_no_match && length(kids) == 0) {
+    # Future proofing for matching multiple things:
+    f <- function(x) if (is.null(x)) "NULL" else paste(x, collapse=", ")
+    warning(sprintf("Did not find any matches with class %s, name %s",
+                    f(class), f(name)))
+  }
+  kids
 }

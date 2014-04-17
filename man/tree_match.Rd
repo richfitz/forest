@@ -2,7 +2,7 @@
 \alias{tree_match}
 \title{Match Children in Tree Grob}
 \usage{
-tree_match(tree_grob, class = NULL, name = NULL)
+tree_match(tree_grob, class = NULL, name = NULL, warn_no_match = TRUE)
 }
 \arguments{
   \item{tree_grob}{A grob created by \code{treeGrob}}
@@ -19,6 +19,9 @@ tree_match(tree_grob, class = NULL, name = NULL)
   \code{tree_tip_labels}, but others default to a
   \code{grid} provided name, which is varies from use to
   use unless one is provided manually.}
+
+  \item{warn_no_match}{Give a warning if no match is
+  found.}
 }
 \value{
 A list of \code{gPath} objects that can be used to

@@ -23,26 +23,30 @@ add_to_tree.tree_labels <- function(object, tree_grob, ...) {
   label <- branches$label[i]
   at <- tree_offset(tree_label_coords(label, tree_grob),
                     object$offset, tree_grob$direction)
-  lab <- tree_labelGrob(label, at$t, at$s,
-                        direction=tree_grob$direction, rot=object$rot,
-                        name=object$name, gp=object$gp,
-                        vp=tree_grob$childrenvp)
+  lab <- tree_labelsGrob(label, at$t, at$s,
+                         direction=tree_grob$direction, rot=object$rot,
+                         name=object$name, gp=object$gp,
+                         vp=tree_grob$childrenvp)
   addGrob(tree_grob, lab)
 }
 
 add_to_tree.tree_style <- function(object, tree_grob, ...) {
+  # TODO: Question here is what to do if a target is not found?
+  # Probably that's a job for tree_match though, and have an argument
+  # must_match or something?
+  class   <- object$class
+  name    <- object$name
+  paths <- tree_match(tree_grob, class, name)
+
   targets <- object$targets
-  base <- object$base
-  what <- object$what
+  base    <- object$base
   cl <- classify(tree_grob$tree, names(targets)) + 1L
 
-  for (w in what) {
-    if (!(w %in% names(tree_grob$children)))
-      stop("No child member ", w, " within this tree")
-    thing <- tree_grob$children[[w]]
+  for (p in paths) {
+    thing <- getGrob(tree_grob, p)
     if (!("label" %in% names(thing)))
-      stop("Tree member ", w, " does not have a label member")
-    base.w <- if (is.null(base)) thing$gp else base
+      stop("Tree member ", dQuote(p), " does not have a label member")
+    base.p <- if (is.null(base)) thing$gp else base
     # TODO: It might be best here to delay this till the drawDetails
     # part, or at least retrigger base lookup.  That would not be hard
     # to do, and actually allow restyling a bit more easily
@@ -50,8 +54,9 @@ add_to_tree.tree_style <- function(object, tree_grob, ...) {
     #
     # TODO: perhaps first look to the object's gpar?  Or would
     # deferring to drawing solve this too?
-    tree_grob$children[[w]]$gp <-
-      combine_gpars(c(list(base.w), targets), unname(cl[thing$label]))
+    thing$gp <-
+      combine_gpars(c(list(base.p), targets), unname(cl[thing$label]))
+    tree_grob <- setGrob(tree_grob, p, thing)
   }
 
   # TODO: Here, and in add_to_tree.tree_labels, or in add_to_tree, or

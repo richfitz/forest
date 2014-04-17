@@ -216,8 +216,8 @@ test_that("Labels", {
 
     expect_that(names(tg$children),
                 equals(c("branches", "tip_labels", "node_labels")))
-    expect_that(tg$children$tip_labels,  is_a("tree_label"))
-    expect_that(tg$children$node_labels, is_a("tree_label"))
+    expect_that(tg$children$tip_labels,  is_a("tree_labels"))
+    expect_that(tg$children$node_labels, is_a("tree_labels"))
     expect_that(tg$children$tip_labels$gp, is_identical_to(gp.tip))
     expect_that(tg$children$node_labels$gp, is_identical_to(gp.node))
 
@@ -286,10 +286,11 @@ test_that("Branch styling (returned object)", {
   # Empty style
   sty <- tree_style("foo")
   expect_that(sty, is_a("tree_style"))
-  expect_that(names(sty), equals(c("what", "targets", "base")))
-  expect_that(sty$what, equals("foo"))
+  expect_that(names(sty), equals(c("class", "name", "targets", "base")))
+  expect_that(sty$class, equals("foo"))
   expect_that(sty$targets, equals(structure(list(), names=character(0))))
   expect_that(sty$base, is_identical_to(gpar()))
+  expect_that(sty$name, equals(NULL))
 
   # List of targets:
   g0 <- gpar(lwd=2)
@@ -379,6 +380,8 @@ test_that("Branch styling (corner cases)", {
   tg3 <- tg + tree_style_branches(base=gp_base)
   expect_that(tg3$children$branches$gp,
               equals(gp_base))
+
+  # TODO: test lower level tree_style?
 })
 
 test_that("Branch styling (multiple regimes)", {
@@ -390,7 +393,7 @@ test_that("Branch styling (multiple regimes)", {
 
   tg <- treeGrob(tr) + tree_tip_labels() + tree_node_labels()
 
-  tg2 <- tg + tree_style(c("branches", "tip_labels"),
+  tg2 <- tg + tree_style("tree_branches",
                          n4=gpar(col="blue"),
                          n5=gpar(col="green4", lwd=2),
                          n2=gpar(col="orange"),
@@ -403,24 +406,13 @@ test_that("Branch styling (multiple regimes)", {
                                      gpar(col="orange")),
                                 cl)
 
-  i.b <- match(tg$children$branches$label,   names(cl))
-  i.t <- match(tg$children$tip_labels$label, names(cl))
+  i <- match(tg$children$branches$label, names(cl))
 
   gp.b <- tg2$children$branches$gp
   expect_that(length(gp.b), equals(2))
   expect_that(names(gp.b), equals(c("col", "lwd")))
-  expect_that(gp.b$col, equals(gpp$col[i.b]))
-  expect_that(gp.b$lwd, equals(gpp$lwd[i.b]))
-
-  gp.t <- tg2$children$tip_labels$gp
-  expect_that(length(gp.t), equals(2))
-  expect_that(names(gp.t), equals(c("col", "lwd")))
-  expect_that(gp.t$col, equals(gpp$col[i.t]))
-  expect_that(gp.t$lwd, equals(gpp$lwd[i.t]))
-
-  # Node parameters unchanged.
-  gp.n <- tg2$children$node_labels$gp
-  expect_that(gp.n, is_identical_to(gpar()))
+  expect_that(gp.b$col, equals(gpp$col[i]))
+  expect_that(gp.b$lwd, equals(gpp$lwd[i]))
 
   if (interactive()) {
     vp <- viewport(width=.8, height=.8, name="spacing")
@@ -670,7 +662,6 @@ test_that("Brace alignment", {
 })
 
 test_that("tree_match", {
-  source("helper-forest.R")
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
@@ -684,17 +675,31 @@ test_that("tree_match", {
   expect_that(tree_match(tg),             throws_error())
   expect_that(tree_match(tg, NULL, NULL), throws_error())
 
-  # Not in the tree - return empty list
-  expect_that(tree_match(tg, class="nope"),              equals(list()))
-  expect_that(tree_match(tg, name="nope"),               equals(list()))
-  expect_that(tree_match(tg, class="nope", name="nope"), equals(list()))
+  # Not in the tree - return empty list and give a warning.
+  expect_that(tmp <- tree_match(tg, class="nope"),
+              gives_warning())
+  expect_that(tmp, equals(list()))
+  expect_that(tmp <- tree_match(tg, name="nope"),
+              gives_warning())
+  expect_that(tmp, equals(list()))
+  expect_that(tmp <- tree_match(tg, class="nope", name="nope"),
+              gives_warning())
+  expect_that(tmp, equals(list()))
+
+  # Warning can be turned off:
+  expect_that(tree_match(tg, class="nope", warn_no_match=FALSE),
+              not(gives_warning()))
+  expect_that(tree_match(tg, name="nope", warn_no_match=FALSE),
+              not(gives_warning()))
+  expect_that(tree_match(tg, class="name", name="nope", warn_no_match=FALSE),
+              not(gives_warning()))
 
   # Match on class:
   expect_that(tree_match(tg, class="tree_branches"),
               equals(list(gPath("branches"))))
 
-  # More than one instance of tree_label:
-  expect_that(tree_match(tg, class="tree_label"),
+  # More than one instance of tree_labels:
+  expect_that(tree_match(tg, class="tree_labels"),
               equals(list(gPath("tip_labels"), gPath("node_labels"))))
 
   # tree_brace had no name so is a generated name.  This is basically
@@ -708,11 +713,12 @@ test_that("tree_match", {
               equals(list(gPath("tip_labels"))))
 
   # Match on nonexistant name for class that does exist:
-  expect_that(tree_match(tg, class="tree_label", name="nope"),
+  expect_that(tree_match(tg, class="tree_labels", name="nope",
+                         warn_no_match=FALSE),
               equals(list()))
 
   # Currently no support for abbreviated names:
-  expect_that(tree_match(tg, class="label"),
+  expect_that(tree_match(tg, class="label", warn_no_match=FALSE),
               equals(list()))
 
   # But there *is* unfortunate support for matching grobs:
