@@ -145,6 +145,11 @@ tree_node_labels <- function(...) {
 ##' @param ... Named graphical parameters.  E.g., pass in
 ##' \code{node5=gpar(col="red")} will colour all descendents of "node5"
 ##' red.
+##' @param descendants Apply styling to all descendants?  The default
+##' is TRUE, using the MEDUSA algorithm to do this.  But specifying
+##' \code{descendants=FALSE} allows styling of a single branch, node
+##' label, etc.  For tips this has no effect as they have no
+##' descendants!
 ##' @param base Base graphical parameters (by default the style is the
 ##' \code{gpar()}, but this will change).
 ##' @param name Passed through to \code{tree_match} - useful to
@@ -152,7 +157,7 @@ tree_node_labels <- function(...) {
 ##' (such as the tip and node labels).
 ##' @export
 ##' @rdname style
-tree_style <- function(class, ..., base=NULL, name=NULL) {
+tree_style <- function(class, ..., descendants=TRUE, base=NULL, name=NULL) {
   # TODO: Potential issue: a node called 'base' cannot be set.  Deal
   # with this by changing base to .base, perhaps
   targets <- list(...)
@@ -160,12 +165,14 @@ tree_style <- function(class, ..., base=NULL, name=NULL) {
     names(targets) <- character(0) # corner case.
   if (is.null(names(targets)) || any(names(targets) == ""))
     stop("Targets must be named")
+  check_scalar(descendants)
   # TODO: This means that check_gpar is happening twice (once here and
   # once in combine_gpar()).  Not sure if that is actually a problem
   # though.
   targets <- lapply(targets, check_gpar)
   base <- check_gpar(base)
-  object <- list(class=class, name=name, targets=targets, base=base)
+  object <- list(class=class, name=name, targets=targets, base=base,
+                 descendants=descendants)
   class(object) <- "tree_style"
   object
 }

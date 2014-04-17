@@ -286,11 +286,13 @@ test_that("Branch styling (returned object)", {
   # Empty style
   sty <- tree_style("foo")
   expect_that(sty, is_a("tree_style"))
-  expect_that(names(sty), equals(c("class", "name", "targets", "base")))
+  expect_that(names(sty), equals(c("class", "name", "targets", "base",
+                                   "descendants")))
   expect_that(sty$class, equals("foo"))
   expect_that(sty$targets, equals(structure(list(), names=character(0))))
   expect_that(sty$base, is_identical_to(gpar()))
   expect_that(sty$name, equals(NULL))
+  expect_that(sty$descendants, equals(TRUE))
 
   # List of targets:
   g0 <- gpar(lwd=2)
@@ -317,6 +319,7 @@ test_that("Branch styling (returned object)", {
   # Invalid input
   expect_that(tree_style("foo", n1="red"), throws_error())
   expect_that(tree_style("foo", n1=list(col="red")), throws_error())
+  expect_that(tree_style("foo", descendants=logical(0)), throws_error())
 })
 
 test_that("Branch styling (single regime)", {
@@ -413,6 +416,43 @@ test_that("Branch styling (multiple regimes)", {
   expect_that(names(gp.b), equals(c("col", "lwd")))
   expect_that(gp.b$col, equals(gpp$col[i]))
   expect_that(gp.b$lwd, equals(gpp$lwd[i]))
+
+  if (interactive()) {
+    vp <- viewport(width=.8, height=.8, name="spacing")
+    print(tg2, vp=vp)
+  }
+})
+
+test_that("Branch styling (single nodes)", {
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  phy$tip.label <- paste0(phy$tip.label, "abcde")
+  tr <- forest.from.ape(phy)
+
+  tg <- treeGrob(tr) + tree_tip_labels() + tree_node_labels()
+
+  # Lots of repetition and ugliness here, but it's only a test.
+  tg2 <- tg + tree_style("tree_labels",
+                         n4=gpar(col="blue"),
+                         n5=gpar(col="green4", lwd=2),
+                         n2=gpar(col="orange"),
+                         base=gpar(col="red"),
+                         descendants=FALSE)
+
+  lab <- tg2$children$node_labels$label
+  idx <- rep(1L, length(lab))
+  idx[match(c("n4", "n5", "n2"), lab)] <- 2:4
+
+  gpp <- forest:::combine_gpars(list(gpar(col="red"), # base
+                                     gpar(col="blue"),
+                                     gpar(col="green4", lwd=2),
+                                     gpar(col="orange")),
+                                idx)
+
+  gp.n <- tg2$children$node_labels$gp
+  expect_that(gp.n$lwd, equals(gpp$lwd))
+  expect_that(gp.n$col, equals(gpp$col))
 
   if (interactive()) {
     vp <- viewport(width=.8, height=.8, name="spacing")

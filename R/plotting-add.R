@@ -40,7 +40,21 @@ add_to_tree.tree_style <- function(object, tree_grob, ...) {
 
   targets <- object$targets
   base    <- object$base
-  cl <- classify(tree_grob$tree, names(targets)) + 1L
+
+  if (!object$descendants) {
+    # This would normally be done in classify(), but we'll sanitise
+    # input the same way:
+    #
+    # TODO: Possibly merge this into classify, or wrap it up a bit for
+    # use here.
+    if (any(duplicated(targets))) {
+      stop("Labels must be unique")
+    }
+    cl <- classify(tree_grob$tree, character(0)) + 1L
+    cl[names(targets)] <- seq_along(targets) + 1L
+  } else {
+    cl <- classify(tree_grob$tree, names(targets)) + 1L
+  }
 
   for (p in paths) {
     thing <- getGrob(tree_grob, p)
