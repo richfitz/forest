@@ -669,4 +669,55 @@ test_that("Brace alignment", {
   }
 })
 
+test_that("tree_match", {
+  source("helper-forest.R")
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  phy$tip.label <- paste0(phy$tip.label, "abcde")
+  tr <- forest.from.ape(phy)
+
+  tg <- treeGrob(tr) +
+    tree_tip_labels() + tree_node_labels() + tree_brace("n4")
+
+  # Need to specify at least one of class / name
+  expect_that(tree_match(tg),             throws_error())
+  expect_that(tree_match(tg, NULL, NULL), throws_error())
+
+  # Not in the tree - return empty list
+  expect_that(tree_match(tg, class="nope"),              equals(list()))
+  expect_that(tree_match(tg, name="nope"),               equals(list()))
+  expect_that(tree_match(tg, class="nope", name="nope"), equals(list()))
+
+  # Match on class:
+  expect_that(tree_match(tg, class="tree_branches"),
+              equals(list(gPath("branches"))))
+
+  # More than one instance of tree_label:
+  expect_that(tree_match(tg, class="tree_label"),
+              equals(list(gPath("tip_labels"), gPath("node_labels"))))
+
+  # tree_brace had no name so is a generated name.  This is basically
+  # the reson for the existance tree_match:
+  cmp <- gPath(names(which(sapply(tg$children, inherits, "tree_brace"))))
+  expect_that(tree_match(tg, class="tree_brace"),
+              equals(list(cmp)))
+
+  # Match on name:
+  expect_that(tree_match(tg, name="tip_labels"),
+              equals(list(gPath("tip_labels"))))
+
+  # Match on nonexistant name for class that does exist:
+  expect_that(tree_match(tg, class="tree_label", name="nope"),
+              equals(list()))
+
+  # Currently no support for abbreviated names:
+  expect_that(tree_match(tg, class="label"),
+              equals(list()))
+
+  # But there *is* unfortunate support for matching grobs:
+  expect_that(tree_match(tg, class="grob"),
+              equals(lapply(names(tg$children), gPath)))
+})
+
 ## TODO: classify on root note?
