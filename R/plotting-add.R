@@ -77,7 +77,7 @@ add_to_tree.tree_image <- function(object, tree_grob, ...) {
   addGrob(tree_grob, img)
 }
 
-add_to_tree.tree_brace <- function(object, tree_grob, ...) {
+add_to_tree.tree_braces <- function(object, tree_grob, ...) {
   # Fraction of the gap we can use.  Hard coded for now.  Needs to be
   # on [0,1]
   p_gap <- 2/3
@@ -114,10 +114,10 @@ add_to_tree.tree_brace <- function(object, tree_grob, ...) {
   # allowing for a user-specified offset:
   at <- tree_offset(at, object$offset, tree_grob$direction)
 
-  brace <- tree_braceGrob(object$label, at$t, at$s_min, at$s_max,
-                          direction=tree_grob$direction,
-                          name=object$name, gp=object$gp,
-                          vp=tree_grob$childrenvp)
+  brace <- tree_bracesGrob(object$label, at$t, at$s_min, at$s_max,
+                           direction=tree_grob$direction,
+                           name=object$name, gp=object$gp,
+                           vp=tree_grob$childrenvp)
   addGrob(tree_grob, brace)
 }
 

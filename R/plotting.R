@@ -141,7 +141,7 @@ tree_node_labels <- function(...) {
 ##' style. This is passed through to \code{\link{tree_match}} as
 ##' \code{class}, so anything that would be appropriate there is good
 ##' here (e.g., \code{tree_branches}, \code{tree_labels},
-##' \code{tree_brace}.
+##' \code{tree_braces}.
 ##' @param ... Named graphical parameters.  E.g., pass in
 ##' \code{node5=gpar(col="red")} will colour all descendents of "node5"
 ##' red.
@@ -188,7 +188,7 @@ tree_style_node_labels <- function(..., base=NULL) {
 ##' @export
 ##' @rdname style
 tree_style_brace <- function(..., base=NULL, name=NULL) {
-  tree_style("tree_brace", ..., base=base, name=name)
+  tree_style("tree_braces", ..., base=base, name=name)
 }
 
 ## TODO: For now just using label, but that should naturally expand
@@ -321,9 +321,9 @@ tree_image <- function(image, label, offset=unit(0.5, "lines"),
 ##' @param gp Graphical parameters (optional)
 ##' @author Rich FitzJohn
 ##' @export
-tree_brace <- function(label, offset=unit(0.5, "lines"),
-                       alignment="none",
-                       name=NULL, gp=gpar()) {
+tree_braces <- function(label, offset=unit(0.5, "lines"),
+                        alignment="none",
+                        name=NULL, gp=gpar()) {
   alignment <- match.arg(alignment, c("none", "set", "global"))
   # TODO: In circle tree, when theta0 > 0, check that we don't do mod
   # 2*pi because that will break working out where the beginning and
@@ -347,7 +347,7 @@ tree_brace <- function(label, offset=unit(0.5, "lines"),
 
   object <- list(label=label, offset=offset, alignment=alignment,
                  name=name, gp=gp)
-  class(object) <- "tree_brace"
+  class(object) <- "tree_braces"
   object
 }
 
@@ -401,14 +401,14 @@ tree_imageGrob <- function(image, t, s, direction, size, rot=0,
        name=name, gp=gp, vp=vp, cl="tree_image")
 }
 
-tree_braceGrob <- function(label, t, s_min, s_max, direction,
-                           name=NULL, gp=gpar(), vp=NULL) {
+tree_bracesGrob <- function(label, t, s_min, s_max, direction,
+                            name=NULL, gp=gpar(), vp=NULL) {
   if (!is.numeric(s_min) || !is.numeric(s_max))
     stop("s_min and s_max must be numeric")
   if (!is.unit(t))
     stop("t must be a unit")
   grob(label=label, t=t, s_min=s_min, s_max=s_max, direction=direction,
-       name=name, gp=gp, vp=vp, cl="tree_brace")
+       name=name, gp=gp, vp=vp, cl="tree_braces")
 }
 
 ## Low level: drawDetails methods to draw grobs
@@ -445,8 +445,8 @@ drawDetails.tree_image <- function(x, recording=TRUE) {
               height=x$size, gp=x$gp)
 }
 
-##' @S3method drawDetails tree_brace
-drawDetails.tree_brace <- function(x, recording=TRUE) {
+##' @S3method drawDetails tree_braces
+drawDetails.tree_braces <- function(x, recording=TRUE) {
   tree_segments_spacing(x$s_min, x$s_max, x$t, x$direction, gp=x$gp)
   # This is where a label would go if we knew what it would say.
 }

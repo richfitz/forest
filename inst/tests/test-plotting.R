@@ -525,10 +525,10 @@ test_that("Add tree_image to a tree", {
   }
 })
 
-test_that("tree_brace", {
+test_that("tree_braces", {
   # Minimal set of options:
-  tb <- tree_brace("t1")
-  expect_that(tb,           is_a("tree_brace"))
+  tb <- tree_braces("t1")
+  expect_that(tb,           is_a("tree_braces"))
   expect_that(tb$label,     is_identical_to("t1"))
   expect_that(tb$offset,    is_a("unit"))
   expect_that(tb$offset,    equals(unit(0.5, "lines")))
@@ -537,19 +537,19 @@ test_that("tree_brace", {
   expect_that(tb$gp,        is_identical_to(gpar()))
 
   # Corner cases:
-  expect_that(tree_brace(), throws_error())  # label missing
+  expect_that(tree_braces(), throws_error())  # label missing
 
   # Invalid label
-  expect_that(tree_brace(character(0)),  throws_error())
+  expect_that(tree_braces(character(0)),  throws_error())
   # No type checking here though.  And we can't check being in the
   # tree until it joins the tree.
 
   # Invalid offset: needs to be an unit of length 1
-  expect_that(tree_brace("t1", offset=1),                  throws_error())
-  expect_that(tree_brace("t1", offset=unit(1:2, "lines")), throws_error())
+  expect_that(tree_braces("t1", offset=1),                  throws_error())
+  expect_that(tree_braces("t1", offset=unit(1:2, "lines")), throws_error())
 
-  expect_that(tree_brace("t1", alignment=NA),        throws_error())
-  expect_that(tree_brace("t1", alignment="invalid"), throws_error())
+  expect_that(tree_braces("t1", alignment=NA),        throws_error())
+  expect_that(tree_braces("t1", alignment="invalid"), throws_error())
 
   # No validation is done on name or gp, though.
 
@@ -561,8 +561,8 @@ test_that("tree_brace", {
   alignment <- "global"
   name <- "foo"
   gp <- gpar(lwd=1)
-  tmp <- tree_brace(label, offset=offset, alignment=alignment,
-                    name=name, gp=gp)
+  tmp <- tree_braces(label, offset=offset, alignment=alignment,
+                     name=name, gp=gp)
 
   expect_that(tmp$label,     is_identical_to(label))
   expect_that(tmp$offset,    is_identical_to(offset))
@@ -571,7 +571,7 @@ test_that("tree_brace", {
   expect_that(tmp$gp,        is_identical_to(gp))
 })
 
-test_that("Add tree_brace to a tree", {
+test_that("Add tree_braces to a tree", {
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
@@ -580,12 +580,12 @@ test_that("Add tree_brace to a tree", {
   for (direction in forest:::tree_directions()) {
     tg <- treeGrob(tr, direction=direction) + tree_node_labels()
 
-    tb <- tree_brace("n4", name="brace")
+    tb <- tree_braces("n4", name="brace")
     tg2 <- tg + tb
 
     expect_that(names(tg2$children),
                 equals(c("branches", "node_labels", "brace")))
-    expect_that(tg2$children$brace, is_a("tree_brace"))
+    expect_that(tg2$children$brace, is_a("tree_braces"))
 
     # TODO: Check that location is correct.
 
@@ -606,12 +606,12 @@ test_that("More than one brace", {
     tg <- treeGrob(tr, direction=direction) + tree_node_labels()
 
     at <- c("n8", "n5", "n2")
-    tb <- tree_brace(at, name="brace")
+    tb <- tree_braces(at, name="brace")
     tg2 <- tg + tb
 
     expect_that(names(tg2$children),
                 equals(c("branches", "node_labels", "brace")))
-    expect_that(tg2$children$brace, is_a("tree_brace"))
+    expect_that(tg2$children$brace, is_a("tree_braces"))
     expect_that(tg2$children$brace$label, is_identical_to(at))
 
     # TODO: Check that location is correct.
@@ -634,9 +634,9 @@ test_that("Brace alignment", {
 
   at <- c("n8", "n5")
 
-  tg.n <- tg + tree_brace(at, name="brace", alignment="none")
-  tg.s <- tg + tree_brace(at, name="brace", alignment="set")
-  tg.g <- tg + tree_brace(at, name="brace", alignment="global")
+  tg.n <- tg + tree_braces(at, name="brace", alignment="none")
+  tg.s <- tg + tree_braces(at, name="brace", alignment="set")
+  tg.g <- tg + tree_braces(at, name="brace", alignment="global")
 
   # Check the time position of these three different alignments:
   spp <- sapply(at, function(nd) tr$get_subtree(nd)$tip_labels)
@@ -644,7 +644,7 @@ test_that("Brace alignment", {
   at.t <- sapply(spp, function(x)
                  max(br$time_tipward[match(x, br$label)]))
 
-  offset <- tree_brace(at, name="brace")$offset
+  offset <- tree_braces(at, name="brace")$offset
 
   expect_that(unit(at.t, "native") + offset,
               equals(tg.n$children$brace$t))
@@ -669,7 +669,7 @@ test_that("tree_match", {
   tr <- forest.from.ape(phy)
 
   tg <- treeGrob(tr) +
-    tree_tip_labels() + tree_node_labels() + tree_brace("n4")
+    tree_tip_labels() + tree_node_labels() + tree_braces("n4")
 
   # Need to specify at least one of class / name
   expect_that(tree_match(tg),             throws_error())
@@ -702,10 +702,10 @@ test_that("tree_match", {
   expect_that(tree_match(tg, class="tree_labels"),
               equals(list(gPath("tip_labels"), gPath("node_labels"))))
 
-  # tree_brace had no name so is a generated name.  This is basically
+  # tree_braces had no name so is a generated name.  This is basically
   # the reson for the existance tree_match:
-  cmp <- gPath(names(which(sapply(tg$children, inherits, "tree_brace"))))
-  expect_that(tree_match(tg, class="tree_brace"),
+  cmp <- gPath(names(which(sapply(tg$children, inherits, "tree_braces"))))
+  expect_that(tree_match(tg, class="tree_braces"),
               equals(list(cmp)))
 
   # Match on name:

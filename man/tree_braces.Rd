@@ -1,8 +1,8 @@
-\name{tree_brace}
-\alias{tree_brace}
+\name{tree_braces}
+\alias{tree_braces}
 \title{Add Brace To Plotted Tree}
 \usage{
-tree_brace(label, offset = unit(0.5, "lines"), alignment = "none",
+tree_braces(label, offset = unit(0.5, "lines"), alignment = "none",
   name = NULL, gp = gpar())
 }
 \arguments{
