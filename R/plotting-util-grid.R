@@ -127,3 +127,19 @@ check_gpar <- function(gp) {
     stop("All elements of 'gp' must be scalar")
   gp
 }
+
+# How much *wider* a thing is than it's *height*.  So an object with
+# width w and h has aspect ratio w/h, or (w/h):1
+aspect_ratio <- function(object, ...) {
+  UseMethod("aspect_ratio")
+}
+
+aspect_ratio.rastergrob <- function(object, ...) {
+  ncol(object$raster) / nrow(object$raster)
+}
+
+## Untested, but this might work OK for general grobs:
+## aspect_ratio.grob <- function(object, ...) {
+##   convertHeight(grobHeight(object), "cm", TRUE) /
+##     convertWidth(grobWidth(object), "cm", TRUE)
+## }
