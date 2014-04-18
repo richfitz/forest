@@ -470,15 +470,15 @@ test_that("tree_image", {
   ti <- tree_image(pic, "t1")
   expect_that(ti, is_a("tree_image"))
   expect_that(names(ti),
-              equals(c("image", "label", "offset", "rot", "size",
+              equals(c("object", "label", "offset", "rot", "width",
                        "name", "gp")))
   # Check the defaults are as expected.
-  expect_that(ti$image,  is_a("raster"))
+  expect_that(ti$object, is_a("rastergrob"))
   expect_that(ti$label,  is_identical_to("t1"))
   expect_that(ti$offset, is_a("unit"))
   expect_that(ti$offset, equals(unit(0.5, "lines")))
   expect_that(ti$rot,    is_identical_to(0.0))
-  expect_that(ti$size,   equals(unit(1, "native")))
+  expect_that(ti$width,   equals(unit(1, "native")))
 
   # Corner cases:
   expect_that(tree_image(),   throws_error())  # picture and label missing
@@ -505,9 +505,9 @@ test_that("tree_image", {
   expect_that(tree_image(pic, "t1", rot=NULL),    throws_error())
   expect_that(tree_image(pic, "t1", rot="right"), throws_error())
 
-  # Invalid size
-  expect_that(tree_image(pic, "t1", size=1), throws_error())
-  expect_that(tree_image(pic, "t1", size=unit(1:2, "lines")),
+  # Invalid width
+  expect_that(tree_image(pic, "t1", width=1), throws_error())
+  expect_that(tree_image(pic, "t1", width=unit(1:2, "lines")),
               throws_error())
 
   # No validation is done on name or gp, though.
@@ -518,23 +518,22 @@ test_that("tree_image", {
   label <- "t1"
   offset <- unit(1, "cm")
   rot <- 90
-  size <- unit(2, "cm")
+  width <- unit(2, "cm")
   name <- "foo"
   gp <- gpar(lwd=1)
-  tmp <- tree_image(pic, label, offset=offset, rot=rot, size=size,
+  tmp <- tree_image(pic, label, offset=offset, rot=rot, width=width,
                     name=name, gp=gp)
-  expect_that(tmp$image,  is_identical_to(as.raster(pic)))
   expect_that(tmp$label,  is_identical_to(label))
   expect_that(tmp$offset, is_identical_to(offset))
   expect_that(tmp$rot,    is_identical_to(rot))
-  expect_that(tmp$size,   is_identical_to(size))
+  expect_that(tmp$width,  is_identical_to(width))
   expect_that(tmp$name,   is_identical_to(name))
   expect_that(tmp$gp,     is_identical_to(gp))
 
   # Check that native raster images are OK too.
   pic.n <- readPNG(pic.filename, native=TRUE)
   tmp <- tree_image(pic.n, "t1")
-  expect_that(tmp$image, is_a("nativeRaster"))
+  expect_that(tmp$object, is_a("rastergrob"))
 })
 
 # This is not really a good test, except that it checks that it checks
@@ -551,7 +550,8 @@ test_that("Add tree_image to a tree", {
   pic.filename <- system.file("img", "Rlogo.png", package="png")
   pic <- readPNG(pic.filename)
 
-  tg2 <- tg + tree_image(pic, "t1", name="myimage", size=unit(1, "cm"))
+  tg2 <- tg + tree_image(pic, "t1", name="myimage",
+                         width=unit(1, "cm"))
   expect_that(names(tg2$children), equals(c("branches", "myimage")))
 
   # TODO:

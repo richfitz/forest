@@ -3,7 +3,7 @@
 \title{Add Image To Plotted Tree}
 \usage{
 tree_image(image, label, offset = unit(0.5, "lines"), rot = 0,
-  size = unit(1, "native"), name = NULL, gp = gpar())
+  width = unit(1, "native"), name = NULL, gp = gpar())
 }
 \arguments{
   \item{image}{A raster object, from \code{readPNG} or
@@ -18,18 +18,18 @@ tree_image(image, label, offset = unit(0.5, "lines"), rot = 0,
   for tip/node labels (this will happily draw on top of the
   labels).}
 
-  \item{rot}{Rotation of the image.  Currently ignored.}
+  \item{rot}{Rotation of the image.}
 
-  \item{size}{Size of the image.  This is hard to nail down
-  because different tree orientations differ in which
-  dimension it will be convenient to size the image.  For
-  now it's the width, but that will also change.}
+  \item{width}{Width of the image, before rotation.
+  Because rotation may eventually happen in two places this
+  is potentially confusing.  Don't use "native" units
+  unless you want unpredictable results.}
 
-  \item{name}{Name to give the image within the tree (may
-  change soon if we depend on this)}
+  \item{name}{Name to give the image within the tree}
 
-  \item{gp}{Graphical parameters.  I don't think any of
-  these are immediately useful, but I could be wrong.}
+  \item{gp}{Graphical parameters.  According to the help
+  for \code{grid.raster} all parameters will be ignored,
+  including \code{alpha}, so this has no effect here.}
 }
 \description{
 Add images to the tree.
@@ -37,6 +37,11 @@ Add images to the tree.
 \details{
 Under heavy development at the moment, documentation
 pending.
+
+There are two basic types of images that we might want to
+add: raster images (e.g., read by \code{readPNG} and
+plotted with \code{grid.raster}) and vector images (through
+a fairly torturous process).
 }
 \author{
 Rich FitzJohn

@@ -228,6 +228,12 @@ tree_style_brace <- function(..., base=NULL, name=NULL) {
 ##' Add images to the tree.
 ##'
 ##' Under heavy development at the moment, documentation pending.
+##'
+##' There are two basic types of images that we might want to add:
+##' raster images (e.g., read by \code{readPNG} and plotted with
+##' \code{grid.raster}) and vector images (through a fairly torturous
+##' process).
+##'
 ##' @title Add Image To Plotted Tree
 ##' @param image A raster object, from \code{readPNG} or
 ##' \code{readJPEG} most likely.  Both "native" and array-based raster
@@ -237,60 +243,55 @@ tree_style_brace <- function(..., base=NULL, name=NULL) {
 ##' image with.  This may change soon!
 ##' @param offset Offset, in the time dimension.  Watch out for
 ##' tip/node labels (this will happily draw on top of the labels).
-##' @param rot Rotation of the image.  Currently ignored.
-##' @param size Size of the image.  This is hard to nail down because
-##' different tree orientations differ in which dimension it will be
-##' convenient to size the image.  For now it's the width, but that
-##' will also change.
-##' @param name Name to give the image within the tree (may change
-##' soon if we depend on this)
-##' @param gp Graphical parameters.  I don't think any of these are
-##' immediately useful, but I could be wrong.
+##' @param rot Rotation of the image.
+##' @param width Width of the image, before rotation.  Because
+##' rotation may eventually happen in two places this is potentially
+##' confusing.  Don't use "native" units unless you want unpredictable
+##' results.
+##' @param name Name to give the image within the tree
+##' @param gp Graphical parameters.  According to the help for
+##' \code{grid.raster} all parameters will be ignored, including
+##' \code{alpha}, so this has no effect here.
 ##' @author Rich FitzJohn
 ##' @export
 tree_image <- function(image, label, offset=unit(0.5, "lines"),
-                       rot=0, size=unit(1, "native"),
+                       rot=0, width=unit(1, "native"),
                        name=NULL, gp=gpar()) {
-  ## TODO: Thinking about this, this would actually generalise nicely
-  ## to all grobs that we might want to add.  So pie charts at nodes,
-  ## things like that.  The requirements would probably be that we
-  ## need to be able to compute sizes and aspect ratios meaningfully.
-  ## It may or may not make sense to retrofit the existing tip labels
-  ## into the same structure, and that pretty much depends on how the
-  ## arguments vectorise.  For now I'm ignoring that issue.
-
-  if (!inherits(image, "nativeRaster")) {
-    # TODO: This is ugly, but as.raster("foo") does not actually fail,
-    # surprisingly.  This check is needed so that filenames cause
-    # errors.
-    if (is.array(image)) {
-      image <- as.raster(image)
-    } else {
-      stop("Not something that can be converted into a raster")
-    }
+  if (inherits(image, "nativeRaster")) {
+    grob <- rasterGrob(image)
+  } else if (is.array(image)) {
+    grob <- rasterGrob(as.raster(image))
+  } else {
+    stop("Not something that can be converted into a raster")
   }
 
+  tree_object(grob, label=label, offset=offset, rot=rot, width=width,
+              name=name, gp=gp, class="tree_image")
+}
+
+## More plubmbing.  I think that for this one to work we have to
+## convert object into a grob, and then everything else will just
+## work!  If that's the case then this will probably never be
+## exported.
+tree_object <- function(object, label, offset=unit(0.5, "lines"),
+                        rot=0, width=unit(0.1, "npc"),
+                        name=NULL, gp=gpar(),
+                        class=character(0)) {
+  assert_grob(object)
+
   ## All of these might change
-  if (length(label) != 1)
-    stop("Need a scalar label at the moment")
-  if (length(offset) != 1)
-    stop("Need a scalar offset at the moment")
-  if (length(rot) != 1)
-    stop("Need a scalar offset at the moment")
-  if (length(size) != 1)
-    stop("Need a scalar size at the moment")
+  check_scalar(label)
+  check_scalar(offset)
+  check_scalar(rot)
+  check_scalar(width)
 
-  # Other checking that is more likely to be permanent
-  if (!is.unit(offset))
-    stop("offset must be a unit")
-  if (!(is.numeric(rot) || is.integer(rot)) || is.na(rot))
-    stop("rot must be numeric")
-  if (!is.unit(size))
-    stop("size must be a unit")
+  assert_unit(offset)
+  assert_number(rot)
+  assert_unit(width)
 
-  object <- list(image=image, label=label, offset=offset, rot=rot,
-                 size=size, name=name, gp=gp)
-  class(object) <- "tree_image"
+  object <- list(object=object, label=label, offset=offset, rot=rot,
+                 width=width, name=name, gp=gp)
+  class(object) <- c(class, "tree_object")
   object
 }
 
@@ -396,16 +397,14 @@ tree_labelsGrob <- function(label, t, s, direction, rot=0,
        name=name, gp=gp, vp=vp, cl="tree_labels")
 }
 
-tree_imageGrob <- function(image, t, s, direction, size, rot=0,
-                           name=NULL, gp=gpar(), vp=NULL) {
-  if (!is.numeric(s))
-    stop("s must be numeric")
-  if (!is.unit(t))
-    stop("t must be a unit")
-  if (!is.unit(size))
-    stop("size must be a unit")
-  grob(image=image, t=t, s=s, direction=direction, size=size, rot=rot,
-       name=name, gp=gp, vp=vp, cl="tree_image")
+tree_objectGrob <- function(object, t, s, direction, width,
+                            rot=0, name=name, gp=gpar(), vp=NULL) {
+  assert_number(s)
+  assert_unit(t)
+  assert_unit(width)
+  grob(object=object, t=t, s=s, direction=direction,
+       width=width, rot=rot,
+       name=name, gp=gp, vp=vp, cl="tree_object")
 }
 
 tree_bracesGrob <- function(label, t, s_min, s_max, direction,
@@ -440,16 +439,24 @@ drawDetails.tree_labels <- function(x, recording=TRUE) {
             rot=loc$rot, gp=x$gp)
 }
 
-##' @S3method drawDetails tree_image
-drawDetails.tree_image <- function(x, recording=TRUE) {
+## Actually nailing down width here is going to be *really* hard to
+## get right with rotation.  Think very very hard about this.  For
+## now, assuming width instead, which always has a meaning.  However,
+## it won't have a well behaved "native" meaning.  Not sure if that's
+## bad though.  Width is nice because it will be dependent on the
+## object and not the tree, and will withstand rotation.  It's only
+## going to be peculiar when rotation comes in.
+
+##' @S3method drawDetails tree_object
+drawDetails.tree_object <- function(x, recording=TRUE) {
   loc <- tree_location_resolve(x, rotate_to_time=FALSE)
-  # TODO: rot only works here via a viewport, so we'll ignore.
-  #
-  # TODO: for up/down, size should be on the width dimension, or
-  # convert the size -> width with convertWidth, etc.  We can work
-  # that out when building the image grob, perhaps.
-  grid.raster(x$image, loc$x, loc$y, hjust=loc$hjust, vjust=loc$vjust,
-              height=x$size, gp=x$gp)
+  w <- x$width
+  h <- w * (1 / aspect_ratio(x$object))
+  vp <- viewport(x=loc$x, y=loc$y,  width=w, height=h,
+                 angle=loc$rot, just=c(loc$hjust, loc$vjust))
+  pushViewport(vp)
+  on.exit(popViewport())
+  grid.draw(x$object)
 }
 
 ##' @S3method drawDetails tree_braces
