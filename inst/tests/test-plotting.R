@@ -701,6 +701,58 @@ test_that("Brace alignment", {
   }
 })
 
+test_that("brace_style", {
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  tr <- forest.from.ape(phy)
+
+  vp.spacing <- viewport(width=.8, height=.8, name="spacing")
+  tg <- treeGrob(tr, direction="right", vp=vp.spacing) +
+    tree_node_labels() + tree_braces(c("n2", "n8", "n5"), name="brace")
+
+  # One colour for all -- this might want to be easier in general,
+  # actually.  Perhaps I'm being over-eager in assuming
+  # phylogenetically distributed styles?
+  gp <- gpar(col="red", lwd=2)
+  tg2 <- tg + tree_style_brace(base=gp)
+  expect_that(tg2$children$brace$gp, equals(gp))
+
+  # Now, with varying styles:
+  tg3 <- tg + tree_style_brace(n8=gpar(col="red"),
+                               n2=gpar(col="blue"),
+                               n5=gpar(col="green4"))
+  cl <- forest:::classify(tr, c("n8", "n2", "n5")) + 1L
+  gpp <- forest:::combine_gpars(list(gpar(),
+                                     gpar(col="red"),
+                                     gpar(col="blue"),
+                                     gpar(col="green4")),
+                                cl[tg3$children$brace$label])
+  expect_that(tg3$children$brace$gp, equals(gpp))
+
+  # Now inherited style; n4 matches the nodes n8 and n5
+  tg4 <- tg + tree_style_brace(n4=gpar(col="blue"),
+                               base=gp)
+
+  cl <- forest:::classify(tr, c("n4")) + 1L
+  gpp <- forest:::combine_gpars(list(gp, gpar(col="blue")),
+                                cl[tg4$children$brace$label])
+  expect_that(tg4$children$brace$gp, equals(gpp))
+
+  # Turning descendents off, n4 now matches nothing:
+  tg5 <- tg + tree_style_brace(n4=gpar(col="blue"),
+                               base=gp, descendants=FALSE)
+  expect_that(tg5$children$brace$gp,
+              equals(do.call(gpar, lapply(gp, rep, 3))))
+
+  if (interactive()) {
+    print(tg2)
+    print(tg3)
+    print(tg4)
+    print(tg5)
+  }
+})
+
 test_that("tree_match", {
   set.seed(1)
   phy <- rtree(10)
