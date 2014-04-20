@@ -150,20 +150,3 @@ vector_read_svg <- function(filename) {
   inkscape_svg_to_eps(filename, filename_eps)
   vector_read_eps(filename_eps)
 }
-
-##' Colour all paths in a vector image (class \code{Picture}) with a
-##' single colour.  This is probably most useful for straight
-##' silhouettes, rather than those with multiple colours.
-##'
-##' May change to allow matching on source colour in the future.
-##' @title Colour a Vector Picture
-##' @param picture A \code{Picture} object
-##' @param col Colour to cange paths to
-##' @author Rich FitzJohn
-##' @export
-colour_picture <- function(picture, col) {
-  assert_picture(picture)
-  for (i in seq_along(picture@paths))
-    picture@paths[[i]]@rgb <- col
-  picture
-}
