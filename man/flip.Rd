@@ -1,0 +1,30 @@
+\name{flip}
+\alias{flip}
+\title{Flip An Image}
+\usage{
+flip(x, horizontal = TRUE, vertical = FALSE, ...)
+}
+\arguments{
+  \item{x}{A picture (see details)}
+
+  \item{horizontal}{Flip in the horizontal dimension
+  (default is TRUE)}
+
+  \item{vertical}{Flip in the vertical dimension (default
+  is FALSE)}
+
+  \item{...}{Additional arguments currently ignored}
+}
+\description{
+Flip an image along its horizontal or vertical axis.
+}
+\details{
+The picture can be a raster image, an array (that will
+later be converted to raster), or a Picture object (vector
+graphics).  Note that nativeRaster objects cannot (yet) be
+flipped.
+}
+\author{
+Rich FitzJohn
+}
+
