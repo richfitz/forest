@@ -16,6 +16,12 @@ assert_number <- function(x) {
   }
 }
 
+assert_list <- function(x) {
+  if (!is.list(x)) {
+    stop(sprintf("%s must be a list", deparse(substitute(x))))
+  }
+}
+
 assert_grob <- function(x) {
   if (!is.grob(x)) {
     stop(sprintf("%s must be a grob", deparse(substitute(x))))

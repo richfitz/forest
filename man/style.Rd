@@ -6,7 +6,8 @@
 \alias{tree_style_tip_labels}
 \title{Style Tree By Node}
 \usage{
-tree_style(class, ..., descendants = TRUE, base = NULL, name = NULL)
+tree_style(class, ..., targets = NULL, descendants = TRUE, base = NULL,
+  name = NULL)
 
 tree_style_branches(..., base = NULL)
 
@@ -27,6 +28,13 @@ tree_style_brace(..., base = NULL, name = NULL)
   \item{...}{Named graphical parameters.  E.g., pass in
   \code{node5=gpar(col="red")} will colour all descendents
   of "node5" red.}
+
+  \item{targets}{A named list of targets, each element of
+  which is a graphical parameters object.  Roughly
+  equivalent to `list(...)`. If this is provided, then
+  `...` must be empty.  This form might be better for
+  programmatic use.  The `...` style might end up being
+  unnecessary, even.}
 
   \item{descendants}{Apply styling to all descendants?  The
   default is TRUE, using the MEDUSA algorithm to do this.

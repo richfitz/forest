@@ -305,6 +305,20 @@ test_that("Branch styling (returned object)", {
   expect_that(sty$targets$n2, equals(g2))
   expect_that(sty$base, equals(g0))
 
+  # Equivalent using the 'targets' argument:
+  sty2 <- tree_style("foo", targets=list(n1=g1, n2=g2), base=g0)
+  expect_that(sty2, equals(sty))
+
+  # Can't provide both:
+  expect_that(tree_style("foo", n3=g1, targets=list(n1=g1, n2=g2)),
+              throws_error())
+  # Even if targets is empty
+  expect_that(tree_style("foo", n3=g1, targets=list()),
+              throws_error())
+  # But OK if NULL
+  expect_that(tree_style("foo", n3=g1, targets=NULL),
+              not(throws_error()))
+
   # Unnamed targets:
   expect_that(tree_style("foo", g1, base=g0), throws_error())
   expect_that(tree_style("foo", n1=g1, g2, base=g0), throws_error())

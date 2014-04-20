@@ -145,6 +145,11 @@ tree_node_labels <- function(...) {
 ##' @param ... Named graphical parameters.  E.g., pass in
 ##' \code{node5=gpar(col="red")} will colour all descendents of "node5"
 ##' red.
+##' @param targets A named list of targets, each element of which is a
+##' graphical parameters object.  Roughly equivalent to `list(...)`.
+##' If this is provided, then `...` must be empty.  This form might be
+##' better for programmatic use.  The `...` style might end up being
+##' unnecessary, even.
 ##' @param descendants Apply styling to all descendants?  The default
 ##' is TRUE, using the MEDUSA algorithm to do this.  But specifying
 ##' \code{descendants=FALSE} allows styling of a single branch, node
@@ -157,10 +162,18 @@ tree_node_labels <- function(...) {
 ##' (such as the tip and node labels).
 ##' @export
 ##' @rdname style
-tree_style <- function(class, ..., descendants=TRUE, base=NULL, name=NULL) {
-  # TODO: Potential issue: a node called 'base' cannot be set.  Deal
-  # with this by changing base to .base, perhaps
-  targets <- list(...)
+tree_style <- function(class, ..., targets=NULL,
+                       descendants=TRUE, base=NULL, name=NULL) {
+  if (is.null(targets)) {
+    # TODO: Potential issue: a node called 'base' cannot be set.  Deal
+    # with this by changing base to .base, perhaps
+    targets <- list(...)
+  } else {
+    if (length(list(...))) {
+      stop("Cannot specify both 'targets' and targets in '...'")
+    }
+    assert_list(targets)
+  }
   if (length(targets) == 0)
     names(targets) <- character(0) # corner case.
   if (is.null(names(targets)) || any(names(targets) == ""))
