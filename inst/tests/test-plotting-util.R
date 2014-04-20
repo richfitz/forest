@@ -133,3 +133,23 @@ test_that("flip raster (as raster)", {
     }
   }
 })
+
+test_that("Aspect ratio", {
+  pic.filename <- system.file("img", "Rlogo.png", package="png")
+  pic <- readPNG(pic.filename)
+  pic.bw <- 1 - apply(readPNG(pic.filename), 1:2, max)
+  pic.native <- readPNG(pic.filename, native=TRUE)
+
+  r <- ncol(pic) / nrow(pic)
+
+  expect_that(aspect_ratio(pic),            equals(r))
+  expect_that(aspect_ratio(pic.native),     equals(r))
+  expect_that(aspect_ratio(as.raster(pic)), equals(r))
+  expect_that(aspect_ratio(pic.bw),         equals(r))
+
+  fish <- vector_read("files/fish.svg")
+  r <- unname(diff(fish@summary@xscale) / diff(fish@summary@yscale))
+
+  expect_that(aspect_ratio(fish),              equals(r))
+  expect_that(aspect_ratio(pictureGrob(fish)), equals(r))
+})

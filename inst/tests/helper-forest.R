@@ -8,6 +8,7 @@ library(deSolve)
 library(grid)
 library(png)
 suppressMessages(library(expm))
+suppressMessages(library(grImport))
 
 # Oops; there's namespace confict here.
 rtree <- forest::rtree

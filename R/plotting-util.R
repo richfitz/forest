@@ -98,30 +98,71 @@ colour_picture <- function(picture, col) {
   picture
 }
 
-# How much *wider* a thing is than it's *height*.  So an object with
-# width w and h has aspect ratio w/h, or (w/h):1
+##' Compute aspect ratio of images (and potentially/eventually other
+##' graphical objects).
+##'
+##' This is how much \emph{wider} a thing is than its height.  So an
+##' object with width "w" and height "h" has  aspect ratio of w/h,or
+##' (w/h):1.  If it is wider than it is high, then the aspect ratio is
+##' greater than one.
+##'
+##' @title Compute Aspect Ratio
+##' @param object Object to compute as
+##' @param ... Additional arguments to methods, all ignored
+##' @author Rich FitzJohn
+##' @export
 aspect_ratio <- function(object, ...) {
   UseMethod("aspect_ratio")
 }
 
-aspect_ratio.rastergrob <- function(object, ...) {
-  ncol(object$raster) / nrow(object$raster)
+##' @S3method aspect_ratio raster
+##' @S3method aspect_ratio array
+##' @S3method aspect_ratio matrix
+##' @S3method aspect_ratio nativeRaster
+aspect_ratio.raster <- function(object, ...) {
+  ncol(object) / nrow(object)
 }
+aspect_ratio.array        <- aspect_ratio.raster
+aspect_ratio.matrix       <- aspect_ratio.raster
+aspect_ratio.nativeRaster <- aspect_ratio.raster
 
-aspect_ratio.picture <- function(object, ...) {
-  xscale <- range(object$hull$x)
-  yscale <- range(object$hull$y)
-  diff(range(xscale)) / diff(range(yscale))
-}
-
+##' @S3method aspect_ratio Picture
 aspect_ratio.Picture <- function(object, ...) {
   xscale <- object@summary@xscale
   yscale <- object@summary@yscale
   diff(range(xscale)) / diff(range(yscale))
 }
 
-## Untested, but this might work OK for general grobs:
+##' @S3method aspect_ratio rastergrob
+aspect_ratio.rastergrob <- function(object, ...) {
+  ncol(object$raster) / nrow(object$raster)
+}
+
+# This is what pictureGrob() returns
+##' @S3method aspect_ratio picture
+aspect_ratio.picture <- function(object, ...) {
+  xscale <- range(object$hull$x)
+  yscale <- range(object$hull$y)
+  diff(range(xscale)) / diff(range(yscale))
+}
+
+## Untested, but this might work OK for general grobs, provided that
+## it is done during drawDetails
 ## aspect_ratio.grob <- function(object, ...) {
 ##   convertHeight(grobHeight(object), "cm", TRUE) /
 ##     convertWidth(grobWidth(object), "cm", TRUE)
 ## }
+
+## This might also want breaking up into S3 methods, so that it is
+## open for extension.  But that won't be obvious to end use.
+image_grob <- function(object) {
+  if (inherits(object, c("raster", "nativeRaster"))) {
+    grob <- rasterGrob(object)
+  } else if (is.array(object)) {
+    grob <- rasterGrob(as.raster(object))
+  } else if (inherits(object, "Picture")) {
+    grob <- grImport::pictureGrob(object)
+  } else {
+    stop("Not something I recognise as an image")
+  }
+}
