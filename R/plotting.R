@@ -209,8 +209,6 @@ tree_style_brace <- function(..., base=NULL, name=NULL) {
 ## TODO: When providing multiple images, how do we provide them?  List
 ## I guess.
 ##
-## TODO: Is it ever useful to provide filenames?  Probably not.
-##
 ## TODO: Handle both vector and bitmap images through the same
 ## interface.  Users should not care.
 ##

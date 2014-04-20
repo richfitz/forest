@@ -9,7 +9,8 @@ Description: Still working this out.  Based on treetree r6, itself
     (https://code.google.com/p/treetree/source/list)
 License: BSD_2_clause + file LICENSE
 Imports:
-    grid
+    grid,
+    tools
 Depends:
     methods,
     Rcpp (>= 0.10.6)
@@ -19,5 +20,6 @@ Suggests:
     diversitree,
     expm,
     deSolve,
-    png
+    png,
+    grImport
 LinkingTo: Rcpp, BH

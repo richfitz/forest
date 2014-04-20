@@ -9,9 +9,9 @@ vector_read(filename)
 
 vector_read_xml(filename)
 
-vector_read_eps(filename, retrace = FALSE)
+vector_read_eps(filename)
 
-vector_read_svg(filename, retrace = TRUE)
+vector_read_svg(filename)
 }
 \arguments{
   \item{filename}{filename of a vector object in svg, eps,
@@ -21,22 +21,53 @@ vector_read_svg(filename, retrace = TRUE)
 Read in a vector file as a \code{grImport::Picture} object.
 }
 \details{
-The function \code{vector_read} is a high level wrapper
-that attempts to do some trickery to most efficiently load
-the correct file.  If the filename given ends in
-\code{.svg}, \code{.eps} or \code{eps.xml} it will convert
-along to \code{eps.xml} and then load.  If the filename has
-no extension (i.e., it is the part \emph{up to} the
-extension, then it will load the \code{.svg}, \code{.eps}
-or \code{eps.xml} file, in increasing order of preference,
-converting to \code{eps.xml} as it does so.  As such, the
-second use of the function in this way will directly load
-the \code{eps.xml} file.
+This is a bit of a Rube Goldberg machine because of a
+disconnect between how most vector images are likely to be
+found (SVG, e.g., \url{http://phylopic.org}) and the
+formats that R is capable of reading.  There are a number
+of steps here that require external programs, and cause
+potential platform non-indepenence.  The process is:
 
-An additional step may be added to this process that
-converts all the way to an rds representation of these xml
-files.  This can be quite a bit faster, though potentially
-less reliable.
+\enumerate{ \item{Convert SVG to EPS.  This can be done
+with Inkscape automatically, or with other programs
+manually.  The fucntion \code{forest:::inkscape_svg_to_eps}
+function does this step, but requires Inkscape to be
+installed.} \item{Convert EPS to XML.
+\code{grImport::readPicture} has an internal XML format
+that it uses, called RGML.  To convert to this format, it
+uses ghostscript to process the EPS file and then does some
+post-processing.  The function
+\code{forest:::ghostscript_eps_to_xml} does this step, but
+requires ghostscript to be installed.} \item{Read XML into
+R.  This is done with \code{grImport::readPicture} and
+creates an object of class \code{Picture} that can be drawn
+using \code{grid.picture} and eventuall some forest
+functions.} }
+
+The function \code{vector_read} is a high level wrapper to
+this process that attempts to do as little work as
+possible.  This means that if an XML file that corresponds
+to an EPS/SVG file exists, that file will be read rather
+than going back and recreating the XML file.  This means
+that not all of the conversion software needs to installed
+if the processed files exist.
+
+Alternatively, \code{vector_read_svg},
+\code{vector_read_eps} and \code{vector_read_xml} will do
+all the necessary processing and read the resulting object
+in as a Picture.  They will \emph{always} reprocess files
+though.
+
+The above functions use a set of conventions for filenames:
+\code{picture.svg} becomes \code{picture.eps} becomes
+\code{picture.xml}.  If the starting point is an eps file
+then this is simply \code{picture.eps} becomes
+\code{picture.xml}.
+
+Reading in the XML files can be quite slow.  I may add an
+additional step here that serialises the object as RDS and
+read from the preferentially.  In this case the processed
+\code{picture.xml} becomes \code{picture.rds}.
 }
 \author{
 Rich FitzJohn

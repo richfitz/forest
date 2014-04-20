@@ -818,4 +818,5 @@ test_that("tree_match", {
               equals(lapply(names(tg$children), gPath)))
 })
 
+
 ## TODO: classify on root note?

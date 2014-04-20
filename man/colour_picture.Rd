@@ -1,0 +1,25 @@
+\name{colour_picture}
+\alias{colour_picture}
+\title{Colour a Vector Picture}
+\usage{
+colour_picture(picture, col)
+}
+\arguments{
+  \item{picture}{A \code{Picture} object}
+
+  \item{col}{Colour to cange paths to}
+}
+\description{
+Colour all paths in a vector image (class \code{Picture})
+with a single colour.  This is probably most useful for
+straight silhouettes, rather than those with multiple
+colours.
+}
+\details{
+May change to allow matching on source colour in the
+future.
+}
+\author{
+Rich FitzJohn
+}
+

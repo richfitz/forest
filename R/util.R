@@ -39,3 +39,21 @@ assert_file_exists <- function(x) {
     stop(sprintf("file %s does not exist", x))
   }
 }
+
+##' @importFrom tools file_path_sans_ext
+replace_extension <- function(x, ext) {
+  if (grepl("^[^.]", ext)) {
+    ext <- paste0(".", ext)
+  }
+  paste0(file_path_sans_ext(x), ext)
+}
+
+system_which <- function(app) {
+  assert_scalar(app)
+  path <- suppressWarnings(system(paste("which", app), intern=TRUE))
+  if (length(path) == 1) {
+    path
+  } else {
+    NULL
+  }
+}
