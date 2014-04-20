@@ -460,7 +460,7 @@ test_that("Branch styling (single nodes)", {
   }
 })
 
-test_that("tree_image", {
+test_that("tree_image (png)", {
   # Here is an image from within the png package.  It's not very
   # inspiring but it's a start.
   pic.filename <- system.file("img", "Rlogo.png", package="png")
@@ -536,6 +536,22 @@ test_that("tree_image", {
   expect_that(tmp$object, is_a("rastergrob"))
 })
 
+test_that("tree_image (vector)", {
+  pic <- vector_read("files/fish.svg")
+
+  ## Minimal set of options.
+  ti <- tree_image(pic, "t1")
+  expect_that(ti, is_a("tree_image"))
+  expect_that(names(ti),
+              equals(c("object", "label", "offset", "rot", "width",
+                       "name", "gp")))
+  # grImport::pictureGrob differs from other some grob making function
+  # in that the grob has the same class as the input, but with grob
+  # appended and with the case of the class changed. :/
+  expect_that(ti$object, is_a("picture"))
+  expect_that(ti$object, is_a("grob"))
+})
+
 # This is not really a good test, except that it checks that it checks
 # that nothing terrible happens in associating the image and the
 # tree.  Work do be done for sure though.
@@ -554,6 +570,12 @@ test_that("Add tree_image to a tree", {
                          width=unit(1, "cm"))
   expect_that(names(tg2$children), equals(c("branches", "myimage")))
 
+  fish <- vector_read("files/fish.svg")
+  tg3 <- tg2 + tree_image(fish, "t4", name="myfish",
+                          width=unit(2, "cm"))
+
+  expect_that(names(tg3$children), equals(c("branches", "myimage", "myfish")))
+
   # TODO:
   # Now, painfully, go through and check that the location is correct?
   # That seems like a lot of work.  Perhaps wait until we have the
@@ -562,6 +584,7 @@ test_that("Add tree_image to a tree", {
   if (interactive()) {
     vp.spacing <- viewport(width=.8, height=.8, name="spacing")
     print(tg2, vp=vp.spacing)
+    print(tg3, vp=vp.spacing)
   }
 })
 

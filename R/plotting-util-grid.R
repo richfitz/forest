@@ -138,6 +138,18 @@ aspect_ratio.rastergrob <- function(object, ...) {
   ncol(object$raster) / nrow(object$raster)
 }
 
+aspect_ratio.picture <- function(object, ...) {
+  xscale <- range(object$hull$x)
+  yscale <- range(object$hull$y)
+  diff(range(xscale)) / diff(range(yscale))
+}
+
+aspect_ratio.Picture <- function(object, ...) {
+  xscale <- object@summary@xscale
+  yscale <- object@summary@yscale
+  diff(range(xscale)) / diff(range(yscale))
+}
+
 ## Untested, but this might work OK for general grobs:
 ## aspect_ratio.grob <- function(object, ...) {
 ##   convertHeight(grobHeight(object), "cm", TRUE) /

@@ -255,12 +255,14 @@ tree_style_brace <- function(..., base=NULL, name=NULL) {
 tree_image <- function(image, label, offset=unit(0.5, "lines"),
                        rot=0, width=unit(1, "native"),
                        name=NULL, gp=gpar()) {
-  if (inherits(image, "nativeRaster")) {
+  if (inherits(image, c("raster", "nativeRaster"))) {
     grob <- rasterGrob(image)
   } else if (is.array(image)) {
     grob <- rasterGrob(as.raster(image))
+  } else if (inherits(image, "Picture")) {
+    grob <- grImport::pictureGrob(image)
   } else {
-    stop("Not something that can be converted into a raster")
+    stop("Not something I recognise as an image")
   }
 
   tree_object(grob, label=label, offset=offset, rot=rot, width=width,
