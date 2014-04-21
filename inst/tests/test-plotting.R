@@ -639,6 +639,7 @@ test_that("Add single tree_images to a tree", {
                          width=unit(1, "cm"))
   expect_that(names(tg2$children), equals(c("branches", "myimage")))
   expect_that(tg2$children$myimage, is_a("tree_objects"))
+  expect_that(tg2$children$myimage, is_a("tree_images"))
 
   fish <- vector_read("files/fish.svg")
   tg3 <- tg2 + tree_images(list(t4=fish), name="myfish",
@@ -646,6 +647,7 @@ test_that("Add single tree_images to a tree", {
 
   expect_that(names(tg3$children), equals(c("branches", "myimage", "myfish")))
   expect_that(tg3$children$myfish, is_a("tree_objects"))
+  expect_that(tg3$children$myfish, is_a("tree_images"))
 
   # TODO:
   # Now, painfully, go through and check that the location is correct?
@@ -675,6 +677,9 @@ test_that("Add multiple tree_images to a tree", {
   expect_that(names(tg2$children), equals(c("branches", "myimage")))
   expect_that(tg2$children$myimage, is_a("tree_objects"))
   expect_that(tg2$children$myimage$label, equals(names(imgs)))
+
+  expect_that(tg2$children$myimage, is_a("tree_objects"))
+  expect_that(tg2$children$myimage, is_a("tree_images"))
 
   if (interactive()) {
     vp.spacing <- viewport(width=.8, height=.8, name="spacing")
@@ -936,8 +941,3 @@ test_that("tree_match", {
 })
 
 ## TODO: classify on root note?
-
-## TODO: Testing on class of tree_images produced thing is wrong --
-## classes don't look propagated at 'add'.
-
-## TODO: Test names that an objects_grob makes (e.g. object vs objects name)

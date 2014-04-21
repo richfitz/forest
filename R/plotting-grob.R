@@ -51,14 +51,17 @@ tree_bracesGrob <- function(label, t, s_min, s_max, direction,
 }
 
 ## Generic object used for images at the moment, but will be useful
-## for things like mini-plots.  Not yet vectorised on draw, but that's
-## not asserted here.
+## for things like mini-plots (e.g., pie charts at nodes).
 tree_objectsGrob <- function(label, objects, t, s, direction, width,
-                             rot=0, name=name, gp=gpar(), vp=NULL) {
+                             rot=0, class="tree_objects",
+                             name=name, gp=gpar(), vp=NULL) {
   assert_number(s)
   assert_unit(t)
   assert_unit(width)
+  if (class[[length(class)]] != "tree_objects") {
+    stop("The last element of 'class' must be 'tree_objects'")
+  }
   grob(label=label, objects=objects, t=t, s=s, direction=direction,
        width=width, rot=rot,
-       name=name, gp=gp, vp=vp, cl="tree_objects")
+       name=name, gp=gp, vp=vp, cl=class)
 }

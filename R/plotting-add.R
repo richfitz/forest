@@ -129,7 +129,8 @@ add_to_tree.tree_objects <- function(object, tree_grob, ...) {
   gr <- tree_objectsGrob(label=label, object$objects, at$t, at$s,
                          direction=tree_grob$direction,
                          width=object$width,
-                         rot=object$rot, name=object$name,
+                         rot=object$rot, class=class(object),
+                         name=object$name,
                          gp=object$gp, vp=tree_grob$childrenvp)
   addGrob(tree_grob, gr)
 }
