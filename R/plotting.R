@@ -96,11 +96,6 @@ treeGrob <- function(tree, direction="right", theta0=0,
 tree_labels <- function(type, offset=unit(0.5, "lines"), rot=0,
                         name=NULL, gp=gpar()) {
   type  <- match.arg(type, c("tips", "nodes"))
-  # TODO: with nonstandard names, tip and node labels become
-  # unaddressable.  We'll need to get some semantics in there to allow
-  # them to be restyled.  That's particularly important if we want to
-  # add a handful of labels and then restyle them later...
-  #
   # TODO: Check the gpar on entry here?  If it's non-scalar then
   # updating style later is hard.
   if (!is.null(name))
@@ -212,31 +207,6 @@ tree_style_node_labels <- function(..., base=NULL) {
 tree_style_brace <- function(..., base=NULL, name=NULL) {
   tree_style("tree_braces", ..., base=base, name=name)
 }
-
-## TODO: For now just using label, but that should naturally expand
-## out to providing lower level t/s pairs.  That's what this is going
-## to use anyway.
-##
-## TODO: In the case where have labels in the tree already should this
-## detect that and add the strwidth of the label to the offset?  That
-## would actually be very easy.
-##
-## TODO: When providing multiple images, how do we provide them?  List
-## I guess.
-##
-## TODO: Handle both vector and bitmap images through the same
-## interface.  Users should not care.
-##
-## TODO: Order of arguments?  Probably picture first.  Others should
-## reflect tree_labels (especially rot)
-##
-## TODO: Recycling of pictures?  Probably never a good idea.
-##
-## TODO: Default sizing of images?  Because the size dimension is only
-## defined as 0..1 it varies depending on how many species are
-## plotted.  This is even worse for circle trees, where that unit will
-## vary depending on the time axis anyway.  Some sort of concept of
-## the between-branch-space might be useful to have here.
 
 ##' Add images to the tree.
 ##'
@@ -353,9 +323,6 @@ tree_braces <- function(label, offset=unit(0.5, "lines"),
   # TODO: In circle tree, when theta0 > 0, check that we don't do mod
   # 2*pi because that will break working out where the beginning and
   # end points are for the contents of the clade.
-  #
-  # TODO: Going to need to work out how the labels are positioned to
-  # nail the offset here.
 
   # All of these might change
   if (length(offset) != 1)
