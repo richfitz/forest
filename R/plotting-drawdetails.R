@@ -1,9 +1,10 @@
 ## Definitions of the drawDetails methods -- this is how things
 ## actually get drawn.
-##
-## Unlike other S3 methods in the package that are used only
-## internally, these need registering in NAMESPACE so that grid can
-## find them.
+
+## TODO: Code in this section can really only be tested interactively
+## at the moment, and that will remain the case until #41 is fixed.
+## In the meantime I'm just trying to keep this section fairly
+## simple.
 
 ##' @S3method drawDetails tree_branches
 drawDetails.tree_branches <- function(x, recording=TRUE) {
@@ -39,14 +40,20 @@ drawDetails.tree_braces <- function(x, recording=TRUE) {
   # This is where a label would go if we knew what it would say.
 }
 
-##' @S3method drawDetails tree_object
-drawDetails.tree_object <- function(x, recording=TRUE) {
+## NOTE: Assumes scalar hjust/vjust, which loc returns.
+##' @S3method drawDetails tree_objects
+drawDetails.tree_objects <- function(x, recording=TRUE) {
   loc <- tree_location_resolve(x, rotate_to_time=FALSE)
-  w <- x$width
-  h <- w * (1 / aspect_ratio(x$object))
-  vp <- viewport(x=loc$x, y=loc$y,  width=w, height=h,
-                 angle=loc$rot, just=c(loc$hjust, loc$vjust))
-  pushViewport(vp)
-  on.exit(popViewport())
-  grid.draw(x$object)
+  add <- function(i) {
+    obj <- x$objects[[i]]
+    w <- x$width[i]
+    vp <- viewport(x=loc$x[i], y=loc$y[i],
+                   width=w, height=w * (1 / aspect_ratio(obj)),
+                   angle=loc$rot[i], just=c(loc$hjust, loc$vjust))
+    pushViewport(vp)
+    on.exit(popViewport())
+    grid.draw(obj)
+  }
+  lapply(seq_along(x$objects), add)
+  invisible()
 }

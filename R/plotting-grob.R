@@ -53,12 +53,12 @@ tree_bracesGrob <- function(label, t, s_min, s_max, direction,
 ## Generic object used for images at the moment, but will be useful
 ## for things like mini-plots.  Not yet vectorised on draw, but that's
 ## not asserted here.
-tree_objectGrob <- function(object, t, s, direction, width,
-                            rot=0, name=name, gp=gpar(), vp=NULL) {
+tree_objectsGrob <- function(label, objects, t, s, direction, width,
+                             rot=0, name=name, gp=gpar(), vp=NULL) {
   assert_number(s)
   assert_unit(t)
   assert_unit(width)
-  grob(object=object, t=t, s=s, direction=direction,
+  grob(label=label, objects=objects, t=t, s=s, direction=direction,
        width=width, rot=rot,
-       name=name, gp=gp, vp=vp, cl="tree_object")
+       name=name, gp=gp, vp=vp, cl="tree_objects")
 }

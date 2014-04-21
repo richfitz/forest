@@ -474,54 +474,58 @@ test_that("Branch styling (single nodes)", {
   }
 })
 
-test_that("tree_image (png)", {
+test_that("tree_images (png)", {
   # Here is an image from within the png package.  It's not very
   # inspiring but it's a start.
   pic.filename <- system.file("img", "Rlogo.png", package="png")
   pic <- readPNG(pic.filename)
 
   ## Minimal set of options.
-  ti <- tree_image(pic, "t1")
-  expect_that(ti, is_a("tree_image"))
+  imgs <- list(t1=pic)
+  ti <- tree_images(imgs)
+  expect_that(ti, is_a("tree_images"))
+  expect_that(ti, is_a("tree_objects"))
   expect_that(names(ti),
-              equals(c("object", "label", "offset", "rot", "width",
+              equals(c("objects", "offset", "rot", "width",
                        "name", "gp")))
   # Check the defaults are as expected.
-  expect_that(ti$object, is_a("rastergrob"))
-  expect_that(ti$label,  is_identical_to("t1"))
+  expect_that(ti$object, is_a("list"))
   expect_that(ti$offset, is_a("unit"))
   expect_that(ti$offset, equals(unit(0.5, "lines")))
   expect_that(ti$rot,    is_identical_to(0.0))
-  expect_that(ti$width,   equals(unit(1, "native")))
+  expect_that(ti$width,  equals(unit(1, "native")))
+
+  # Inspect the image
+  expect_that(length(ti$object), equals(1))
+  expect_that(ti$object[[1]],    is_a("rastergrob"))
+  expect_that(names(ti$object),  equals(names(imgs)))
 
   # Corner cases:
-  expect_that(tree_image(),   throws_error())  # picture and label missing
-  expect_that(tree_image(pic), throws_error()) # label missing
+  expect_that(tree_images(),          throws_error("missing"))
+  expect_that(tree_images(pic),       throws_error("list"))
+  expect_that(tree_images(list(pic)), throws_error("named"))
 
   # Invalid image
-  expect_that(tree_image(NULL, "t1"),         throws_error())
-  expect_that(tree_image(pic.filename, "t1"), throws_error())
+  expect_that(tree_images(NULL, "t1"),         throws_error())
+  expect_that(tree_images(pic.filename, "t1"), throws_error())
 
-  # Invalid label
-  expect_that(tree_image(NULL, character(0)),  throws_error())
-  expect_that(tree_image(NULL, c("t1", "t2")), throws_error())
   # No type checking here though.  And we can't check being in the
   # tree until it joins the tree.
 
   # Invalid offset: needs to be an unit of length 1
-  expect_that(tree_image(pic, "t1", offset=1), throws_error())
-  expect_that(tree_image(pic, "t1", offset=unit(1:2, "lines")),
-              throws_error())
+  expect_that(tree_images(imgs, offset=1), throws_error("unit"))
+  expect_that(tree_images(imgs, offset=unit(1:2, "lines")),
+              throws_error("scalar"))
 
   # Invalid rotation
-  expect_that(tree_image(pic, "t1", rot=c(1, 2)), throws_error())
-  expect_that(tree_image(pic, "t1", rot=NA),      throws_error())
-  expect_that(tree_image(pic, "t1", rot=NULL),    throws_error())
-  expect_that(tree_image(pic, "t1", rot="right"), throws_error())
+  expect_that(tree_images(imgs, rot=c(1, 2)), throws_error())
+  expect_that(tree_images(imgs, rot=NA),      throws_error())
+  expect_that(tree_images(imgs, rot=NULL),    throws_error())
+  expect_that(tree_images(imgs, rot="right"), throws_error())
 
   # Invalid width
-  expect_that(tree_image(pic, "t1", width=1), throws_error())
-  expect_that(tree_image(pic, "t1", width=unit(1:2, "lines")),
+  expect_that(tree_images(imgs, width=1), throws_error())
+  expect_that(tree_images(imgs, width=unit(1:2, "lines")),
               throws_error())
 
   # No validation is done on name or gp, though.
@@ -529,15 +533,13 @@ test_that("tree_image (png)", {
   # Check that options passed through are actually recorded.  This has
   # already been an issue a couple of times.  Might actually be better
   # to build the lists through match.call()?
-  label <- "t1"
   offset <- unit(1, "cm")
   rot <- 90
   width <- unit(2, "cm")
   name <- "foo"
   gp <- gpar(lwd=1)
-  tmp <- tree_image(pic, label, offset=offset, rot=rot, width=width,
+  tmp <- tree_images(imgs, offset=offset, rot=rot, width=width,
                     name=name, gp=gp)
-  expect_that(tmp$label,  is_identical_to(label))
   expect_that(tmp$offset, is_identical_to(offset))
   expect_that(tmp$rot,    is_identical_to(rot))
   expect_that(tmp$width,  is_identical_to(width))
@@ -546,30 +548,82 @@ test_that("tree_image (png)", {
 
   # Check that native raster images are OK too.
   pic.n <- readPNG(pic.filename, native=TRUE)
-  tmp <- tree_image(pic.n, "t1")
-  expect_that(tmp$object, is_a("rastergrob"))
+  tmp <- tree_images(list(t1=pic.n))
+  expect_that(tmp$object[[1]], is_a("rastergrob"))
 })
 
-test_that("tree_image (vector)", {
+test_that("tree_images (vector)", {
   pic <- vector_read("files/fish.svg")
 
   ## Minimal set of options.
-  ti <- tree_image(pic, "t1")
-  expect_that(ti, is_a("tree_image"))
+  imgs <- list(t1=pic)
+  ti <- tree_images(imgs)
+  expect_that(ti, is_a("tree_images"))
   expect_that(names(ti),
-              equals(c("object", "label", "offset", "rot", "width",
+              equals(c("objects", "offset", "rot", "width",
                        "name", "gp")))
   # grImport::pictureGrob differs from other some grob making function
   # in that the grob has the same class as the input, but with grob
   # appended and with the case of the class changed. :/
-  expect_that(ti$object, is_a("picture"))
-  expect_that(ti$object, is_a("grob"))
+  expect_that(ti$object[[1]], is_a("picture"))
+  expect_that(ti$object[[1]], is_a("grob"))
+})
+
+test_that("tree_images (multiple images)", {
+  pic.filename <- system.file("img", "Rlogo.png", package="png")
+  pic <- readPNG(pic.filename)
+  fish <- vector_read("files/fish.svg")
+  imgs <- list(t1=pic, t2=pic, t3=fish)
+  n <- length(imgs)
+
+  ti <- tree_images(imgs)
+  expect_that(length(ti$objects), equals(n))
+  expect_that(names(ti$objects),  equals(names(imgs)))
+
+  expect_that(ti$objects[[1]], is_a("rastergrob"))
+  expect_that(ti$objects[[2]], is_a("rastergrob"))
+  expect_that(ti$objects[[3]], is_a("picture"))
+
+  # Offset is scalar
+  expect_that(ti$offset, equals(unit(0.5, "lines")))
+  # But rot and width have been repeated out
+  expect_that(ti$rot,    is_identical_to(rep(0.0, n)))
+  expect_that(ti$width,  equals(rep(unit(1, "native"), n)))
+
+  # Scalar offset *required*
+  offset.n <- rep(unit(1, "lines"), n)
+  expect_that(tree_images(imgs, offset=offset.n),
+              throws_error("scalar"))
+
+  # rot can be a vector or scalar
+  rot.n <- runif(n, max=360)
+  expect_that(tree_images(imgs, rot=rot.n)$rot, equals(rot.n))
+  expect_that(tree_images(imgs, rot=rot.n[[1]])$rot,
+              equals(rep(rot.n[[1]], 3)))
+  # but it cannot be something in between:
+  expect_that(tree_images(imgs, rot=numeric(0)), throws_error())
+  expect_that(tree_images(imgs, rot=numeric(2)), throws_error())
+  expect_that(tree_images(imgs, rot=numeric(4)), throws_error())
+
+  # width can be a vector or scalar
+  width.n <- unit(runif(n, max=2), "cm")
+  expect_that(tree_images(imgs, width=width.n)$width, equals(width.n))
+  expect_that(tree_images(imgs, width=width.n[1])$width,
+              equals(rep(width.n[1], 3)))
+  # but it cannot be something in between:
+  expect_that(tree_images(imgs, width=rep(width.n, length.out=2)),
+              throws_error())
+  expect_that(tree_images(imgs, width=rep(width.n, length.out=4)),
+              throws_error())
 })
 
 # This is not really a good test, except that it checks that it checks
 # that nothing terrible happens in associating the image and the
 # tree.  Work do be done for sure though.
-test_that("Add tree_image to a tree", {
+#
+# TODO: Formalise these tests a bit more -- check classes and
+# positions once things have been added to the tree.
+test_that("Add single tree_images to a tree", {
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
@@ -580,15 +634,18 @@ test_that("Add tree_image to a tree", {
   pic.filename <- system.file("img", "Rlogo.png", package="png")
   pic <- readPNG(pic.filename)
 
-  tg2 <- tg + tree_image(pic, "t1", name="myimage",
+  imgs <- list(t1=pic)
+  tg2 <- tg + tree_images(imgs, name="myimage",
                          width=unit(1, "cm"))
   expect_that(names(tg2$children), equals(c("branches", "myimage")))
+  expect_that(tg2$children$myimage, is_a("tree_objects"))
 
   fish <- vector_read("files/fish.svg")
-  tg3 <- tg2 + tree_image(fish, "t4", name="myfish",
+  tg3 <- tg2 + tree_images(list(t4=fish), name="myfish",
                           width=unit(2, "cm"))
 
   expect_that(names(tg3$children), equals(c("branches", "myimage", "myfish")))
+  expect_that(tg3$children$myfish, is_a("tree_objects"))
 
   # TODO:
   # Now, painfully, go through and check that the location is correct?
@@ -599,6 +656,29 @@ test_that("Add tree_image to a tree", {
     vp.spacing <- viewport(width=.8, height=.8, name="spacing")
     print(tg2, vp=vp.spacing)
     print(tg3, vp=vp.spacing)
+  }
+})
+
+test_that("Add multiple tree_images to a tree", {
+  set.seed(1)
+  phy <- rtree(10)
+  phy$node.label <- paste0("n", seq_len(phy$Nnode))
+  tr <- forest.from.ape(phy)
+  tg <- treeGrob(tr, direction="right")
+
+  logo <- readPNG(system.file("img", "Rlogo.png", package="png"))
+  fish <- vector_read("files/fish.svg")
+
+  imgs <- list(t1=logo, t4=fish)
+  tg2 <- tg + tree_images(imgs, name="myimage",
+                          width=unit(c(1, 2), "cm"))
+  expect_that(names(tg2$children), equals(c("branches", "myimage")))
+  expect_that(tg2$children$myimage, is_a("tree_objects"))
+  expect_that(tg2$children$myimage$label, equals(names(imgs)))
+
+  if (interactive()) {
+    vp.spacing <- viewport(width=.8, height=.8, name="spacing")
+    print(tg2, vp=vp.spacing)
   }
 })
 
@@ -856,3 +936,8 @@ test_that("tree_match", {
 })
 
 ## TODO: classify on root note?
+
+## TODO: Testing on class of tree_images produced thing is wrong --
+## classes don't look propagated at 'add'.
+
+## TODO: Test names that an objects_grob makes (e.g. object vs objects name)

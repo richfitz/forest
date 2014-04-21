@@ -78,19 +78,6 @@ add_to_tree.tree_style <- function(object, tree_grob, ...) {
   tree_grob
 }
 
-# TODO: At the moment, this is set up only for a single tip and not
-# for arbitrary plotting.  Lotsa changes coming.
-add_to_tree.tree_object <- function(object, tree_grob, ...) {
-  at <- tree_offset(tree_label_coords(object$label, tree_grob),
-                    object$offset, tree_grob$direction)
-  gr <- tree_objectGrob(object$object, at$t, at$s,
-                        direction=tree_grob$direction,
-                        width=object$width,
-                        rot=object$rot, name=object$name,
-                        gp=object$gp, vp=tree_grob$childrenvp)
-  addGrob(tree_grob, gr)
-}
-
 add_to_tree.tree_braces <- function(object, tree_grob, ...) {
   # Fraction of the gap we can use.  Hard coded for now.  Needs to be
   # on [0,1]
@@ -133,6 +120,18 @@ add_to_tree.tree_braces <- function(object, tree_grob, ...) {
                            name=object$name, gp=object$gp,
                            vp=tree_grob$childrenvp)
   addGrob(tree_grob, brace)
+}
+
+add_to_tree.tree_objects <- function(object, tree_grob, ...) {
+  label <- names(object$objects)
+  at <- tree_offset(tree_label_coords(label, tree_grob),
+                    object$offset, tree_grob$direction)
+  gr <- tree_objectsGrob(label=label, object$objects, at$t, at$s,
+                         direction=tree_grob$direction,
+                         width=object$width,
+                         rot=object$rot, name=object$name,
+                         gp=object$gp, vp=tree_grob$childrenvp)
+  addGrob(tree_grob, gr)
 }
 
 tree_label_coords <- function(label, tree_grob) {

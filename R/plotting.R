@@ -174,10 +174,12 @@ tree_style <- function(class, ..., targets=NULL,
     }
     assert_list(targets)
   }
-  if (length(targets) == 0)
-    names(targets) <- character(0) # corner case.
-  if (is.null(names(targets)) || any(names(targets) == ""))
-    stop("Targets must be named")
+  # NOTE: This little hack is needed for classify -- basically the
+  # list must *always* be named even when empty.
+  if (length(targets) == 0) {
+    names(targets) <- character(0)
+  }
+  assert_named(targets)
   assert_scalar(descendants)
   # TODO: This means that check_gpar is happening twice (once here and
   # once in combine_gpar()).  Not sure if that is actually a problem
@@ -246,7 +248,7 @@ tree_style_brace <- function(..., base=NULL, name=NULL) {
 ##' process).
 ##'
 ##' @title Add Image To Plotted Tree
-##' @param image A raster object, from \code{readPNG} or
+##' @param images A raster object, from \code{readPNG} or
 ##' \code{readJPEG} most likely.  Both "native" and array-based raster
 ##' objects are supported.  See \code{grid.raster} for scope and
 ##' limitations.
@@ -254,57 +256,57 @@ tree_style_brace <- function(..., base=NULL, name=NULL) {
 ##' image with.  This may change soon!
 ##' @param offset Offset, in the time dimension.  Watch out for
 ##' tip/node labels (this will happily draw on top of the labels).
-##' @param rot Rotation of the image.
+##' @param rot Rotation of the image.  May be a scalar or vector of
+##' the same length as \code{images}.
 ##' @param width Width of the image, before rotation.  Because
 ##' rotation may eventually happen in two places this is potentially
 ##' confusing.  Don't use "native" units unless you want unpredictable
-##' results.
+##' results.  Ironically, that is the default.  May be a scalar or a
+##' vector of the same length as \code{images}.
 ##' @param name Name to give the image within the tree
 ##' @param gp Graphical parameters.  According to the help for
 ##' \code{grid.raster} all parameters will be ignored, including
 ##' \code{alpha}, so this has no effect here.
 ##' @author Rich FitzJohn
 ##' @export
-tree_image <- function(image, label, offset=unit(0.5, "lines"),
-                       rot=0, width=unit(1, "native"),
-                       name=NULL, gp=gpar()) {
-  if (inherits(image, c("raster", "nativeRaster"))) {
-    grob <- rasterGrob(image)
-  } else if (is.array(image)) {
-    grob <- rasterGrob(as.raster(image))
-  } else if (inherits(image, "Picture")) {
-    grob <- grImport::pictureGrob(image)
-  } else {
-    stop("Not something I recognise as an image")
-  }
+tree_images <- function(images, offset=unit(0.5, "lines"),
+                        rot=0, width=unit(1, "native"),
+                        name=NULL, gp=gpar()) {
+  assert_list(images)
+  assert_named(images)
+  images[] <- lapply(images, image_grob)
 
-  tree_object(grob, label=label, offset=offset, rot=rot, width=width,
-              name=name, gp=gp, class="tree_image")
+  width <- recycle_simple(width, length(images))
+  rot   <- recycle_simple(rot,   length(images))
+
+  tree_objects(images, offset=offset, rot=rot, width=width,
+               name=name, gp=gp, class="tree_images")
 }
 
 ## More plubmbing.  I think that for this one to work we have to
 ## convert object into a grob, and then everything else will just
 ## work!  If that's the case then this will probably never be
 ## exported.
-tree_object <- function(object, label, offset=unit(0.5, "lines"),
-                        rot=0, width=unit(0.1, "npc"),
-                        name=NULL, gp=gpar(),
-                        class=character(0)) {
-  assert_grob(object)
+tree_objects <- function(objects, offset=unit(0.5, "lines"),
+                         rot=0, width=unit(0.1, "npc"),
+                         name=NULL, gp=gpar(),
+                         class=character(0)) {
+  assert_list(objects)
+  assert_named(objects)
+  lapply(objects, assert_grob)
 
   ## All of these might change
-  assert_scalar(label)
   assert_scalar(offset)
-  assert_scalar(rot)
-  assert_scalar(width)
+  assert_length(rot,   length(objects))
+  assert_length(width, length(objects))
 
   assert_unit(offset)
   assert_number(rot)
   assert_unit(width)
 
-  object <- list(object=object, label=label, offset=offset, rot=rot,
+  object <- list(objects=objects, offset=offset, rot=rot,
                  width=width, name=name, gp=gp)
-  class(object) <- c(class, "tree_object")
+  class(object) <- c(class, "tree_objects")
   object
 }
 
