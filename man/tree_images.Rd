@@ -6,13 +6,14 @@ tree_images(images, offset = unit(0.5, "lines"), rot = 0, width = unit(1,
   "native"), name = NULL, gp = gpar())
 }
 \arguments{
-  \item{images}{A raster object, from \code{readPNG} or
-  \code{readJPEG} most likely.  Both "native" and
-  array-based raster objects are supported.  See
-  \code{grid.raster} for scope and limitations.}
-
-  \item{label}{The label indicating the tip or node to
-  associate the image with.  This may change soon!}
+  \item{images}{A named list of images; the name
+  corresponds to the tip or node that it will be associated
+  with.  The actual images can be raster images (produced
+  by \code{as.raster}) with it), a \code{nativeRaster}
+  object or a matrix or array that \code{as.raster} can
+  handle, or they can be vector images (class
+  \code{Picture}, using the \code{grImport} package).  The
+  list may contain a mix of different types.}
 
   \item{offset}{Offset, in the time dimension.  Watch out
   for tip/node labels (this will happily draw on top of the
@@ -32,7 +33,9 @@ tree_images(images, offset = unit(0.5, "lines"), rot = 0, width = unit(1,
 
   \item{gp}{Graphical parameters.  According to the help
   for \code{grid.raster} all parameters will be ignored,
-  including \code{alpha}, so this has no effect here.}
+  including \code{alpha}, so this has no effect here.  In
+  future versions, vector images may allow use of some of
+  these.}
 }
 \description{
 Add images to the tree.
