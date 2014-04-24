@@ -7,10 +7,18 @@ tree_directions <- function() {
 ## TODO: This is all far uglier than it wants to be, and can probably
 ## be done massively faster in compiled code.  Until things settle
 ## down though, leave it as this.
-plotting_prepare <- function(tree) {
+##
+## TODO: The clade tree stuff is bolted on here with the last two
+## arguments.  That's going to change once we get proper clade tree
+## support.
+plotting_prepare <- function(tree, n_taxa=NULL, p=0.5) {
   treeapply <- function(tr, f)
     lapply(drain_tree(tr), f)
-  tp <- plotting_coordinates(tree)
+  if (is.null(n_taxa)) {
+    tp <- plotting_coordinates(tree)
+  } else {
+    tp <- plotting_coordinates_clade(tree, n_taxa, p)
+  }
   xy <- do.call(rbind, treeapply(tp, function(x) unlist(x$data)))
   rownames(xy) <- unlist(treeapply(tp, function(x) x$label))
   xy <- as.data.frame(xy)

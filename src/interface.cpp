@@ -150,4 +150,6 @@ RCPP_MODULE(forest) {
 
   Rcpp::function("plotting_coordinates",
                  &forest::plotting::coordinates);
+  Rcpp::function("plotting_coordinates_clade",
+                 &forest::plotting::coordinates_clade);
 }

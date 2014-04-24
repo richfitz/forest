@@ -76,7 +76,8 @@ tree_plot coordinates(const tree_robject& tree) {
   // copy the data into a 'data' element within this list.
   tree_plot ret(copy_structure<tree_plot::value_type>(tree));
   coordinates_time(ret);
-  coordinates_spacing(ret);
+  coordinates_spacing_tips(ret);
+  coordinates_spacing_internal(ret);
   return ret;
 }
 
@@ -130,17 +131,12 @@ void coordinates_time(tree_plot& tree) {
 //     trees
 //   * different node positioning algorithms affect only internals and
 //     affect normal and clade trees equally.
-void coordinates_spacing(tree_plot& tree) {
-  coordinates_spacing_tips(tree);
-  coordinates_spacing_internal(tree);
-}
-
 void coordinates_spacing_tips(tree_plot& tree) {
   size_t tip = 0, n_tip = count_tips(tree);
+  const double ds = 1 / static_cast<double>(n_tip - 1);
   for (tree_plot::sub_post_iterator it = tree.begin_sub_post();
        it != tree.end_sub_post(); ++it) {
     tree_plot::post_iterator nd = it;
-    const double ds = 1 / static_cast<double>(n_tip - 1);
     nd->data_.is_tip = it->childless();
     if (nd->data_.is_tip) {
       const double s = tip * ds;
@@ -160,6 +156,83 @@ void coordinates_spacing_internal(tree_plot& tree) {
       nd->data_.spacing_max = boost::prior(it->end_child())->data_.spacing_mid;
       nd->data_.spacing_mid = (nd->data_.spacing_min +
                                nd->data_.spacing_max)/2.0;
+    }
+  }
+}
+
+tree_plot coordinates_clade(const tree_robject& tree,
+                            const std::vector<double>& n_taxa,
+                            double p) {
+  tree_plot ret(copy_structure<tree_plot::value_type>(tree));
+  coordinates_time(ret);
+  coordinates_spacing_tips_clade(ret, n_taxa, p);
+  coordinates_spacing_internal(ret);
+  return ret;
+}
+
+// - At one extreme we will fill *all* the space (this is not quite
+//   true for single taxon tips, but they will take up the same space
+//   that an appropriately scaled clade *would take up*, if it was not
+//   plotted as a line alone).
+// - At the other extreme we fill *none* of the space, and every clade
+//   is going to collapse down to a single line.  As such, tips will be
+//   evenly spaced and this will converge on the non-clade-tree case.
+// - Clades have widths that are proportional to the number of taxa
+//   (this need not be an integer number so that other scalings are
+//   possible).  A clade of size 1 will be plotted as a single tip, but
+//   it will take up as much space as a clade of size 1 would.  This
+//   might end up looking odd and being removed though.
+//
+// To do this, we track the position that the next minimum point of
+// the clade will be (s below).  In the extreme where p = 0 and we use
+// non of the whitespace, the maximum s and the midpoint s will be the
+// same.
+//
+// Then update by moving through the amount of whitespace we have.
+// There is a possible (1 - p) of whitespace (because spacing is on
+// [0,1]) and n_tip - 1 gaps.
+//
+// All of this is complicated by some scaling factors.
+//
+// To be fair, the original code in diversitree that did a similar
+// thing was described even worse.
+//
+// TODO: Check that the smallest values in n_taxa are not smaller than
+// 1.  I don't think that is well defined?  It might be OK though.
+//
+// TODO: Add a logical flag like is_tip that indicates if the tip is a
+// clade?  The other way of doing this is comparing min and max, but
+// there's no sure fire way there of separating single species from
+// clades unless we go through and trim them back out (adding in a
+// switch on (*n > 1) below.  That *would* require the condition above.
+//
+// TODO: Work out how we can store the ds element for later use.
+// We're going to use that in spacing_info().  I can duplicate the
+// code, but it seems that the 'r' calculation could return it?  Not
+// sure.  I think that this needs to be the amount of space between
+// clade extremes, so should be the same as ds below.  Final version
+// might vary once we get to circular plots because we remap onto
+// [0,2pi].
+void coordinates_spacing_tips_clade(tree_plot& tree,
+                                    const std::vector<double>& n_taxa,
+                                    double p) {
+  util::check_length(n_taxa.size(), count_tips(tree));
+  const double n_spp  = std::accumulate(n_taxa.begin(), n_taxa.end(), 0.0);
+  const double r = p * n_spp + (1 - p) * (n_taxa.size() - 1);
+  double s = 0.0;
+  const double ds = (1 - p) / r;
+  std::vector<double>::const_iterator n = n_taxa.begin();
+  for (tree_plot::sub_post_iterator it = tree.begin_sub_post();
+       it != tree.end_sub_post(); ++it) {
+    tree_plot::post_iterator nd = it;
+    nd->data_.is_tip = it->childless();
+    if (nd->data_.is_tip) {
+      nd->data_.spacing_min = s;
+      nd->data_.spacing_max = s + (*n * p) / r;
+      nd->data_.spacing_mid =
+        (nd->data_.spacing_min + nd->data_.spacing_max) * 0.5;
+      s = nd->data_.spacing_max + ds;
+      ++n;
     }
   }
 }

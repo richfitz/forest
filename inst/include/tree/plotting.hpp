@@ -37,10 +37,17 @@ treetree::tree<node<plot_info> >
 coordinates(const treetree::tree<node<Rcpp::RObject> >& tree);
 
 void coordinates_time(treetree::tree<node<plot_info> >& tree);
-void coordinates_spacing(treetree::tree<node<plot_info> >& tree);
 void coordinates_spacing_tips(treetree::tree<node<plot_info> >& tree);
 void coordinates_spacing_internal(treetree::tree<node<plot_info> >& tree);
 
+// For clade trees:
+treetree::tree<node<plot_info> >
+coordinates_clade(const treetree::tree<node<Rcpp::RObject> >& tree,
+                  const std::vector<double>& n_taxa,
+                  double p);
+void coordinates_spacing_tips_clade(treetree::tree<node<plot_info> >& tree,
+                                    const std::vector<double>& n_taxa,
+                                    double p);
 }
 }
 
