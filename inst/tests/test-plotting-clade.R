@@ -76,4 +76,9 @@ test_that("Coordinate calculation", {
                               code=3, length=0.03, angle=90))
     }
   }
+
+  # Corner cases:
+  expect_that(forest:::plotting_prepare(tr, numeric(0), 0), throws_error())
+  expect_that(forest:::plotting_prepare(tr, n_taxa[-1], 0), throws_error())
+  expect_that(forest:::plotting_prepare(tr, 1:11, 0), throws_error())
 })
