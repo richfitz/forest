@@ -124,19 +124,38 @@ void coordinates_time(tree_plot& tree) {
 // NOTE: In contrast with ape, where tips are spaced as {1, 2, n_tip},
 // I am giving tips coordinates {0.0, ..., 1.0} as that is going to be
 // easier to scale.
+//
+// NOTE: tips and internal calculations are separated out because:
+//   * tips need to be handled differently for normal and "clade"
+//     trees
+//   * different node positioning algorithms affect only internals and
+//     affect normal and clade trees equally.
 void coordinates_spacing(tree_plot& tree) {
+  coordinates_spacing_tips(tree);
+  coordinates_spacing_internal(tree);
+}
+
+void coordinates_spacing_tips(tree_plot& tree) {
   size_t tip = 0, n_tip = count_tips(tree);
   for (tree_plot::sub_post_iterator it = tree.begin_sub_post();
        it != tree.end_sub_post(); ++it) {
     tree_plot::post_iterator nd = it;
+    const double ds = 1 / static_cast<double>(n_tip - 1);
     nd->data_.is_tip = it->childless();
-    if (it->childless()) {
-      const double s = (tip/static_cast<double>(n_tip - 1));
+    if (nd->data_.is_tip) {
+      const double s = tip * ds;
       nd->data_.spacing_min = s;
       nd->data_.spacing_max = s;
       nd->data_.spacing_mid = s;
       ++tip;
-    } else {
+    }
+  }
+}
+void coordinates_spacing_internal(tree_plot& tree) {
+  for (tree_plot::sub_post_iterator it = tree.begin_sub_post();
+       it != tree.end_sub_post(); ++it) {
+    tree_plot::post_iterator nd = it;
+    if (!it->childless()) {
       nd->data_.spacing_min = it->begin_child()->data_.spacing_mid;
       nd->data_.spacing_max = boost::prior(it->end_child())->data_.spacing_mid;
       nd->data_.spacing_mid = (nd->data_.spacing_min +

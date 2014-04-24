@@ -38,6 +38,8 @@ coordinates(const treetree::tree<node<Rcpp::RObject> >& tree);
 
 void coordinates_time(treetree::tree<node<plot_info> >& tree);
 void coordinates_spacing(treetree::tree<node<plot_info> >& tree);
+void coordinates_spacing_tips(treetree::tree<node<plot_info> >& tree);
+void coordinates_spacing_internal(treetree::tree<node<plot_info> >& tree);
 
 }
 }
