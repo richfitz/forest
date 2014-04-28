@@ -18,16 +18,16 @@
 ##' @param tree A forest tree.  The underlying data do not matter at
 ##' this point (but that may change in future).  Note that this cannot
 ##' be an ape \code{phylo} tree.
-##' accept an ape tree, but that is
 ##' @param direction Direction in which to plot the tree.  Valid
 ##' options are \dQuote{right} (the default), \dQuote{left},
-##' \dQuote{up}, \dQuote{down} and \code{circle}.  The circle version
-##' plots a tree very similar to ape's \dQuote{fan} style.
+##' \dQuote{up}, \dQuote{down}, \code{circle} and \code{semicircle}.
+##' The circle version plots a tree very similar to ape's \dQuote{fan}
+##' style.
 ##' @param theta0 Starting point when drawing trees of direction
 ##' "circle" only.  May eventually be supported for "semicircle" too.
 ##' Specifying a nonzero value for non-circle plots will generate an
 ##' error (may eventually be softened to a warning).
-##' @param name Name of the grob (optional)
+##' @param name Name of the grob (optional).
 ##' @param gp Graphical parameters that the segments will take.  This
 ##' one is \emph{really} up for grabs.  I'd suggest being fairly tame
 ##' here and treating this as scalar values only.  There is pretty
@@ -51,20 +51,14 @@ treeGrob <- function(tree, direction="right", theta0=0,
   }
 
   xy <- plotting_prepare(tree)
-
   ## TODO: These probably merge into plotting_prepare(), which then
   ## returns a list with elements xy, spacing_info, childrenvp, but
   ## then that's basically doing everything that this is doing.  But
   ## increasingly it seems that the spacing info should be returned by
   ## plotting_prepare because we use some bits multiple times.
   spacing_info <- spacing_info(xy, direction)
-
+  xy <- spacing_rescale(xy, direction, spacing_info, theta0)
   childrenvp <- scaling_viewport(xy, direction, name="scaling")
-
-  if (direction %in% c("circle", "semicircle")) {
-    spacing_cols <- c("spacing_mid", "spacing_min", "spacing_max")
-    xy[spacing_cols] <- theta0 + xy[spacing_cols] * spacing_info$size
-  }
 
   branches <- tree_branchesGrob(xy, direction=direction,
                                 name="branches", gp=gp,

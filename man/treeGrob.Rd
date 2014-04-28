@@ -8,14 +8,13 @@ treeGrob(tree, direction = "right", theta0 = 0, name = NULL,
 \arguments{
   \item{tree}{A forest tree.  The underlying data do not
   matter at this point (but that may change in future).
-  Note that this cannot be an ape \code{phylo} tree. accept
-  an ape tree, but that is}
+  Note that this cannot be an ape \code{phylo} tree.}
 
   \item{direction}{Direction in which to plot the tree.
   Valid options are \dQuote{right} (the default),
-  \dQuote{left}, \dQuote{up}, \dQuote{down} and
-  \code{circle}.  The circle version plots a tree very
-  similar to ape's \dQuote{fan} style.}
+  \dQuote{left}, \dQuote{up}, \dQuote{down}, \code{circle}
+  and \code{semicircle}. The circle version plots a tree
+  very similar to ape's \dQuote{fan} style.}
 
   \item{theta0}{Starting point when drawing trees of
   direction "circle" only.  May eventually be supported for
@@ -23,7 +22,7 @@ treeGrob(tree, direction = "right", theta0 = 0, name = NULL,
   non-circle plots will generate an error (may eventually
   be softened to a warning).}
 
-  \item{name}{Name of the grob (optional)}
+  \item{name}{Name of the grob (optional).}
 
   \item{gp}{Graphical parameters that the segments will
   take.  This one is \emph{really} up for grabs.  I'd
