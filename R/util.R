@@ -49,6 +49,18 @@ assert_named <- function(x, empty_can_be_unnamed=TRUE) {
   }
 }
 
+assert_names_align <- function(x, target) {
+  nx <- names(x)
+  if (!all(target %in% nx)) {
+    stop(sprintf("Missing names in %s: %s",
+                 deparse(substitute(x)), paste(setdiff(target, nx))))
+  }
+  if (!all(nx %in% target)) {
+    stop(sprintf("Unknown names in %s: %s",
+                 deparse(substitute(x)), paste(setdiff(nx, target))))
+  }
+}
+
 assert_file_exists <- function(x) {
   if (!file.exists(x)) {
     stop(sprintf("file %s does not exist", x))

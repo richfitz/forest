@@ -3,6 +3,7 @@ source("helper-forest.R")
 context("Plotting (clade tree)")
 
 test_that("Coordinate calculation", {
+  plotting_prepare_clade <- forest:::plotting_prepare_clade
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
@@ -13,7 +14,7 @@ test_that("Coordinate calculation", {
   names(n_taxa) <- tr$tip_labels
 
   xy0 <- forest:::plotting_prepare(tr)
-  xy <- forest:::plotting_prepare(tr, n_taxa)
+  xy <- plotting_prepare_clade(tr, n_taxa, 0.5)
 
   # First, in contrast to plotting_prepare, we won't have spacing_min
   # equal spacing_max for tips:
@@ -36,6 +37,7 @@ test_that("Coordinate calculation", {
     rownames(pos) <- names(n_taxa)
     pos
   }
+  gc() # stupid Rcpp finalizer bug.
 
   pos.R <- clade_info(n_taxa, 0.5)
   pos.C <- as.matrix(xy[rownames(pos.R), colnames(pos.R)])
@@ -44,7 +46,7 @@ test_that("Coordinate calculation", {
   # Now, repeat for a range of p values:
   for (p in seq(0, 1, length=11)) {
     pos.R <- clade_info(n_taxa, p)
-    pos.C <- forest:::plotting_prepare(tr, n_taxa, p)
+    pos.C <- plotting_prepare_clade(tr, n_taxa, p)
     pos.C <- as.matrix(pos.C[rownames(pos.R), colnames(pos.R)])
     expect_that(pos.C, equals(pos.R))
   }
@@ -53,11 +55,11 @@ test_that("Coordinate calculation", {
 
   # When we set p -> 0, we should converge on the the non-clade
   # version:
-  expect_that(forest:::plotting_prepare(tr, n_taxa, 0),
-              equals(xy0))
+  tmp <- plotting_prepare_clade(tr, n_taxa, 0)
+  expect_that(tmp[names(tmp) != "is_clade"], equals(xy0))
 
   # When we set p -> 1 there should be no gaps between clades:
-  pos.1 <- forest:::plotting_prepare(tr, n_taxa, 1.0)
+  pos.1 <- plotting_prepare_clade(tr, n_taxa, 1.0)
   pos.1 <- pos.1[pos.1$is_tip,]
   pos.1 <- pos.1[order(pos.1$spacing_mid),] # not strictly needed
   expect_that(pos.1$spacing_min[-1],
@@ -77,8 +79,43 @@ test_that("Coordinate calculation", {
     }
   }
 
+  ## TODO: Probably worth checking with a vector that is all 1 and all
+  ## >1 to make sure that the approach here is sane.
+  expect_that(xy[names(n_taxa), "is_clade"],
+              equals(unname(n_taxa > 1)))
+
   # Corner cases:
-  expect_that(forest:::plotting_prepare(tr, numeric(0), 0), throws_error())
-  expect_that(forest:::plotting_prepare(tr, n_taxa[-1], 0), throws_error())
-  expect_that(forest:::plotting_prepare(tr, 1:11, 0), throws_error())
+
+  # Sanity checking on the n_taxa vector.
+  expect_that(plotting_prepare_clade(tr, unname(n_taxa), 0),
+              throws_error("must be named"))
+  expect_that(plotting_prepare_clade(tr, n_taxa[-1], 0),
+              throws_error("Missing names"))
+  expect_that(plotting_prepare_clade(tr, c(n_taxa[-1], foo=1), 0),
+              throws_error("Missing names"))
+  expect_that(plotting_prepare_clade(tr, c(n_taxa, foo=1), 0),
+              throws_error("Unknown names"))
+
+  expect_that(plotting_prepare_clade(tr, n_taxa - 1, 0),
+              throws_error("at least 1"))
+  expect_that(plotting_prepare_clade(tr, n_taxa - 1e-8, 0),
+              throws_error("at least 1"))
+
+  # The order of n_taxa does not matter:
+  expect_that(plotting_prepare_clade(tr, sample(n_taxa), 0.5),
+              is_identical_to(xy))
+  expect_that(plotting_prepare_clade(tr, rev(n_taxa), 0.5),
+              is_identical_to(xy))
+
+  # Sanity checking on p:
+  expect_that(plotting_prepare_clade(tr, n_taxa, numeric(0)),
+              throws_error("scalar"))
+  expect_that(plotting_prepare_clade(tr, n_taxa, c(.1, .2)),
+              throws_error("scalar"))
+  expect_that(plotting_prepare_clade(tr, n_taxa, -1),
+              throws_error("between 0 and 1"))
+  expect_that(plotting_prepare_clade(tr, n_taxa, 1.1),
+              throws_error("between 0 and 1"))
+  expect_that(plotting_prepare_clade(tr, n_taxa, "foo"),
+              throws_error("between 0 and 1"))
 })

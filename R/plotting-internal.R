@@ -4,21 +4,40 @@ tree_directions <- function() {
   c("right", "left", "up", "down", "circle", "semicircle")
 }
 
+plotting_prepare <- function(tree) {
+  tp <- plotting_coordinates(tree)
+  plotting_prepare_shared(tp)
+}
+
+plotting_prepare_clade <- function(tree, n_taxa, p=0.5) {
+  assert_named(n_taxa)
+  assert_names_align(n_taxa, tree$tip_labels)
+  if (any(n_taxa < 1)) {
+    stop("All n_taxa must be at least 1")
+  }
+  # This means we get the correct order.
+  n_taxa <- n_taxa[tree$tip_labels]
+
+  assert_scalar(p)
+  if (p < 0 || p > 1) {
+    stop("p must be between 0 and 1 (inclusive)")
+  }
+
+  tp <- plotting_coordinates_clade(tree, n_taxa, p)
+  xy <- plotting_prepare_shared(tp)
+
+  xy$is_clade <- FALSE
+  xy$is_clade[match(names(n_taxa), rownames(xy))] <- n_taxa > 1
+
+  xy
+}
+
 ## TODO: This is all far uglier than it wants to be, and can probably
 ## be done massively faster in compiled code.  Until things settle
 ## down though, leave it as this.
-##
-## TODO: The clade tree stuff is bolted on here with the last two
-## arguments.  That's going to change once we get proper clade tree
-## support.
-plotting_prepare <- function(tree, n_taxa=NULL, p=0.5) {
+plotting_prepare_shared <- function(tp) {
   treeapply <- function(tr, f)
     lapply(drain_tree(tr), f)
-  if (is.null(n_taxa)) {
-    tp <- plotting_coordinates(tree)
-  } else {
-    tp <- plotting_coordinates_clade(tree, n_taxa, p)
-  }
   xy <- do.call(rbind, treeapply(tp, function(x) unlist(x$data)))
   rownames(xy) <- unlist(treeapply(tp, function(x) x$label))
   xy <- as.data.frame(xy)
