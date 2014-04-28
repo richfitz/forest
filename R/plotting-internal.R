@@ -29,7 +29,9 @@ plotting_prepare <- function(tree, n_taxa=NULL, p=0.5) {
 ## Viewport that establishes the "native" scale.  For a circular plot
 ## this also sets the aspect to be 1 so that the circle does not
 ## become an ellipse.
-scaling_viewport <- function(lim_t, lim_s, direction, ...) {
+scaling_viewport <- function(xy, direction, ...) {
+  lim_t <- range(xy$time_rootward, xy$time_tipward, na.rm=TRUE)
+  lim_s <- range(xy$spacing_min, xy$spacing_max) # NOTE: always [0,1]
   if (direction %in% "circle") {
     lim <- c(-1, 1) * lim_t[2]
     viewport(xscale=lim, yscale=lim,
@@ -93,7 +95,8 @@ normalise_time <- function(unit, direction) {
 # NOTE: We might want a slightly larger gap to indicate where the
 # "beginning" of the tree is for the circle tree, but for now it is
 # worth one gap.
-spacing_info <- function(n_tips, direction) {
+spacing_info <- function(xy, direction) {
+  n_tips <- sum(xy$is_tip)
   if (direction %in% c("left", "right", "down", "up")) {
     size <- 1
     gaps <- n_tips - 1

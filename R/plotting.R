@@ -46,20 +46,20 @@
 treeGrob <- function(tree, direction="right", theta0=0,
                      name=NULL, gp=gpar(), vp=NULL) {
   direction <- match.arg(direction, tree_directions())
-
-  xy <- plotting_prepare(tree)
-
-  # TODO: The range calculations could be restricted to within the
-  # scaling_viewport code, perhaps?
-  lim_t <- range(xy$time_rootward, xy$time_tipward, na.rm=TRUE)
-  lim_s <- range(xy$spacing_min, xy$spacing_max) # NOTE: always [0,1]
-  cvp <- scaling_viewport(lim_t, lim_s, direction, name="scaling")
-
-  spacing_info <- spacing_info(sum(xy$is_tip), direction)
-
   if (theta0 != 0 && direction != "circle") {
     stop("theta0 argument only valid for circle plots (at present)")
   }
+
+  xy <- plotting_prepare(tree)
+
+  ## TODO: These probably merge into plotting_prepare(), which then
+  ## returns a list with elements xy, spacing_info, childrenvp, but
+  ## then that's basically doing everything that this is doing.  But
+  ## increasingly it seems that the spacing info should be returned by
+  ## plotting_prepare because we use some bits multiple times.
+  spacing_info <- spacing_info(xy, direction)
+
+  childrenvp <- scaling_viewport(xy, direction, name="scaling")
 
   if (direction %in% c("circle", "semicircle")) {
     spacing_cols <- c("spacing_mid", "spacing_min", "spacing_max")
@@ -67,15 +67,16 @@ treeGrob <- function(tree, direction="right", theta0=0,
   }
 
   branches <- tree_branchesGrob(xy, direction=direction,
-                                name="branches", gp=gp, vp=cvp$name)
+                                name="branches", gp=gp,
+                                vp=childrenvp$name)
 
   ## NOTE: there is a double storage of information here; the tree
   ## contains all the information that the branches grob contains.
   ## But it's probably not desirable to pull that out of the tree
   ## every time we want to use it.
   gTree(tree=tree, direction=direction, spacing_info=spacing_info,
-        children=gList(branches),
-        childrenvp=cvp, name=name, gp=gp, vp=vp, cl="tree")
+        children=gList(branches), childrenvp=childrenvp,
+        name=name, gp=gp, vp=vp, cl="tree")
 }
 
 ##' Add tip and node labels to a plotted tree.  These functions do not
