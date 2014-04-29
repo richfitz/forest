@@ -36,8 +36,13 @@ assert_grob <- function(x) {
 }
 
 assert_picture <- function(x) {
-  if (!inherits(x, "Picture")) {
-    stop(sprintf("%s must be a Picture", deparse(substitute(x))))
+  assert_inherits(x, "Picture")
+}
+
+assert_inherits <- function(x, what) {
+  if (!inherits(x, what)) {
+    stop(sprintf("%s must be a %s", deparse(substitute(x)),
+                 paste(what, collapse=" / ")))
   }
 }
 

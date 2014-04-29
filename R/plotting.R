@@ -441,19 +441,19 @@ tree_match <- function(tree_grob, class=NULL, name=NULL,
 ##' @author Rich FitzJohn
 ##' @export
 direction <- function(direction, theta0=0) {
+  # For me mostly:
+  if (inherits(direction, "tree_direction")) {
+    stop("Don't use direction() like this")
+  }
   direction <- match.arg(direction, tree_directions())
 
-  ## TODO: If fed in a tree_direction argument, this should behave
-  ## differently and refuse the theta0 argument but take theta0 from
-  ## the attribute.
-
   ## The only special option is for circle plots at the moment:
-  if (direction == "circle") {
-    assert_scalar(theta0)
-    attr(direction, "theta0") <- theta0
-  } else if (!(is.null(theta0) || theta0 == 0)) {
+  assert_scalar(theta0)
+  attr(direction, "theta0") <- theta0
+  if (direction != "circle" && theta0 != 0) {
     stop("theta0 argument only valid for circle plots (at present)")
   }
+
   class(direction) <- "tree_direction"
   direction
 }

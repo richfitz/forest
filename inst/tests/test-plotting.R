@@ -14,8 +14,7 @@ test_that("direction", {
     obj <- direction(d)
     expect_that(obj, is_a("tree_direction"))
     expect_that(as.character(obj), equals(d))
-    expect_that(attr(obj, "theta0"),
-                equals(if (d == "circle") 0 else NULL))
+    expect_that(attr(obj, "theta0"), equals(0))
 
     # Abbreviations are OK:
     expect_that(as.character(direction(substr(d, 1, 1))),
@@ -40,6 +39,7 @@ test_that("direction", {
               throws_error("must be of length 1"))
   expect_that(direction("circle", c(1, 2)),
               throws_error("must be a scalar"))
+  expect_that(direction(direction("left")), throws_error())
 })
 
 test_that("Coordinate calculation", {
