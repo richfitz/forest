@@ -9,6 +9,39 @@ context("Plotting")
 ## successful?  We could generate an SVG or something and compare, but
 ## that is really difficult to do.
 
+test_that("direction", {
+  for (d in forest:::tree_directions()) {
+    obj <- direction(d)
+    expect_that(obj, is_a("tree_direction"))
+    expect_that(as.character(obj), equals(d))
+    expect_that(attr(obj, "theta0"),
+                equals(if (d == "circle") 0 else NULL))
+
+    # Abbreviations are OK:
+    expect_that(as.character(direction(substr(d, 1, 1))),
+                equals(d))
+
+    # Handling of theta0:
+    t0 <- runif(1)
+    if (d == "circle") {
+      obj <- direction(d, t0)
+      expect_that(attr(obj, "theta0"), equals(t0))
+    } else {
+      expect_that(direction(d, t0), throws_error())
+    }
+  }
+
+  # Things not handled:
+  expect_that(direction("no_such_direction"),
+              throws_error("should be one of"))
+  expect_that(direction(character(0)),
+              throws_error("should be one of"))
+  expect_that(direction(c("left", "right")),
+              throws_error("must be of length 1"))
+  expect_that(direction("circle", c(1, 2)),
+              throws_error("must be a scalar"))
+})
+
 test_that("Coordinate calculation", {
   set.seed(1)
   phy <- rtree(10)

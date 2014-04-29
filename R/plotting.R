@@ -420,3 +420,40 @@ tree_match <- function(tree_grob, class=NULL, name=NULL,
   }
   kids
 }
+
+##' Helper function for setting up plotting directions.
+##'
+##' This function is mostly used internally, but is useful for
+##' circular plots that need to start at an angle different to zero.
+##' It might eventually hold more basic layout options, such as curly
+##' brackets.
+##'
+##' This might change a little to become "shape", in which case we'd
+##' have rectangular (with direction l, r, u, d), semicircle with the
+##' same directions, circle with any direction, etc.  Everything can
+##' change...
+##'
+##' @title Tree Plot Direction
+##' @param direction A character vector (scalar) indicating the
+##' direction.  Must be one of "right", "left", "up", "down", "circle"
+##' or "semicircle"
+##' @param theta0 Initial angle when making a semicircle plot.
+##' @author Rich FitzJohn
+##' @export
+direction <- function(direction, theta0=0) {
+  direction <- match.arg(direction, tree_directions())
+
+  ## TODO: If fed in a tree_direction argument, this should behave
+  ## differently and refuse the theta0 argument but take theta0 from
+  ## the attribute.
+
+  ## The only special option is for circle plots at the moment:
+  if (direction == "circle") {
+    assert_scalar(theta0)
+    attr(direction, "theta0") <- theta0
+  } else if (!(is.null(theta0) || theta0 == 0)) {
+    stop("theta0 argument only valid for circle plots (at present)")
+  }
+  class(direction) <- "tree_direction"
+  direction
+}
