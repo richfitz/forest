@@ -23,10 +23,6 @@
 ##' \dQuote{up}, \dQuote{down}, \code{circle} and \code{semicircle}.
 ##' The circle version plots a tree very similar to ape's \dQuote{fan}
 ##' style.
-##' @param theta0 Starting point when drawing trees of direction
-##' "circle" only.  May eventually be supported for "semicircle" too.
-##' Specifying a nonzero value for non-circle plots will generate an
-##' error (may eventually be softened to a warning).
 ##' @param name Name of the grob (optional).
 ##' @param gp Graphical parameters that the segments will take.  This
 ##' one is \emph{really} up for grabs.  I'd suggest being fairly tame
@@ -43,11 +39,10 @@
 ##' @author Rich FitzJohn
 ##' @export
 ##' @import grid
-treeGrob <- function(tree, direction="right", theta0=0,
+treeGrob <- function(tree, direction="right",
                      name=NULL, gp=gpar(), vp=NULL) {
-  direction <- match.arg(direction, tree_directions())
-  if (theta0 != 0 && direction != "circle") {
-    stop("theta0 argument only valid for circle plots (at present)")
+  if (!inherits(direction, "tree_direction")) {
+    direction <- direction(direction)
   }
 
   xy <- plotting_prepare(tree)
@@ -57,7 +52,7 @@ treeGrob <- function(tree, direction="right", theta0=0,
   ## increasingly it seems that the spacing info should be returned by
   ## plotting_prepare because we use some bits multiple times.
   spacing_info <- spacing_info(xy, direction)
-  xy <- spacing_rescale(xy, direction, spacing_info, theta0)
+  xy <- spacing_rescale(xy, direction, spacing_info)
   childrenvp <- scaling_viewport(xy, direction, name="scaling")
 
   branches <- tree_branchesGrob(xy, direction=direction,
@@ -315,9 +310,6 @@ tree_braces <- function(label, offset=unit(0.5, "lines"),
                         alignment="none",
                         name=NULL, gp=gpar()) {
   alignment <- match.arg(alignment, c("none", "set", "global"))
-  # TODO: In circle tree, when theta0 > 0, check that we don't do mod
-  # 2*pi because that will break working out where the beginning and
-  # end points are for the contents of the clade.
 
   # All of these might change
   if (length(offset) != 1)
@@ -432,6 +424,12 @@ tree_match <- function(tree_grob, class=NULL, name=NULL,
 ##' have rectangular (with direction l, r, u, d), semicircle with the
 ##' same directions, circle with any direction, etc.  Everything can
 ##' change...
+##'
+##' Using this function can result in daft looking things like
+##' \code{direction=direction(d)} or even
+##' \code{direction=direction(direction)}, but it generally works
+##' thanks to R's scoping rules.  However, this function might need to
+##' change name to make things clearer.
 ##'
 ##' @title Tree Plot Direction
 ##' @param direction A character vector (scalar) indicating the

@@ -2,8 +2,7 @@
 \alias{treeGrob}
 \title{Create a Tree Grob}
 \usage{
-treeGrob(tree, direction = "right", theta0 = 0, name = NULL,
-  gp = gpar(), vp = NULL)
+treeGrob(tree, direction = "right", name = NULL, gp = gpar(), vp = NULL)
 }
 \arguments{
   \item{tree}{A forest tree.  The underlying data do not
@@ -15,12 +14,6 @@ treeGrob(tree, direction = "right", theta0 = 0, name = NULL,
   \dQuote{left}, \dQuote{up}, \dQuote{down}, \code{circle}
   and \code{semicircle}. The circle version plots a tree
   very similar to ape's \dQuote{fan} style.}
-
-  \item{theta0}{Starting point when drawing trees of
-  direction "circle" only.  May eventually be supported for
-  "semicircle" too. Specifying a nonzero value for
-  non-circle plots will generate an error (may eventually
-  be softened to a warning).}
 
   \item{name}{Name of the grob (optional).}
 

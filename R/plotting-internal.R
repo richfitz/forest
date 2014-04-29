@@ -132,15 +132,10 @@ spacing_info <- function(xy, direction) {
   list(size=size, gaps=gaps, gap_size=size / gaps)
 }
 
-## This is a bit horrid because of the dependency on theta0, but it
-## can't be helped for now.
-##
-## TODO: Rework 'direction' into a little tiny function like gpar that
-## takes a few options.  Could be generally useful if we want to add
-## things like curvy braches in future without breaking a billion
-## functions.
-spacing_rescale <- function(xy, direction, info, theta0) {
+spacing_rescale <- function(xy, direction, info) {
+  assert_inherits(direction, "tree_direction")
   if (direction %in% c("circle", "semicircle")) {
+    theta0 <- attr(direction, "theta0")
     spacing_cols <- c("spacing_mid", "spacing_min", "spacing_max")
     xy[spacing_cols] <- theta0 + xy[spacing_cols] * info$size
   }

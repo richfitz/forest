@@ -25,6 +25,12 @@ This might change a little to become "shape", in which case
 we'd have rectangular (with direction l, r, u, d),
 semicircle with the same directions, circle with any
 direction, etc.  Everything can change...
+
+Using this function can result in daft looking things like
+\code{direction=direction(d)} or even
+\code{direction=direction(direction)}, but it generally
+works thanks to R's scoping rules.  However, this function
+might need to change name to make things clearer.
 }
 \author{
 Rich FitzJohn
