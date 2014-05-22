@@ -14,7 +14,8 @@ be an ape \code{phylo} tree.}
 options are \dQuote{right} (the default), \dQuote{left},
 \dQuote{up}, \dQuote{down}, \code{circle} and \code{semicircle}.
 The circle version plots a tree very similar to ape's \dQuote{fan}
-style.}
+style.  Or use the result of running \code{\link{tree_direction}},
+which allows setting options about the direction.}
 
 \item{name}{Name of the grob (optional).}
 

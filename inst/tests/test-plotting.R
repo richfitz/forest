@@ -11,35 +11,36 @@ context("Plotting")
 
 test_that("direction", {
   for (d in forest:::tree_directions()) {
-    obj <- direction(d)
+    obj <- tree_direction(d)
     expect_that(obj, is_a("tree_direction"))
     expect_that(as.character(obj), equals(d))
     expect_that(attr(obj, "theta0"), equals(0))
 
     # Abbreviations are OK:
-    expect_that(as.character(direction(substr(d, 1, 1))),
+    expect_that(as.character(tree_direction(substr(d, 1, 1))),
                 equals(d))
 
     # Handling of theta0:
     t0 <- runif(1)
     if (d == "circle") {
-      obj <- direction(d, theta0=t0)
+      obj <- tree_direction(d, theta0=t0)
       expect_that(attr(obj, "theta0"), equals(t0))
     } else {
-      expect_that(direction(d, theta0=t0), throws_error())
+      expect_that(tree_direction(d, theta0=t0),
+                  throws_error("only valid for circle plots"))
     }
   }
 
   # Things not handled:
-  expect_that(direction("no_such_direction"),
+  expect_that(tree_direction("no_such_direction"),
               throws_error("should be one of"))
-  expect_that(direction(character(0)),
+  expect_that(tree_direction(character(0)),
               throws_error("should be one of"))
-  expect_that(direction(c("left", "right")),
+  expect_that(tree_direction(c("left", "right")),
               throws_error("must be of length 1"))
-  expect_that(direction("circle", theta0=c(1, 2)),
+  expect_that(tree_direction("circle", theta0=c(1, 2)),
               throws_error("must be a scalar"))
-  expect_that(direction(direction("left")), throws_error())
+  expect_that(tree_direction(tree_direction("left")), throws_error())
 })
 
 test_that("Coordinate calculation", {
@@ -116,7 +117,7 @@ test_that("treeGrob construction", {
     ## Viewport is associated:
     expect_that(tg$vp,   is_identical_to(vp))
     ## Direction is correct:
-    expect_that(tg$direction, equals(direction(direction)))
+    expect_that(tg$direction, equals(tree_direction(direction)))
 
     ## Spacing info is included:
     expect_that(tg$spacing_info, is_a("list"))
@@ -272,7 +273,7 @@ test_that("Initial angle argument for circle plots", {
   theta <- runif(1, 0, 2*pi)
   tg0 <- treeGrob(tr, name="mytree", direction="circle")
   tg1 <- treeGrob(tr, name="mytree",
-                  direction=direction("circle", theta0=theta))
+                  direction=tree_direction("circle", theta0=theta))
 
   expect_that(tg1$children$branches$spacing_mid,
               equals(tg0$children$branches$spacing_mid + theta))
@@ -284,7 +285,7 @@ test_that("Initial angle argument for circle plots", {
   if (interactive()) {
     f <- function(theta0) {
       tg <- treeGrob(tr, name="mytree",
-                     direction=direction("circle", theta0=theta0)) +
+                     direction=tree_direction("circle", theta0=theta0)) +
                        tree_tip_labels() + tree_node_labels()
       vp <- viewport(width=.8, height=.7, name="spacing")
       print(tg, vp=vp)
@@ -310,9 +311,9 @@ test_that("Initial angle argument fails for non-circle plot types", {
   dirs <- setdiff(forest:::tree_directions(), "circle")
   for (d in dirs) {
     expect_that(treeGrob(tr, name="t",
-                         direction=direction(d, theta0=0)),
+                         direction=tree_direction(d, theta0=0)),
                 equals(treeGrob(tr, name="t", direction=d)))
-    expect_that(treeGrob(tr, direction=direction(d, theta0=1)),
+    expect_that(treeGrob(tr, direction=tree_direction(d, theta0=1)),
                 throws_error())
   }
 })

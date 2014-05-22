@@ -22,7 +22,8 @@
 ##' options are \dQuote{right} (the default), \dQuote{left},
 ##' \dQuote{up}, \dQuote{down}, \code{circle} and \code{semicircle}.
 ##' The circle version plots a tree very similar to ape's \dQuote{fan}
-##' style.
+##' style.  Or use the result of running \code{\link{tree_direction}},
+##' which allows setting options about the direction.
 ##' @param name Name of the grob (optional).
 ##' @param gp Graphical parameters that the segments will take.  This
 ##' one is \emph{really} up for grabs.  I'd suggest being fairly tame
@@ -42,7 +43,7 @@
 treeGrob <- function(tree, direction="right",
                      name=NULL, gp=gpar(), vp=NULL) {
   if (!inherits(direction, "tree_direction")) {
-    direction <- direction(direction)
+    direction <- tree_direction(direction)
   }
 
   xy <- plotting_prepare(tree)
@@ -425,12 +426,6 @@ tree_match <- function(tree_grob, class=NULL, name=NULL,
 ##' same directions, circle with any direction, etc.  Everything can
 ##' change...
 ##'
-##' Using this function can result in daft looking things like
-##' \code{direction=direction(d)} or even
-##' \code{direction=direction(direction)}, but it generally works
-##' thanks to R's scoping rules.  However, this function might need to
-##' change name to make things clearer.
-##'
 ##' @title Tree Plot Direction
 ##' @param direction A character vector (scalar) indicating the
 ##' direction.  Must be one of "right", "left", "up", "down", "circle"
@@ -438,10 +433,12 @@ tree_match <- function(tree_grob, class=NULL, name=NULL,
 ##' @param theta0 Initial angle when making a semicircle plot.
 ##' @author Rich FitzJohn
 ##' @export
-direction <- function(direction, theta0=0) {
-  # For me mostly:
+tree_direction <- function(direction, theta0=0) {
+  ## TODO: Not sure if this is a good idea: it should actually be OK
+  ## to pass a direction back to itself in which case we just return
+  ## the direction.
   if (inherits(direction, "tree_direction")) {
-    stop("Don't use direction() like this")
+    stop("Don't use tree_direction() like this")
   }
   direction <- match.arg(direction, tree_directions())
 
