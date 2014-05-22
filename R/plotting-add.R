@@ -2,7 +2,7 @@
 ##
 ## The ideas in this section borrow *very* heavily from ggplot2.
 
-##' @S3method + tree
+##' @export
 `+.tree` <- function(e1, e2) {
   add_to_tree(e2, e1) # e1 is the tree!
 }

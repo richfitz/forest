@@ -10,7 +10,7 @@ clean:
 test:
 	make -C inst/tests test
 
-DEVTOOLS_DOCUMENT='library(methods); devtools::document()'
+DEVTOOLS_DOCUMENT='library(methods); options(warn=1); devtools::document()'
 document: all
 	@mkdir -p man
 	Rscript -e ${DEVTOOLS_DOCUMENT}

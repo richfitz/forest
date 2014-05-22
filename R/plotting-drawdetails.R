@@ -6,6 +6,10 @@
 ## In the meantime I'm just trying to keep this section fairly
 ## simple.
 
+## TODO: Despite working elsewhere, swapping out @S3method for @export
+## is causing export of the functions below rather than building the
+## methods table.  Need to look into this at some point.
+
 ##' @S3method drawDetails tree_branches
 drawDetails.tree_branches <- function(x, recording=TRUE) {
   tree_segments_time(x$spacing_mid,

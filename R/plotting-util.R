@@ -14,7 +14,7 @@ flip <- function(x, horizontal=TRUE, vertical=FALSE, ...) {
   UseMethod("flip")
 }
 
-##' @S3method flip Picture
+##' @export
 flip.Picture <- function(x, horizontal=TRUE, vertical=FALSE, ...) {
   tr <- function(path) {
     if (horizontal) {
@@ -42,7 +42,7 @@ flip.Picture <- function(x, horizontal=TRUE, vertical=FALSE, ...) {
 # some complication.
 #
 # NOTE: plain matrices would also work here.
-##' @S3method flip array
+##' @export
 flip.array <- function(x, horizontal=TRUE, vertical=FALSE, ...) {
   if (length(dim(x)) != 3L) {
     stop("Invalid size array")
@@ -59,14 +59,14 @@ flip.array <- function(x, horizontal=TRUE, vertical=FALSE, ...) {
   x
 }
 
-##' @S3method flip matrix
+##' @export
 flip.matrix <- function(x, horizontal=TRUE, vertical=FALSE, ...) {
   dim(x) <- c(dim(x), 1L)
   # Might cause issues with rasters of 1 column/row
   flip.array(x, horizontal, vertical, ...)[,,1L]
 }
 
-##' @S3method flip raster
+##' @export
 flip.raster <- function(x, horizontal=TRUE, vertical=FALSE, ...) {
   # Issue here is that rasters are stored in row order, and there
   # doesn't seem to be much in the way of [<- support.  So this pile
@@ -115,31 +115,31 @@ aspect_ratio <- function(object, ...) {
   UseMethod("aspect_ratio")
 }
 
-##' @S3method aspect_ratio raster
-##' @S3method aspect_ratio array
-##' @S3method aspect_ratio matrix
-##' @S3method aspect_ratio nativeRaster
+##' @export
 aspect_ratio.raster <- function(object, ...) {
   ncol(object) / nrow(object)
 }
+##' @export
 aspect_ratio.array        <- aspect_ratio.raster
+##' @export
 aspect_ratio.matrix       <- aspect_ratio.raster
+##' @export
 aspect_ratio.nativeRaster <- aspect_ratio.raster
 
-##' @S3method aspect_ratio Picture
+##' @export
 aspect_ratio.Picture <- function(object, ...) {
   xscale <- object@summary@xscale
   yscale <- object@summary@yscale
   diff(range(xscale)) / diff(range(yscale))
 }
 
-##' @S3method aspect_ratio rastergrob
+##' @export
 aspect_ratio.rastergrob <- function(object, ...) {
   ncol(object$raster) / nrow(object$raster)
 }
 
 # This is what pictureGrob() returns
-##' @S3method aspect_ratio picture
+##' @export
 aspect_ratio.picture <- function(object, ...) {
   xscale <- range(object$hull$x)
   yscale <- range(object$hull$y)

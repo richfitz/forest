@@ -331,7 +331,7 @@ tree_braces <- function(label, offset=unit(0.5, "lines"),
 }
 
 ## Actually plot the tree
-##' @S3method print tree
+##' @export
 print.tree <- function(x, newpage=TRUE, vp=NULL, ...) {
   if (newpage)
     grid.newpage()
