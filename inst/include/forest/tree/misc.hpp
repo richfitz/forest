@@ -4,9 +4,9 @@
 // Miscellaneous things to do with treetree trees (*not* the wrapper
 // in include/tree/tree_wrapper.hpp).
 
-#include "tree/node.hpp"
-#include "treetree.hpp"
-#include "util.hpp"
+#include <forest/tree/node.hpp>
+#include <forest/treetree.hpp>
+#include <forest/util.hpp> // util::stop
 
 namespace forest {
 
@@ -84,8 +84,9 @@ bool has_branch_lengths(const treetree::tree<T>& tr) {
 template <typename T>
 void update_heights(treetree::tree<T>& tr) {
   typedef typename treetree::tree<T>::pre_iterator pre_iterator;
-  if (!has_branch_lengths(tr))
-    stop("Tree does not have complete branch lengths");
+  if (!has_branch_lengths(tr)) {
+    util::stop("Tree does not have complete branch lengths");
+  }
   double max_h = 0.0;
   for (pre_iterator it = tr.begin(); it != tr.end(); ++it) {
     const double h = it == tr.begin() ? 0.0 :
@@ -162,8 +163,9 @@ bool is_ultrametric(treetree::tree<T> tr, double eps) {
 // just throw instead.
 template <typename T>
 bool is_binary(const treetree::tree<T>& tr) {
-  if (tr.size() < 2)
-    stop("Tree of size < 2 does not have defined binaryness");
+  if (tr.size() < 2) {
+    util::stop("Tree of size < 2 does not have defined binaryness");
+  }
   for (typename treetree::tree<T>::const_sub_pre_iterator
          it = tr.begin_sub(); it != tr.end_sub(); ++it) {
     if (!it->childless()) {   // not terminal
@@ -192,8 +194,9 @@ template <typename T, typename Iterator>
 Iterator locate_node_by_label(Iterator first, Iterator last,
                               const std::string& label) {
   Iterator ret = std::find_if(first, last, label_finder<T>(label));
-  if (ret == last)
-    stop("Did not find node " + label + " in tree\n");
+  if (ret == last) {
+    util::stop("Did not find node " + label + " in tree\n");
+  }
   return ret;
 }
 
@@ -208,8 +211,9 @@ template <typename T, typename Iterator>
 Iterator locate_tip_by_label(Iterator first, Iterator last,
                              const std::string& label) {
   Iterator ret = locate_node_by_label<T>(first, last, label);
-  if (!is_terminal<T>(ret))
-    stop("The label " + label + " is not terminal\n");
+  if (!is_terminal<T>(ret)) {
+    util::stop("The label " + label + " is not terminal\n");
+  }
   return ret;
 }
 
@@ -217,8 +221,9 @@ template <typename T, typename Iterator>
 Iterator locate_internal_by_label(Iterator first, Iterator last,
                                   const std::string& label) {
   Iterator ret = locate_node_by_label<T>(first, last, label);
-  if (is_terminal<T>(ret))
-    stop("The label " + label + " is not internal\n");
+  if (is_terminal<T>(ret)) {
+    util::stop("The label " + label + " is not internal\n");
+  }
   return ret;
 }
 
@@ -339,8 +344,9 @@ classify(const treetree::tree<T>& tr,
   typedef forest::node<int>     inode;
   typedef treetree::tree<inode> itree;
   typedef itree::pre_iterator   iterator;
-  if (!util::is_unique(labels))
-    stop("Labels must be unique");
+  if (!util::is_unique(labels)) {
+    util::stop("Labels must be unique");
+  }
 
   // This initialises all the node data to zero.
   treetree::tree<inode> itr = copy_structure<inode>(tr);

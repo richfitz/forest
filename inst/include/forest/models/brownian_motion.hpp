@@ -3,7 +3,7 @@
 
 #include <R.h> // NA_REAL
 #include <vector>
-#include "models/gaussian.hpp"
+#include <forest/models/gaussian.hpp>
 
 namespace forest {
 namespace models {

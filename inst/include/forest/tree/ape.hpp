@@ -2,7 +2,7 @@
 #define _FOREST_TREE_APE_HPP_
 
 #include <Rcpp.h>
-#include "tree.hpp"
+#include <forest/tree.hpp>
 
 namespace forest {
 

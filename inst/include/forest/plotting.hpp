@@ -1,7 +1,7 @@
 #ifndef _FOREST_TREE_PLOTTING_HPP_
 #define _FOREST_TREE_PLOTTING_HPP_
 
-#include "tree.hpp"
+#include <forest/tree.hpp>
 #include <Rcpp.h>
 
 // NOTE: In contrast with the suggestions in Rcpp-extending, I've

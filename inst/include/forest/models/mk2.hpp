@@ -3,7 +3,7 @@
 
 #include <R.h> // NA_REAL
 #include <vector>
-#include "models/discrete.hpp"
+#include <forest/models/discrete.hpp>
 
 // Special class for the two-state Markov model because we can get to
 // the solution analytically.  This could also be called the M2 model

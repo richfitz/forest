@@ -1,7 +1,7 @@
 #ifndef _FOREST_MANIPULATION_HPP_
 #define _FOREST_MANIPULATION_HPP_
 
-#include "util.hpp"
+#include <forest/util.hpp>
 
 namespace forest {
 
@@ -133,8 +133,9 @@ void ladderise(treetree::tree<T>& tr, bool right) {
   for (typename treetree::tree<T>::sub_pre_iterator
          it = tr.begin_sub(); it != tr.end_sub(); ++it) {
     if (!it->childless() && it->arity() > 1) {
-      if (it->arity() > 2)
-        stop("Can't (yet) ladderize a polytomy");
+      if (it->arity() > 2) {
+        util::stop("Can't (yet) ladderize a polytomy");
+      }
       const size_t nl = (*it)[0].size(), nr = (*it)[1].size();
       if ((right && nr > nl) || (!right && nl > nr))
         rotate<T>(it);

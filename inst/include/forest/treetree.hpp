@@ -10,8 +10,8 @@
 #pragma clang diagnostic ignored "-Wsign-conversion"
 #endif
 #define TREE_TREE_NAMESPACE treetree
-#include "treetree/tree.hpp"
-#include "treetree/tree_io.hpp"
+#include <treetree/tree.hpp>
+#include <treetree/tree_io.hpp>
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif

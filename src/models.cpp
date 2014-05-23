@@ -1,4 +1,4 @@
-#include "models.hpp"
+#include <forest.h>
 
 // Testing only
 typedef forest::node<forest::models::gaussian> gnode_test;

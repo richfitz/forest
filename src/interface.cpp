@@ -1,8 +1,8 @@
-#include "tree.hpp"
+#include <forest.h>
 
-#include "tree/ape.hpp"
-#include "tree/newick.hpp"
-#include "tree/plotting.hpp"
+// Things additional to the API:
+#include <forest/tree/ape.hpp>
+#include <forest/tree/newick.hpp>
 
 // Temporary -- used in treeapply
 template <typename T>

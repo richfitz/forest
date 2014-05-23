@@ -4,8 +4,8 @@
 #include <ostream>
 #include <iomanip>
 
-#include "tree.hpp"
-#include "util.hpp"
+#include <forest/tree.hpp>
+#include <forest/util.hpp>
 
 namespace forest {
 

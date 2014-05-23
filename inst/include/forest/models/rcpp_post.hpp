@@ -1,8 +1,8 @@
 #ifndef _FOREST_MODELS_RCPP_POST_HPP_
 #define _FOREST_MODELS_RCPP_POST_HPP_
 
-#include "models/common.hpp"
-#include "models/rcpp_pre.hpp"
+#include <forest/models/common.hpp>
+#include <forest/models/rcpp_pre.hpp>
 
 #include <Rcpp.h>
 

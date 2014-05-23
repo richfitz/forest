@@ -3,9 +3,9 @@
 
 #include <RcppCommon.h> // SEXP
 
-#include "treetree.hpp"
-#include "tree/misc.hpp"
-#include "tree/manipulation.hpp"
+#include <forest/treetree.hpp>
+#include <forest/tree/misc.hpp>
+#include <forest/tree/manipulation.hpp>
 
 // Iterators
 //

@@ -15,7 +15,7 @@
 #include <R.h>               // NA_REAL
 #include <vector>            // std::vector
 #include <boost/utility.hpp> // boost:prior
-#include "../util.hpp"       // stop
+#include <forest/util.hpp>   // util::stop
 
 namespace forest {
 namespace models {
@@ -27,8 +27,9 @@ struct discrete {
 
   static discrete from_R(SEXP obj) {
     std::vector<double> pars = Rcpp::as<std::vector<double> >(obj);
-    if (pars.size() < 1)
-      stop("Need at least one elements");
+    if (pars.size() < 1) {
+      util::stop("Need at least one elements");
+    }
     std::vector<double> p(pars.begin(), boost::prior(pars.end()));
     return discrete(p, pars.back());
   }

@@ -1,4 +1,5 @@
-#include "tree/plotting.hpp"
+// Could otherwise include <forest/plotting.hpp>
+#include <forest.h>
 #include <boost/utility.hpp> // boost::prior
 
 namespace forest {

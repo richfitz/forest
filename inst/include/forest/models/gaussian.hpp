@@ -3,7 +3,7 @@
 
 #include <R.h>      // M_PI, NA_REAL
 #include <vector>   // std::vector
-#include "../util.hpp" // stop
+#include <forest/util.hpp> // util::stop
 
 namespace forest {
 namespace models {
@@ -29,10 +29,11 @@ struct gaussian {
   // given.
   static gaussian from_R(SEXP obj) {
     std::vector<double> p = Rcpp::as<std::vector<double> >(obj);
-    if (p.size() == 0)
-      stop("Missing a mean");
-    else if (p.size() < 3)
+    if (p.size() == 0) {
+      util::stop("Missing a mean");
+    } else if (p.size() < 3) {
       p.resize(3, 0.0); // variance, log_scale
+    }
     return gaussian(p[0], p[1], p[2]);
   }
 

@@ -7,8 +7,8 @@
 // NOTE: Because this requires some use of Rcpp types, this is
 // something that will need to be included in models.hpp, not in
 // common.hpp.
-#include "tree/common.hpp"
-#include "models/common.hpp"
+#include <forest/tree/common.hpp>
+#include <forest/models/common.hpp>
 #include <Rcpp.h>
 
 namespace forest {

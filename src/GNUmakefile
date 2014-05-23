@@ -1,6 +1,4 @@
-SOURCES_TEST = test_iterator_wrapper.cpp test_tree.cpp
-SOURCES_REAL = interface.cpp models.cpp util.cpp plotting.cpp
-SOURCES = $(SOURCES_REAL) $(SOURCES_TEST)
+SOURCES = $(shell ls *.cpp)
 
 TARGETS = forest.so
 
@@ -18,6 +16,5 @@ forest.so: $(SOURCES)
 
 clean:
 	rm -f *.o *.so
-	rm -rf forest.so.dSYM
 
 .PHONY: all clean

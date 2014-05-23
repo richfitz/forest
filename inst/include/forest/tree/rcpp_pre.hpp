@@ -1,8 +1,8 @@
 #ifndef _FOREST_TREE_RCPP_PRE_HPP_
 #define _FOREST_TREE_RCPP_PRE_HPP_
 
-#include "tree/node.hpp"
-#include "treetree.hpp"
+#include <forest/tree/node.hpp>
+#include <forest/treetree.hpp>
 
 #include <RcppCommon.h>
 

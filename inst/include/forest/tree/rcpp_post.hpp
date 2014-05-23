@@ -1,7 +1,7 @@
 #ifndef _FOREST_TREE_RCPP_POST_HPP_
 #define _FOREST_TREE_RCPP_POST_HPP_
 
-#include "tree/rcpp_pre.hpp"
+#include <forest/tree/rcpp_pre.hpp>
 
 #include <Rcpp.h>
 
