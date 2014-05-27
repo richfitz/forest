@@ -4,4 +4,3 @@
 ##' @export rnode
 ##' @export rtree
 loadModule("forest", TRUE)
-loadModule("models", TRUE)
