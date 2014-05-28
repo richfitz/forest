@@ -7,6 +7,9 @@ install:
 clean:
 	make -C src clean
 
+attributes:
+	Rscript -e "Rcpp::compileAttributes()"
+
 test:
 	make -C inst/tests test
 
