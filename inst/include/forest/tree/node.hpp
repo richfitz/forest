@@ -39,18 +39,12 @@ namespace forest {
 template <typename T_out, typename T_in>
 T_out data_convert(const T_in& obj);
 
-// NOTE: The constructor dance below is a bit annoying; I assume that
-// it makes the least sense to initialise a node without a label, then
-// an edge length, and then some data.  That's not always going to be
-// the case of course, but values can be directly initialised (though
-// the public data fields) so where inappropriate it's easy enough to
-// deal with.
-//
-// TODO: Check that all the mess below is still needed.  We might need
-// a default constructor but when do we use the others?
 template <typename T>
 struct node {
   typedef T data_type;
+  // C++11 delegated constructors would make this much easier.  The
+  // different constructors are used in the newick code -- that might
+  // change once we get a different parser in.
   node()
     : label_(""),    length_(NA_REAL), data_(),
       height_(NA_REAL), depth_(NA_REAL) {}
@@ -58,7 +52,7 @@ struct node {
     : label_(label), length_(NA_REAL), data_(),
       height_(NA_REAL), depth_(NA_REAL) {}
   node(const std::string& label, double length)
-    : label_(label), length_(length),  data_(),
+    : label_(label), length_(length), data_(),
       height_(NA_REAL), depth_(NA_REAL) {}
   node(const std::string& label, double length, const data_type& data)
     : label_(label), length_(length),  data_(data),
@@ -83,19 +77,24 @@ struct node {
     return ret;
   }
 
+  // TODO: This does not actually work very well for node<RObject>.
+  // Need to find the equivalent of R's identical and use that.
   bool operator==(const node<data_type>& rhs) const {
     return (label_       == rhs.label_       &&
             has_length() == rhs.has_length() &&
 	    (!has_length() || !(std::abs(length_ - rhs.length_) > 0)) &&
             data_   == rhs.data_);}
-  node copy() const {return *this;}
-  // TODO: These can possibly be dropped now.
+
   bool has_label()  const {return label_ != "";}
   bool has_length() const {return !ISNA(length_);}
+
   std::string label_;
   double      length_;
   data_type   data_;
-
+  // These refer to the tip-end of the node:
+  // ------+
+  //       ^
+  //       time at this point
   double height_; // Height above the root
   double depth_;  // Depth below the highest tip
 };
@@ -106,7 +105,6 @@ std::ostream& operator<<(std::ostream& out, const node<T>& nd) {
   return out;
 }
 
-// TODO: do this with enable_if and proper SFINAE
 template <typename T>
 std::string node_label(const forest::node<T>& nd) {
   return nd.label_;
