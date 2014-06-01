@@ -37,3 +37,7 @@ plotting_coordinates_clade <- function(tree, n_taxa, p) {
     .Call('forest_plotting_coordinates_clade', PACKAGE = 'forest', tree, n_taxa, p)
 }
 
+forest_node__ctor <- function(label, length, data) {
+    .Call('forest_forest_node__ctor', PACKAGE = 'forest', label, length, data)
+}
+

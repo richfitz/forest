@@ -7,7 +7,6 @@ test_that("Parse node with no length", {
   label <- "foo"
   nd <- forest:::from_newick_node(label)
   expect_that(nd$label, is_identical_to(label))
-  expect_that(nd$has_length, is_false())
   expect_that(nd$length, is_identical_to(NA_real_))
 })
 
@@ -16,7 +15,6 @@ test_that("Parse node with branch length", {
   length <- pi
   nd <- forest:::from_newick_node(paste(label, length, sep=":"))
   expect_that(nd$label, is_identical_to(label))
-  expect_that(nd$has_length, is_true())
   expect_that(nd$length, equals(length))
 })
 
@@ -33,7 +31,6 @@ test_that("Parse node with branch length and embedded colon", {
   length <- pi
   nd <- forest:::from_newick_node(paste(label, length, sep=":"))
   expect_that(nd$label, is_identical_to(label))
-  expect_that(nd$has_length, is_true())
   expect_that(nd$length, equals(length))
 })
 

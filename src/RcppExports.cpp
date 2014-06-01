@@ -149,3 +149,20 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// forest_node__ctor
+forest::rnode forest_node__ctor(std::string label, double length, Rcpp::RObject data);
+RcppExport SEXP forest_forest_node__ctor(SEXP labelSEXP, SEXP lengthSEXP, SEXP dataSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< std::string >::type label(labelSEXP );
+        Rcpp::traits::input_parameter< double >::type length(lengthSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type data(dataSEXP );
+        forest::rnode __result = forest_node__ctor(label, length, data);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}

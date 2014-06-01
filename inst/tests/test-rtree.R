@@ -21,7 +21,7 @@ test_that("Empty tree", {
 })
 
 test_that("Construct with root node", {
-  nd <- new(rnode, "root", pi, list(1, 2))
+  nd <- forest_node("root", pi, list(1, 2))
   tr <- new(rtree, nd)
   expect_that(tr$empty,          is_false())
   expect_that(tr$size,           equals(1))
@@ -33,7 +33,7 @@ test_that("Construct with root node", {
   expect_that(tr$nodes,          equals(0)) # NOTE: sensible?
 
   nd2 <- tr$root_node
-  expect_that(nd2$equals(nd), is_true())
+  expect_that(nd2, is_identical_to(nd))
   nd2$length <- 0
   # Does not flow through at all:
   expect_that(nd$length, equals(pi))
@@ -74,7 +74,7 @@ test_that("tips and nodes works", {
 
 test_that("is_binary", {
   tr0 <- new(rtree)
-  tr1 <- new(rtree, new(rnode, "a"))
+  tr1 <- new(rtree, forest_node("a"))
   tr2 <- from.newick.string("(b,c)a;")
   tr3 <- from.newick.string("(b,c,d)a;")
   tr4 <- from.newick.string("((1,2)7,(3,(4,5)9)8)6;")
@@ -101,9 +101,11 @@ test_that("Height calculation", {
 
   tr$update_heights()
   heights <- unlist(treeapply(tr, function(nd)
-                              structure(nd$height, names=nd$label)))
+                              structure(attr(nd, "height"),
+                                        names=nd$label)))
   depths <- unlist(treeapply(tr, function(nd)
-                              structure(nd$depth, names=nd$label)))
+                              structure(attr(nd, "depth"),
+                                        names=nd$label)))
 
   if (suppressWarnings(require("diversitree", quietly=TRUE)))
     branching.heights <- diversitree:::branching.heights

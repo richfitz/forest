@@ -20,26 +20,6 @@ RCPP_MODULE(forest) {
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
-  Rcpp::class_<rnode>("rnode")
-    .constructor()
-    .constructor<std::string>()
-    .constructor<std::string, double>()
-    .constructor<std::string, double, rnode::data_type>()
-
-    .field("label",              &rnode::label_)
-    .field("length",             &rnode::length_)
-    .field("data",               &rnode::data_)
-
-    .property("has_label",       &rnode::has_label)
-    .property("has_length",      &rnode::has_length)
-
-    .field_readonly("height",    &rnode::height_)
-    .field_readonly("depth",     &rnode::depth_)
-
-    .method("copy",              &rnode::copy_convert<Rcpp::RObject>)
-    .method("equals",            &rnode::operator==)
-    ;
-
   Rcpp::class_<rtree>("rtree")
     .constructor()
     .constructor<rtree::node_type>()

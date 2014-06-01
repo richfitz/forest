@@ -41,9 +41,22 @@ T_out data_convert(const T_in& obj) {
   return Rcpp::as<T_out>(Rcpp::wrap(obj));
 }
 
+namespace exporters {
+// Given a SEXP, or something that can be implicitly constructed from
+// a SEXP, create an object of some type.
+
+template <typename T>
+node<T> node_from_R(Rcpp::List x) {
+  // NOTE: No user-friendly error messages here: might not be ideal.
+  return node<T>(Rcpp::as<std::string>(x["label"]),
+                 Rcpp::as<double>(x["length"]),
+                 Rcpp::as<T>(x["data"]));
 }
 
-RCPP_EXPOSED_CLASS_NODECL(forest::rnode)
+}
+
+}
+
 RCPP_EXPOSED_CLASS_NODECL(forest::rtree)
 RCPP_EXPOSED_CLASS_NODECL(forest::rsubtree)
 
@@ -62,6 +75,23 @@ SEXP wrap(const treetree::subtree<T>& obj) {
   return Rcpp::wrap(forest::subtree_wrapped<T>(obj));
 }
 
+template <typename T>
+SEXP wrap(const forest::node<T>& obj) {
+  Rcpp::List ret = Rcpp::List::create(_["label"]  = obj.label_,
+                                      _["length"] = obj.length_,
+                                      _["data"]   = obj.data_);
+  // Copy these, though we'll not reuse them.  One option would be to
+  // checksum these to make sure that they've not changed before
+  // adding them back into the tree, but this is really a big ongoing
+  // problem with keeping the times in sync.  Looking at other node
+  // copying though, I don't think that I actually do this very
+  // often.
+  ret.attr("height") = obj.height_;
+  ret.attr("depth")  = obj.depth_;
+  ret.attr("class")  = "forest_node"; // TODO: will change...
+  return ret;
+}
+
 template<>
 inline SEXP wrap(const treetree::tree<forest::node<Rcpp::List> >& obj) {
   typedef forest::node<Rcpp::List>    T_in;
@@ -70,6 +100,15 @@ inline SEXP wrap(const treetree::tree<forest::node<Rcpp::List> >& obj) {
 }
 
 namespace traits {
+template <typename T>
+class Exporter< forest::node<T> > {
+public:
+  Exporter (SEXP x) : nd(forest::exporters::node_from_R<T>(x)) {}
+  inline forest::node<T> get() { return nd; }
+private:
+  forest::node<T> nd;
+};
+
 template <typename T>
 class Exporter< treetree::tree<T> > {
 public:

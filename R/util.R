@@ -1,6 +1,14 @@
+## TODO: Port rodeint's set of assertion functions here.  Might need
+## to use a standard set at some point.
 assert_scalar <- function(x) {
   if (length(x) != 1) {
     stop(sprintf("%s must be a scalar", deparse(substitute(x))))
+  }
+}
+
+assert_character <- function(x) {
+  if (!is.character(x)) {
+    stop(sprintf("%s must be a character", deparse(substitute(x))))
   }
 }
 
@@ -69,6 +77,12 @@ assert_names_align <- function(x, target) {
 assert_file_exists <- function(x) {
   if (!file.exists(x)) {
     stop(sprintf("file %s does not exist", x))
+  }
+}
+
+assert_nonnegative <- function(x, name=deparse(substitute(x))) {
+  if (x < 0) {
+    stop(sprintf("%s must be nonnegative", name), call.=FALSE)
   }
 }
 

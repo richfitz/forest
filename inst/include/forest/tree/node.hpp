@@ -45,6 +45,9 @@ T_out data_convert(const T_in& obj);
 // the case of course, but values can be directly initialised (though
 // the public data fields) so where inappropriate it's easy enough to
 // deal with.
+//
+// TODO: Check that all the mess below is still needed.  We might need
+// a default constructor but when do we use the others?
 template <typename T>
 struct node {
   typedef T data_type;
@@ -86,6 +89,7 @@ struct node {
 	    (!has_length() || !(std::abs(length_ - rhs.length_) > 0)) &&
             data_   == rhs.data_);}
   node copy() const {return *this;}
+  // TODO: These can possibly be dropped now.
   bool has_label()  const {return label_ != "";}
   bool has_length() const {return !ISNA(length_);}
   std::string label_;
