@@ -1,12 +1,18 @@
 source("helper-forest.R")
 
+## TODO: This is failing because classify takes 'tr' directly, but
+## that does not give the actual pointer.  So we need to tweak the
+## 'as' function to grab the pointer if given an object that is not an
+## external pointer.  There are ways of testing for external
+## pointerness that should make this easy.
+
 context("Classify")
 classify <- forest:::classify # hidden for now.
 
 set.seed(1)
 phy <- rtree(10)
 phy$node.label <- paste0("n", seq_len(phy$Nnode))
-tr <- forest.from.ape(phy)
+tr <- forest_tree(phy)
 
 # For comparisons.  This is always the order we expect things in
 # (pre-order traversal)
@@ -15,16 +21,18 @@ label <- unlist(treeapply(tr, function(x) x$label))
 ## subtree as an argument properly and simply crashes.  That's going
 ## to be entertaining to fix.
 
-test_that("Classification of empty tree fails", {
+## TODO: classification of empty tree
+
+test_that("Trivial classification", {
   expect_that(classify(tr, character(0)),
-              equals(structure(rep(0L, tr$size), names=label)))
+              equals(structure(rep(0L, tr$size()), names=label)))
 })
 
 test_that("Classification of a single clade", {
   classify1.manual <- function(nd) {
-    base <- structure(rep(0L, tr$size), names=label)
-    sub <- tr$get_subtree(nd)
-    base[c(sub$tip_labels, sub$node_labels)] <- 1L
+    base <- structure(rep(0L, tr$size()), names=label)
+    sub <- tr$subtree(nd)
+    base[c(sub$tip_labels(), sub$node_labels())] <- 1L
     base
   }
 
@@ -36,11 +44,11 @@ test_that("Classification of a single clade", {
 ## TODO: Multi-regime cases.
 test_that("Classification of a pair of clades", {
   classify.manual <- function(nd) {
-    base <- structure(rep(0L, tr$size), names=label)
+    base <- structure(rep(0L, tr$size()), names=label)
     for (i in nd) {
-      sub <- tr$get_subtree(i)
-      j <- c(sub$tip_labels, sub$node_labels)
-      base[j][base[j] == base[[sub$root_node$label]]] <- max(base) + 1L
+      sub <- tr$subtree(i)
+      j <- c(sub$tip_labels(), sub$node_labels())
+      base[j][base[j] == base[[sub$root_node()$label]]] <- max(base) + 1L
     }
     base
   }

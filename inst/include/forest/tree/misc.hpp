@@ -1,12 +1,10 @@
-#ifndef _FOREST_MISC_HPP_
-#define _FOREST_MISC_HPP_
-
-// Miscellaneous things to do with treetree trees (*not* the wrapper
-// in include/tree/tree_wrapper.hpp).
+#ifndef _FOREST_TREE_MISC_HPP_
+#define _FOREST_TREE_MISC_HPP_
 
 #include <forest/tree/node.hpp>
 #include <forest/treetree.hpp>
 #include <forest/util.hpp> // util::stop
+#include <forest/tree/support.hpp> // locate_node_by_label
 
 namespace forest {
 
@@ -43,24 +41,47 @@ std::string node_label(const T& nd) {
   return boost::lexical_cast<std::string>(nd);
 }
 
+// TODO: I would like to clean this up so that it is easier to get all
+// labels for the traversal.  One solution would be to use
+// boost::filter_iterator to filter the iterator by nodes.  Then this
+// function would take two bool args: tip and node.  For now, this
+// approach should work OK though.
 template <typename T>
 std::vector<std::string> labels(const treetree::const_subtree<T>& tr,
-                                bool tip) {
+                                bool tip, bool node) {
   std::vector<std::string> ret;
   for (typename treetree::const_subtree<T>::const_sub_pre_iterator
          it = tr.begin(); it != tr.end(); ++it) {
-    if (it->childless() == tip)
+    const bool terminal = it->childless();
+    if (terminal == tip || !terminal == node) {
       ret.push_back(node_label(it->root()));
+    }
   }
   return ret;
 }
 template <typename T>
-std::vector<std::string> labels(const treetree::subtree<T>& tr, bool tip) {
-  return labels(treetree::const_subtree<T>(tr), tip);
+std::vector<std::string> labels(const treetree::subtree<T>& tr,
+                                bool tip, bool node) {
+  return labels(treetree::const_subtree<T>(tr), tip, node);
 }
 template <typename T>
-std::vector<std::string> labels(const treetree::tree<T>& tr, bool tip) {
-  return labels(treetree::const_subtree<T>(tr), tip);
+std::vector<std::string> labels(const treetree::tree<T>& tr,
+                                bool tip, bool node) {
+  return labels(treetree::const_subtree<T>(tr), tip, node);
+}
+
+// Convenience wrappers around the labels functions, used by the R side.
+template <typename T>
+std::vector<std::string> tip_labels(const T& tr) {
+  return labels(tr, true, false);
+}
+template <typename T>
+std::vector<std::string> node_labels(const T& tr) {
+  return labels(tr, false, true);
+}
+template <typename T>
+std::vector<std::string> labels(const T& tr) {
+  return labels(tr, true, true);
 }
 
 // Are *all* branch lengths in the tree valid?
@@ -148,11 +169,14 @@ template <typename T>
 bool is_ultrametric(treetree::tree<T> tr, double eps) {
   update_heights(tr);
 
+  // TODO: Throw error if eps is negative?
   // TODO: sub_leaf_adapter might be better here?
   for (typename treetree::tree<T>::const_sub_pre_iterator
-         it = tr.begin_sub(); it != tr.end_sub(); ++it)
-    if (it->childless() && it->begin()->depth_ > eps)
+         it = tr.begin_sub(); it != tr.end_sub(); ++it) {
+    if (it->childless() && it->begin()->depth_ > eps) {
         return false;
+    }
+  }
   return true;
 }
 
@@ -175,29 +199,6 @@ bool is_binary(const treetree::tree<T>& tr) {
     }
   }
   return true;
-}
-
-template <typename T>
-struct label_finder {
-  label_finder(const std::string& label) : target(label) {}
-  bool operator()(const T& nd) const {
-    return nd.has_label() && nd.label_ == target;
-  }
-  bool operator()(const treetree::subtree<T>& sub) const {
-    const T& nd = sub.root();
-    return nd.has_label() && nd.label_ == target;
-  }
-  const std::string target;
-};
-
-template <typename T, typename Iterator>
-Iterator locate_node_by_label(Iterator first, Iterator last,
-                              const std::string& label) {
-  Iterator ret = std::find_if(first, last, label_finder<T>(label));
-  if (ret == last) {
-    util::stop("Did not find node " + label + " in tree\n");
-  }
-  return ret;
 }
 
 template <typename T, typename Iterator>
@@ -225,20 +226,6 @@ Iterator locate_internal_by_label(Iterator first, Iterator last,
     util::stop("The label " + label + " is not internal\n");
   }
   return ret;
-}
-
-template <typename T>
-treetree::subtree<T> subtree_at_label(treetree::subtree<T>& tr,
-                                      const std::string& label) {
-  return *locate_node_by_label<T>(tr.begin_sub(), tr.end_sub(),
-                                  label);
-}
-
-template <typename T>
-treetree::subtree<T> subtree_at_label(treetree::tree<T>& tr,
-                                      const std::string& label) {
-  return *locate_node_by_label<T>(tr.begin_sub(), tr.end_sub(),
-                                  label);
 }
 
 // Check that all tip and/or node labels are present in the vector
@@ -333,6 +320,11 @@ copy_convert(const treetree::tree<T_in>& tr) {
   return copy_convert<T_out>(treetree::const_subtree<T_in>(tr));
 }
 
+template <typename T>
+treetree::tree<T> subtree_to_tree(const treetree::subtree<T>& tr) {
+  return treetree::tree<T>(tr);
+}
+
 // Classify a tree according to node labels.  Eventually becomes the
 // MEDUSA classification algorithm.
 //
@@ -351,7 +343,7 @@ classify(const treetree::tree<T>& tr,
   // This initialises all the node data to zero.
   treetree::tree<inode> itr = copy_structure<inode>(tr);
   for (size_t i = 0; i < labels.size(); ++i) {
-    treetree::subtree<inode> sub = subtree_at_label(itr, labels[i]);
+    treetree::subtree<inode> sub = subtree(itr, labels[i]);
     int base = sub.root().data_, regime = i + 1;
     for (iterator it = sub.begin(); it != sub.end(); ++it) {
       if (it->data_ == base) {

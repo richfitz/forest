@@ -19,7 +19,7 @@ context("Associating tree and data")
 set.seed(1)
 phy <- rtree(10)
 phy$node.label <- paste0("n", seq_len(phy$Nnode))
-tr <- forest.from.ape(phy)
+tr <- forest_tree(phy)
 
 ## This test might move into tree, and it might be lost entirely (and
 ## the tests done via the associating functions themselves).
@@ -28,8 +28,8 @@ test_that("check_names", {
   expect_that(tr$check_names(character(0), TRUE,  TRUE),  is_false())
   expect_that(tr$check_names(character(0), FALSE, FALSE), is_true())
 
-  tip.labels  <- tr$tip_labels
-  node.labels <- tr$node_labels
+  tip.labels  <- tr$tip_labels()
+  node.labels <- tr$node_labels()
   all.labels  <- c(tip.labels, node.labels)
 
   expect_that(tr$check_names(tip.labels,  TRUE, FALSE), is_true())
@@ -56,10 +56,10 @@ test_that("check_names", {
 ## has some issues for the current implementation of treeapply; this
 ## test will break as soon as that function is changed or improved.
 test_that("associate_data", {
-  states.tips <- structure(as.list(runif(tr$tips)),
-                           names=tr$tip_labels)
-  states.nodes <- structure(as.list(runif(tr$nodes)),
-                            names=tr$node_labels)
+  states.tips <- structure(as.list(runif(tr$count_tips())),
+                           names=tr$tip_labels())
+  states.nodes <- structure(as.list(runif(tr$count_nodes())),
+                            names=tr$node_labels())
   states.all <- c(states.tips, states.nodes)
 
   tr$associate_data(states.tips, TRUE, FALSE)
@@ -86,15 +86,16 @@ test_that("associate_data", {
 })
 
 test_that("copy_structure", {
-  states.tips <- structure(as.list(runif(tr$tips)),
-                           names=tr$tip_labels)
-  states.nodes <- structure(as.list(runif(tr$nodes)),
-                            names=tr$node_labels)
+  states.tips <- structure(as.list(runif(tr$count_tips())),
+                           names=tr$tip_labels())
+  states.nodes <- structure(as.list(runif(tr$count_nodes())),
+                            names=tr$node_labels())
   states.all <- c(states.tips, states.nodes)
   tr$associate_data(states.all, TRUE, TRUE)
 
   tr2 <- tr$copy_structure()
-  expect_that(tr2$representation, is_identical_to(tr$representation))
+  expect_that(tr2$representation(),
+              is_identical_to(tr$representation()))
   expect_that(to.newick.string(tr2),
               is_identical_to(to.newick.string(tr)))
 
@@ -105,5 +106,3 @@ test_that("copy_structure", {
   data2 <- treeapply(tr2, function(x) x$data)
   expect_that(all(sapply(data2, is.null)), is_true())
 })
-
-gc()

@@ -11,7 +11,7 @@ to.newick.string(tree, digits = 10)
 \arguments{
 \item{str}{A string encoding a tree in Newick format.}
 
-\item{tree}{A forest tree (currently class \code{xtree})}
+\item{tree}{A forest tree (currently class \code{forest_tree})}
 
 \item{digits}{Number of digits to format branch lengths to.  The
 default is the same as ape.}

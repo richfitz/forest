@@ -88,7 +88,7 @@ add_to_tree.tree_braces <- function(object, tree_grob, ...) {
   # (the /2 is because the gap is shared with the neighbouring tips).
 
   brace_position <- function(label) {
-    desc <- tree_grob$tree$get_subtree(label)$tip_labels
+    desc <- tree_grob$tree$subtree(label)$tip_labels()
     branches <- tree_grob$children$branches
     i <- match(desc, branches$label)
     # Here, even though min and max are the same for tips at the moment

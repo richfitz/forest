@@ -47,10 +47,10 @@ assert_picture <- function(x) {
   assert_inherits(x, "Picture")
 }
 
-assert_inherits <- function(x, what) {
+assert_inherits <- function(x, what, name=deparse(substitute(x))) {
   if (!inherits(x, what)) {
-    stop(sprintf("%s must be a %s", deparse(substitute(x)),
-                 paste(what, collapse=" / ")))
+    stop(sprintf("%s must be a %s", name,
+                 paste(what, collapse=" / ")), call.=FALSE)
   }
 }
 

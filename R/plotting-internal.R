@@ -11,12 +11,12 @@ plotting_prepare <- function(tree) {
 
 plotting_prepare_clade <- function(tree, n_taxa, p=0.5) {
   assert_named(n_taxa)
-  assert_names_align(n_taxa, tree$tip_labels)
+  assert_names_align(n_taxa, tree$tip_labels())
   if (any(n_taxa < 1)) {
     stop("All n_taxa must be at least 1")
   }
   # This means we get the correct order.
-  n_taxa <- n_taxa[tree$tip_labels]
+  n_taxa <- n_taxa[tree$tip_labels()]
 
   assert_scalar(p)
   if (p < 0 || p > 1) {

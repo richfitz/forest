@@ -10,6 +10,12 @@ clean:
 attributes:
 	Rscript -e "Rcpp::compileAttributes()"
 
+cog:
+	cog.py -Iextra -r @extra/generation_list.txt
+
+uncog:
+	cog.py -Iextra -r -x @extra/generation_list.txt
+
 test:
 	make -C inst/tests test
 

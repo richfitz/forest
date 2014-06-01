@@ -12,12 +12,13 @@
 from.newick.string <- function(str)
   from_newick_string(split.newick.string(str))
 ##' @rdname newick
-##' @param tree A forest tree (currently class \code{xtree})
+##' @param tree A forest tree (currently class \code{forest_tree})
 ##' @param digits Number of digits to format branch lengths to.  The
 ##' default is the same as ape.
 ##' @export
-to.newick.string <- function(tree, digits=10)
-  to_newick_string(tree, digits)
+to.newick.string <- function(tree, digits=10) {
+  to_newick_string(tree$ptr, digits)
+}
 
 split.newick.string <- function(str) {
   if (length(str) > 1)

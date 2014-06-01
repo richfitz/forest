@@ -9,6 +9,7 @@
 #include <forest/tree/rcpp_pre.hpp>
 #include <forest/tree/rcpp_post.hpp>
 
+#include <forest/tree/tree.hpp>
 #include <forest/tree/misc_post_rcpp.hpp>
 
 #endif

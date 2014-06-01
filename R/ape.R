@@ -9,13 +9,19 @@
 ##' associated with each node), and only the labels give a route to
 ##' re-associating.  Both these may change in future.
 ##'
+##' Note that the preferred way of going from ape phylo to forest tree
+##' is \code{forest_tree(phy)}.  Eventually the reverse will be
+##' \code{as.phylo(tr)}.  These are the functions used by those
+##' functions though.
+##'
 ##' @title Convert Between Forest and Ape Trees
 ##' @param phy A tree in ape's "phylo" class.
 ##' @rdname ape
 ##' @export
-forest.from.ape <- function(phy) {
-  if (!inherits(phy, "phylo"))
+forest_from_ape <- function(phy) {
+  if (!inherits(phy, "phylo")) {
     stop("Need a 'phylo' object to convert")
+  }
   phy   <- reorder(phy, "pruningwise")
   n.tip <- length(phy$tip.label)
   from  <- phy$edge[,1]
@@ -28,8 +34,9 @@ forest.from.ape <- function(phy) {
   label  <- c(phy$tip.label, node.label)
 
   length <- phy$edge.length[match(seq_len(n), phy$edge[,2])]
-  if (is.null(length))
+  if (is.null(length)) {
     length <- rep.int(NA_real_, n)
+  }
 
   order <- c(seq_len(n.tip), unique(from))
 
@@ -47,13 +54,13 @@ forest.from.ape <- function(phy) {
 ##' @param tree A tree from forest
 ##' @rdname ape
 ##' @export
-ape.from.forest <- function(tree) {
-  obj <- to_ape_internal(tree)
+ape_from_forest <- function(tree) {
+  obj <- to_ape_internal(tree_ptr(tree))
   edge <- obj$edge
   label <- obj$label
   length <- obj$length
-  n.tip <- tree$tips
-  n.node <- tree$nodes
+  n.tip <- tree$count_tips()
+  n.node <- tree$count_nodes()
 
   tip.index  <- setdiff(edge[,2], edge[,1])
   node.index <- setdiff(seq_len(n.tip + n.node), tip.index)
@@ -62,12 +69,14 @@ ape.from.forest <- function(tree) {
   tip.label <- label[match(seq_len(n.tip), edge[,2])]
   i <- if (n.node > 1)
     match((n.tip+2):(n.tip+n.node), edge[,2]) else integer(0)
-  node.label <- c(tree$root_node$label, label[i])
+  node.label <- c(tree$root_node()$label, label[i])
 
-  if (all(is.na(length)))
+  if (all(is.na(length))) {
     length <- NULL
-  if (all(node.label == ""))
+  }
+  if (all(node.label == "")) {
     node.label <- NULL
+  }
 
   structure(list(edge=edge,
                  tip.label=tip.label,

@@ -80,6 +80,8 @@ void drop_tip(treetree::tree<T>& tr,
 
 // TODO: This will chance once I get a better way of addressing nodes
 // from the R side.
+//
+// TODO: Should be able to drop nodes this way, too.
 template <typename T>
 void drop_tip_by_label(treetree::tree<T>& tr, const std::string& label) {
   typename treetree::tree<T>::sub_pre_iterator it =

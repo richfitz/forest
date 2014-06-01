@@ -7,11 +7,11 @@ test_that("Coordinate calculation", {
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
 
   set.seed(1)
-  n_taxa <- pmax(1, rpois(tr$tips, 3))
-  names(n_taxa) <- tr$tip_labels
+  n_taxa <- pmax(1, rpois(tr$count_tips(), 3))
+  names(n_taxa) <- tr$tip_labels()
 
   xy0 <- forest:::plotting_prepare(tr)
   xy <- plotting_prepare_clade(tr, n_taxa, 0.5)
@@ -37,7 +37,6 @@ test_that("Coordinate calculation", {
     rownames(pos) <- names(n_taxa)
     pos
   }
-  gc() # stupid Rcpp finalizer bug.
 
   pos.R <- clade_info(n_taxa, 0.5)
   pos.C <- as.matrix(xy[rownames(pos.R), colnames(pos.R)])

@@ -10,9 +10,6 @@ library(png)
 suppressMessages(library(expm))
 suppressMessages(library(grImport))
 
-# Oops; there's namespace confict here.
-rtree <- forest::rtree
-
 is_expected_tree <- function(n, representation) {
   function(tr) {
     ok <- (isTRUE(all.equal(tr$size, n))           &&
@@ -97,7 +94,7 @@ get.harmon.trees <- function(path, regenerate=FALSE) {
 ## Very hackish version of a treeapply() type function.  Pre-order
 ## traversal only, and taking node only (not subtree, or data)
 treeapply <- function(tr, f) {
-  lapply(forest:::drain_tree(tr), f)
+  lapply(forest:::drain_tree(tr$ptr), f)
 }
 
 ## Copied over from diversitree, for now:

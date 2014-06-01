@@ -10,10 +10,9 @@ Description: Still working this out.  Based on treetree r6, itself
 License: BSD_2_clause + file LICENSE
 Imports:
     grid,
-    tools
-Depends:
-    methods,
-    Rcpp (>= 0.10.6)
+    tools,
+    Rcpp,
+    methods
 Suggests:
     testthat,
     ape,

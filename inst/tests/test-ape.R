@@ -25,27 +25,27 @@ test_that("Simple ape -> forest conversion works", {
                     c(phy$tip.label, phy$node.label))
   cmp.data <- as.list(as.numeric(cmp.data))
 
-  tr <- forest.from.ape(phy)
-  tr0 <- forest.from.ape(phy0)
+  tr <- forest_tree(phy)
+  tr0 <- forest_tree(phy0)
 
   # Here is the RObject/SEXP comparison issue again:
   #   expect_that(tr$equals(cmp), is_true())
   # I'm going to have to deal with that eventually...
-  expect_that(tr$representation, is_identical_to(cmp$representation))
+  expect_that(tr$representation(), is_identical_to(cmp$representation()))
   expect_that(to.newick.string(tr),
               is_identical_to(to.newick.string(cmp)))
   expect_that(treeapply(tr, function(x) x$data),
               is_identical_to(cmp.data))
 
-  expect_that(tr0$representation, is_identical_to(cmp0$representation))
+  expect_that(tr0$representation(), is_identical_to(cmp0$representation()))
   expect_that(to.newick.string(tr0),
               is_identical_to(to.newick.string(cmp0)))
   expect_that(treeapply(tr0, function(x) x$data),
               is_identical_to(cmp.data))
 
   # And back the other way:
-  conv  <- ape.from.forest(tr)
-  conv0 <- ape.from.forest(tr0)
+  conv  <- ape_from_forest(tr)
+  conv0 <- ape_from_forest(tr0)
 
   # Be aware the this might not check node labels correctly..
   expect_that(conv,  equals(phy))

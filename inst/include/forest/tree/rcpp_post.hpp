@@ -6,9 +6,11 @@
 #include <Rcpp.h>
 
 namespace forest {
-typedef forest::node<Rcpp::RObject> rnode;
-typedef forest::tree_wrapped<rnode> rtree;
-typedef rtree::subtree_wrapped_type rsubtree;
+// TODO: This should probably be a forest_node to match the R side?
+// It's not used very often, so that's not that much of a big deal.
+typedef forest::node<Rcpp::RObject>    forest_node;
+typedef treetree::tree<forest_node>    forest_tree;
+typedef treetree::subtree<forest_node> forest_subtree;
 
 // This is all we're defining for now.  Will grow over time though.
 // Really this one should only work for T_in = Rcpp::RObject and
@@ -41,67 +43,186 @@ T_out data_convert(const T_in& obj) {
   return Rcpp::as<T_out>(Rcpp::wrap(obj));
 }
 
+namespace util {
+
+// Shared with rodeint, though not sure what it will take to get an
+// equivalent rebuild working.
+template <typename T>
+void check_ptr_valid(Rcpp::XPtr<T> p) {
+  T* test = p;
+  if (test == NULL) {
+    util::stop("Pointer is NULL");
+  }
+}
+
+}
+
+// These are little bits of code that will be useful in keeping the
+// Rcpp::as functions tidy.  This is here just so that we have an
+// internal namespace and to keep things organised, and to keep the
+// exporter code as simple as possible (as it's a bit of a weird bit
+// of code).
 namespace exporters {
-// Given a SEXP, or something that can be implicitly constructed from
-// a SEXP, create an object of some type.
+// All these functions, given a SEXP, or something that can be
+// implicitly constructed from a SEXP, create an object of some type.
+// They'll have to be called with template arguments as the templated
+// thing is the return argument.
 
 template <typename T>
-node<T> node_from_R(Rcpp::List x) {
-  // NOTE: No user-friendly error messages here: might not be ideal.
-  return node<T>(Rcpp::as<std::string>(x["label"]),
-                 Rcpp::as<double>(x["length"]),
-                 Rcpp::as<T>(x["data"]));
+node<T> node_from_R(Rcpp::RObject x) {
+  const std::string cl = Rcpp::as<std::string>(x.attr("class"));
+  if (cl != "forest_node") {
+    util::stop("Expected forest_node, recieved " + cl);
+  }
+  Rcpp::List xl = Rcpp::as<Rcpp::List>(x);
+  return node<T>(Rcpp::as<std::string>(xl["label"]),
+                 Rcpp::as<double>(xl["length"]),
+                 Rcpp::as<T>(xl["data"]));
+}
+
+// There is a bit of a trick here: sometimes we are going to get trees
+// and sometimes we are going to get their pointers.  This little
+// wrapper is going to cut back on some of the repetition here.  We
+// don't keep full as/wrap transitiveness though because it's way more
+// convenient to pass in the pointer directly from the containing
+// class.
+//
+// Basically, we check the class -- if it's a forest_tree then we'll
+// coerce it to a reference class object and grab the pointer field.
+// Otherwise we assume it's a pointer and just cast it to the right
+// type.  This second part could be improved by (a) checking that
+// there is *no* class attribute.  (b) checking the "type" attribute
+// of the pointer.
+//
+// Note that if we use a different class type (wch classes or
+// something) this will not work and we'll have to use some other
+// magic.
+template <typename T>
+Rcpp::XPtr<treetree::tree<T> > tree_ptr_from_R(Rcpp::RObject x) {
+  typedef Rcpp::XPtr<treetree::tree<T> > ptr;
+  if (x.hasAttribute("class") &&
+      Rcpp::as<std::string>(x.attr("class")) == "forest_tree") {
+    Rcpp::Reference obj = Rcpp::as<Rcpp::Reference>(x);
+    ptr xp = Rcpp::as<ptr>(obj.field("ptr"));
+    forest::util::check_ptr_valid(xp);
+    return xp;
+  } else {
+    ptr xp = Rcpp::as<ptr>(x);
+    forest::util::check_ptr_valid(xp);
+    return xp;
+  }
+}
+
+template <typename T>
+Rcpp::XPtr<treetree::subtree<T> > subtree_ptr_from_R(Rcpp::RObject x) {
+  typedef Rcpp::XPtr<treetree::subtree<T> > ptr;
+  if (x.hasAttribute("class") &&
+      Rcpp::as<std::string>(x.attr("class")) == "forest_subtree") {
+    Rcpp::Reference obj = Rcpp::as<Rcpp::Reference>(x);
+    ptr xp = Rcpp::as<ptr>(obj.field("ptr"));
+    forest::util::check_ptr_valid(xp);
+    return xp;
+  } else {
+    ptr xp = Rcpp::as<ptr>(x);
+    forest::util::check_ptr_valid(xp);
+    return xp;
+  }
+}
+
+template <typename T>
+treetree::tree<T>& tree_from_R(Rcpp::RObject x) {
+  return *tree_ptr_from_R<T>(x);
+}
+
+template <typename T>
+treetree::subtree<T>& subtree_from_R(Rcpp::RObject x) {
+  return *subtree_ptr_from_R<T>(x);
 }
 
 }
-
 }
 
-RCPP_EXPOSED_CLASS_NODECL(forest::rtree)
-RCPP_EXPOSED_CLASS_NODECL(forest::rsubtree)
-
-// These are bit weird.  To export a tree (treetree::tree<T>) to R, we
-// need to put it into a forest::tree_wrapped class; this arranges for
-// that.  Then the wrapped classes still need to be wrappable (see for
-// example the RCPP_EXPOSED_CLASS_NODECL(forest::rtree) above, but
-// also in the models code).
 namespace Rcpp {
+
+template <>
+inline SEXP wrap(const forest::util::index& obj) {
+  return wrap(obj.i);
+}
+
+// For both trees and subtrees, we'll pop a copy of the tree into an
+// external pointer and return that with a "type" attribute that means
+// we can work with it.
+
+// TODO: Would be useful to be able to say what the internal type is
+// here, but I don't think it's actually necessary.  And R users may
+// not care.  Options for doing this nicely include:
+// http://stackoverflow.com/questions/12877521/human-readable-type-info-name
+// http://ideone.com/L3T3p
+// http://stackoverflow.com/questions/81870/print-variable-type-in-c
+// http://stackoverflow.com/a/1055563
+// the result of which we could store in some attribute.
+
+// TODO: The approach of wrapping things up here could possibly be
+// improved on, and will need to be if we're going to use the a non-RC
+// class.  One approach would be to create a function in
+// package:forest and use that -- could simply be forest::forest_tree
+// and forest::forest_subtree, which is quite nice actually.  My guess
+// is that the lookup cost here is not that terrible and should be
+// cached between uses.
 template <typename T>
 SEXP wrap(const treetree::tree<T>& obj) {
-  return Rcpp::wrap(forest::tree_wrapped<T>(obj));
-}
-template <typename T>
-SEXP wrap(const treetree::subtree<T>& obj) {
-  return Rcpp::wrap(forest::subtree_wrapped<T>(obj));
+  XPtr<treetree::tree<T> > ptr(new treetree::tree<T>(obj), true);
+  ptr.attr("type") = "forest_tree";
+
+  Environment methods("package:methods");
+  Function Rnew = methods["new"];
+  return Rnew("forest_tree", ptr);
 }
 
+template <typename T>
+SEXP wrap(const treetree::subtree<T>& obj) {
+  XPtr<treetree::subtree<T> > ptr(new treetree::subtree<T>(obj), true);
+  ptr.attr("type") = "forest_subtree";
+
+  Environment methods("package:methods");
+  Function Rnew = methods["new"];
+  return Rnew("forest_subtree", ptr);
+}
+
+// Node level wrapping is different to the tree level wrapping because
+// we'll actually copy completely into an R list.  Then on the R side
+// we lock down the accessors a bit to give relative type-safety.
+// This might change to become a pointer, but given that we're only
+// going to work with copies of objects the reference semantics are
+// not hugely useful.
 template <typename T>
 SEXP wrap(const forest::node<T>& obj) {
   Rcpp::List ret = Rcpp::List::create(_["label"]  = obj.label_,
                                       _["length"] = obj.length_,
                                       _["data"]   = obj.data_);
-  // Copy these, though we'll not reuse them.  One option would be to
-  // checksum these to make sure that they've not changed before
-  // adding them back into the tree, but this is really a big ongoing
-  // problem with keeping the times in sync.  Looking at other node
-  // copying though, I don't think that I actually do this very
-  // often.
   ret.attr("height") = obj.height_;
   ret.attr("depth")  = obj.depth_;
-  ret.attr("class")  = "forest_node"; // TODO: will change...
+  ret.attr("class")  = "forest_node";
   return ret;
 }
 
-template<>
-inline SEXP wrap(const treetree::tree<forest::node<Rcpp::List> >& obj) {
-  typedef forest::node<Rcpp::List>    T_in;
-  typedef forest::node<Rcpp::RObject> T_out;
-  return Rcpp::wrap(forest::copy_convert<T_out,T_in>(obj));
+// I am not sure who uses this, or why it exists.  Might try and
+// remove it soon.  It looks like it converts an
+// template<>
+// inline SEXP wrap(const treetree::tree<forest::node<Rcpp::List> >& obj) {
+//   typedef forest::node<Rcpp::List>    T_in;
+//   typedef forest::node<Rcpp::RObject> T_out;
+//   return Rcpp::wrap(forest::copy_convert<T_out,T_in>(obj));
+// }
+
+template <>
+inline forest::util::index as(SEXP obj) {
+  return forest::util::index(Rcpp::as<int>(obj));
 }
 
 namespace traits {
 template <typename T>
-class Exporter< forest::node<T> > {
+class Exporter<forest::node<T> > {
 public:
   Exporter (SEXP x) : nd(forest::exporters::node_from_R<T>(x)) {}
   inline forest::node<T> get() { return nd; }
@@ -109,22 +230,26 @@ private:
   forest::node<T> nd;
 };
 
+
+// TODO: Check that the reference bits here work OK.
 template <typename T>
-class Exporter< treetree::tree<T> > {
+class Exporter<treetree::tree<T> > {
 public:
-  Exporter (SEXP x) : t(Rcpp::as<forest::tree_wrapped<T> >(x).tree_) {}
-  inline treetree::tree<T> get() { return t; }
+  Exporter (SEXP x) : t(forest::exporters::tree_from_R<T>(x)) {}
+  inline const treetree::tree<T>& get() const { return t; }
+  inline treetree::tree<T>& get() { return t; }
 private:
-  treetree::tree<T> t;
+  treetree::tree<T>& t;
 };
 
 template <typename T>
-class Exporter< treetree::subtree<T> > {
+class Exporter<treetree::subtree<T> > {
 public:
-  Exporter (SEXP x) : t(Rcpp::as<forest::subtree_wrapped<T> >(x).subtree_) {}
-  inline treetree::subtree<T> get() { return t; }
+  Exporter (SEXP x) : t(forest::exporters::subtree_from_R<T>(x)) {}
+  inline const treetree::subtree<T>& get() const { return t; }
+  inline treetree::subtree<T>& get() { return t; }
 private:
-  treetree::subtree<T> t;
+  treetree::subtree<T>& t;
 };
 
 }

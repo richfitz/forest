@@ -33,8 +33,9 @@ public:
 
 // Update the tree with plotting coordinates.  This does not need to
 // be done via templates, so I'm doing it with plain C++ here.
-// TODO: node<Rcpp::RObject> is an forest::rnode
-// TODO: make node<plot_info> a forest::plotting::node or forest::pnode?
+// TODO: node<Rcpp::RObject> is a forest::forest_node
+// TODO: make node<plot_info> a forest::plotting_node (or make
+// forest_node -> node_general and node<plot_info> -> node_plotting)
 treetree::tree<node<plot_info> >
 coordinates(const treetree::tree<node<Rcpp::RObject> >& tree);
 

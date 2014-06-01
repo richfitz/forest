@@ -47,7 +47,7 @@ test_that("Coordinate calculation", {
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
 
   xy <- forest:::plotting_prepare(tr)
   ## These are the columns we expect:
@@ -58,7 +58,7 @@ test_that("Coordinate calculation", {
 
   ## Convert the 0..1 data to ape's scaling:
   s <- c("spacing_mid", "spacing_max", "spacing_min")
-  xy[s] <- 1 + xy[s] * (tr$tips - 1)
+  xy[s] <- 1 + xy[s] * (tr$count_tips() - 1)
   o <- rownames(xy)
 
   ## First, check time axis:
@@ -106,7 +106,7 @@ test_that("treeGrob construction", {
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
   phy$tip.label <- paste0(phy$tip.label, "abcde")
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
 
   for (direction in forest:::tree_directions()) {
     vp <- viewport(name="extra", width=.5)
@@ -121,9 +121,9 @@ test_that("treeGrob construction", {
 
     ## Spacing info is included:
     expect_that(tg$spacing_info, is_a("list"))
-    expect_that(tg$spacing_info$gaps, equals(tr$tips - 1))
+    expect_that(tg$spacing_info$gaps, equals(tr$count_tips() - 1))
     if (direction == "circle") {
-      spacing_gap_size <- 2 * pi / tr$tips
+      spacing_gap_size <- 2 * pi / tr$count_tips()
       spacing_size     <- 2 * pi - spacing_gap_size
     } else if (direction == "semicircle") {
       spacing_gap_size <- pi / tg$spacing_info$gaps
@@ -168,7 +168,7 @@ test_that("tree_label_coords", {
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
   tg <- treeGrob(tr, direction="right")
 
   # Errors on invalid input
@@ -185,14 +185,14 @@ test_that("tree_label_coords", {
   expect_that(tree_label_coords(label, tg), equals(cmp))
 
   # Multiple labels:
-  tip_labels <- tr$tip_labels
+  tip_labels <- tr$tip_labels()
   res <- tree_label_coords(tip_labels, tg)
   i <- match(tip_labels, tg$children$branches$label)
   cmp <- list(s=tg$children$branches$spacing_mid[i],
               t=tg$children$branches$time_tip[i])
   expect_that(tree_label_coords(tip_labels, tg), equals(cmp))
 
-  node_labels <- tr$node_labels
+  node_labels <- tr$node_labels()
   res <- tree_label_coords(node_labels, tg)
   i <- match(node_labels, tg$children$branches$label)
   cmp <- list(s=tg$children$branches$spacing_mid[i],
@@ -236,7 +236,7 @@ test_that("Labels", {
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
   phy$tip.label <- paste0(phy$tip.label, "abcde")
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
   gp.tip <- gpar(col="red")
   gp.node <- gpar(col="blue")
 
@@ -267,7 +267,7 @@ test_that("Initial angle argument for circle plots", {
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
   phy$tip.label <- paste0(phy$tip.label, "abcde")
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
 
   set.seed(1)
   theta <- runif(1, 0, 2*pi)
@@ -306,7 +306,7 @@ test_that("Initial angle argument fails for non-circle plot types", {
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
   phy$tip.label <- paste0(phy$tip.label, "abcde")
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
 
   dirs <- setdiff(forest:::tree_directions(), "circle")
   for (d in dirs) {
@@ -377,7 +377,7 @@ test_that("Branch styling (single regime)", {
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
   phy$tip.label <- paste0(phy$tip.label, "abcde")
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
 
   tg <- treeGrob(tr) + tree_tip_labels() + tree_node_labels()
   tg2 <- tg + tree_style_branches(n5=gpar(col="red"))
@@ -385,7 +385,7 @@ test_that("Branch styling (single regime)", {
   gp2 <- tg2$children$branches$gp
   expect_that(gp2, is_a("gpar"))
   expect_that(names(gp2), equals("col"))
-  expect_that(length(gp2$col), equals(tr$size))
+  expect_that(length(gp2$col), equals(tr$size()))
   cl2 <- forest:::classify(tr, "n5")
   cl2 <- cl2[match(tg$children$branches$label, names(cl2))]
   expect_that(gp2$col, equals(c("black", "red")[cl2 + 1L]))
@@ -394,7 +394,7 @@ test_that("Branch styling (single regime)", {
   gp3 <- tg3$children$tip_labels$gp
   expect_that(gp3, is_a("gpar"))
   expect_that(names(gp3), equals("col"))
-  expect_that(length(gp3$col), equals(tr$tips))
+  expect_that(length(gp3$col), equals(tr$count_tips()))
   cl3 <- forest:::classify(tr, "n2")
   cl3 <- cl3[match(tg$children$tip_labels$label, names(cl3))]
   expect_that(gp3$col, equals(c("black", "blue")[cl3 + 1L]))
@@ -403,7 +403,7 @@ test_that("Branch styling (single regime)", {
   gp4 <- tg4$children$node_labels$gp
   expect_that(gp4, is_a("gpar"))
   expect_that(names(gp4), equals("col"))
-  expect_that(length(gp4$col), equals(tr$nodes))
+  expect_that(length(gp4$col), equals(tr$count_nodes()))
   cl4 <- forest:::classify(tr, "n4")
   cl4 <- cl4[match(tg$children$node_labels$label, names(cl4))]
   expect_that(gp4$col, equals(c("black", "green4")[cl4 + 1L]))
@@ -421,7 +421,7 @@ test_that("Branch styling (corner cases)", {
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
   phy$tip.label <- paste0(phy$tip.label, "abcde")
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
 
   tg <- treeGrob(tr) + tree_tip_labels() + tree_node_labels()
   tg2 <- tg + tree_style_branches()
@@ -442,7 +442,7 @@ test_that("Branch styling (multiple regimes)", {
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
   phy$tip.label <- paste0(phy$tip.label, "abcde")
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
 
   tg <- treeGrob(tr) + tree_tip_labels() + tree_node_labels()
 
@@ -478,7 +478,7 @@ test_that("Branch styling (single nodes)", {
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
   phy$tip.label <- paste0(phy$tip.label, "abcde")
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
 
   tg <- treeGrob(tr) + tree_tip_labels() + tree_node_labels()
 
@@ -663,7 +663,7 @@ test_that("Add single tree_images to a tree", {
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
   tg <- treeGrob(tr, direction="right")
 
   # Same picture as above
@@ -701,7 +701,7 @@ test_that("Add multiple tree_images to a tree", {
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
   tg <- treeGrob(tr, direction="right")
 
   logo <- readPNG(system.file("img", "Rlogo.png", package="png"))
@@ -773,7 +773,7 @@ test_that("Add tree_braces to a tree", {
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
 
   for (direction in forest:::tree_directions()) {
     tg <- treeGrob(tr, direction=direction) + tree_node_labels()
@@ -798,7 +798,7 @@ test_that("More than one brace", {
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
 
   for (direction in forest:::tree_directions()) {
     tg <- treeGrob(tr, direction=direction) + tree_node_labels()
@@ -825,7 +825,7 @@ test_that("Brace alignment", {
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
 
   vp.spacing <- viewport(width=.8, height=.8, name="spacing")
   tg <- treeGrob(tr, direction="right", vp=vp.spacing) + tree_node_labels()
@@ -837,7 +837,7 @@ test_that("Brace alignment", {
   tg.g <- tg + tree_braces(at, name="brace", alignment="global")
 
   # Check the time position of these three different alignments:
-  spp <- sapply(at, function(nd) tr$get_subtree(nd)$tip_labels)
+  spp <- sapply(at, function(nd) tr$subtree(nd)$tip_labels())
   br <- tg$children$branches
   at.t <- sapply(spp, function(x)
                  max(br$time_tipward[match(x, br$label)]))
@@ -863,7 +863,7 @@ test_that("brace_style", {
   set.seed(1)
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
 
   vp.spacing <- viewport(width=.8, height=.8, name="spacing")
   tg <- treeGrob(tr, direction="right", vp=vp.spacing) +
@@ -916,7 +916,7 @@ test_that("tree_match", {
   phy <- rtree(10)
   phy$node.label <- paste0("n", seq_len(phy$Nnode))
   phy$tip.label <- paste0(phy$tip.label, "abcde")
-  tr <- forest.from.ape(phy)
+  tr <- forest_tree(phy)
 
   tg <- treeGrob(tr) +
     tree_tip_labels() + tree_node_labels() + tree_braces("n4")
