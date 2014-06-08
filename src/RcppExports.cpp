@@ -167,14 +167,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // forest_tree__root_subtree
-forest::forest_subtree forest_tree__root_subtree(Rcpp::XPtr<forest::forest_tree> ptr);
-RcppExport SEXP forest_forest_tree__root_subtree(SEXP ptrSEXP) {
+forest::forest_subtree forest_tree__root_subtree(Rcpp::RObject x);
+RcppExport SEXP forest_forest_tree__root_subtree(SEXP xSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
-        forest::forest_subtree __result = forest_tree__root_subtree(ptr);
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
+        forest::forest_subtree __result = forest_tree__root_subtree(x);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -182,14 +182,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // forest_subtree__root_subtree
-forest::forest_subtree forest_subtree__root_subtree(Rcpp::XPtr<forest::forest_subtree> ptr);
-RcppExport SEXP forest_forest_subtree__root_subtree(SEXP ptrSEXP) {
+forest::forest_subtree forest_subtree__root_subtree(Rcpp::RObject x);
+RcppExport SEXP forest_forest_subtree__root_subtree(SEXP xSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_subtree> >::type ptr(ptrSEXP );
-        forest::forest_subtree __result = forest_subtree__root_subtree(ptr);
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
+        forest::forest_subtree __result = forest_subtree__root_subtree(x);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -197,40 +197,40 @@ BEGIN_RCPP
 END_RCPP
 }
 // forest_tree__set_root_subtree
-void forest_tree__set_root_subtree(Rcpp::XPtr<forest::forest_tree> ptr, forest::forest_tree value);
-RcppExport SEXP forest_forest_tree__set_root_subtree(SEXP ptrSEXP, SEXP valueSEXP) {
+void forest_tree__set_root_subtree(Rcpp::RObject x, forest::forest_tree value);
+RcppExport SEXP forest_forest_tree__set_root_subtree(SEXP xSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< forest::forest_tree >::type value(valueSEXP );
-        forest_tree__set_root_subtree(ptr, value);
+        forest_tree__set_root_subtree(x, value);
     }
     return R_NilValue;
 END_RCPP
 }
 // forest_subtree__set_root_subtree
-void forest_subtree__set_root_subtree(Rcpp::XPtr<forest::forest_subtree> ptr, forest::forest_tree value);
-RcppExport SEXP forest_forest_subtree__set_root_subtree(SEXP ptrSEXP, SEXP valueSEXP) {
+void forest_subtree__set_root_subtree(Rcpp::RObject x, forest::forest_tree value);
+RcppExport SEXP forest_forest_subtree__set_root_subtree(SEXP xSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_subtree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< forest::forest_tree >::type value(valueSEXP );
-        forest_subtree__set_root_subtree(ptr, value);
+        forest_subtree__set_root_subtree(x, value);
     }
     return R_NilValue;
 END_RCPP
 }
 // forest_tree__root_node
-forest::forest_node forest_tree__root_node(Rcpp::XPtr<forest::forest_tree> ptr);
-RcppExport SEXP forest_forest_tree__root_node(SEXP ptrSEXP) {
+forest::forest_node forest_tree__root_node(Rcpp::RObject x);
+RcppExport SEXP forest_forest_tree__root_node(SEXP xSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
-        forest::forest_node __result = forest_tree__root_node(ptr);
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
+        forest::forest_node __result = forest_tree__root_node(x);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -238,14 +238,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // forest_subtree__root_node
-forest::forest_node forest_subtree__root_node(Rcpp::XPtr<forest::forest_subtree> ptr);
-RcppExport SEXP forest_forest_subtree__root_node(SEXP ptrSEXP) {
+forest::forest_node forest_subtree__root_node(Rcpp::RObject x);
+RcppExport SEXP forest_forest_subtree__root_node(SEXP xSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_subtree> >::type ptr(ptrSEXP );
-        forest::forest_node __result = forest_subtree__root_node(ptr);
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
+        forest::forest_node __result = forest_subtree__root_node(x);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -253,41 +253,41 @@ BEGIN_RCPP
 END_RCPP
 }
 // forest_tree__set_root_node
-void forest_tree__set_root_node(Rcpp::XPtr<forest::forest_tree> ptr, forest::forest_node value);
-RcppExport SEXP forest_forest_tree__set_root_node(SEXP ptrSEXP, SEXP valueSEXP) {
+void forest_tree__set_root_node(Rcpp::RObject x, forest::forest_node value);
+RcppExport SEXP forest_forest_tree__set_root_node(SEXP xSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< forest::forest_node >::type value(valueSEXP );
-        forest_tree__set_root_node(ptr, value);
+        forest_tree__set_root_node(x, value);
     }
     return R_NilValue;
 END_RCPP
 }
 // forest_subtree__set_root_node
-void forest_subtree__set_root_node(Rcpp::XPtr<forest::forest_subtree> ptr, forest::forest_node value);
-RcppExport SEXP forest_forest_subtree__set_root_node(SEXP ptrSEXP, SEXP valueSEXP) {
+void forest_subtree__set_root_node(Rcpp::RObject x, forest::forest_node value);
+RcppExport SEXP forest_forest_subtree__set_root_node(SEXP xSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_subtree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< forest::forest_node >::type value(valueSEXP );
-        forest_subtree__set_root_node(ptr, value);
+        forest_subtree__set_root_node(x, value);
     }
     return R_NilValue;
 END_RCPP
 }
 // forest_tree__child_subtree
-forest::forest_subtree forest_tree__child_subtree(Rcpp::XPtr<forest::forest_tree> ptr, forest::util::index idx);
-RcppExport SEXP forest_forest_tree__child_subtree(SEXP ptrSEXP, SEXP idxSEXP) {
+forest::forest_subtree forest_tree__child_subtree(Rcpp::RObject x, forest::util::index idx);
+RcppExport SEXP forest_forest_tree__child_subtree(SEXP xSEXP, SEXP idxSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< forest::util::index >::type idx(idxSEXP );
-        forest::forest_subtree __result = forest_tree__child_subtree(ptr, idx);
+        forest::forest_subtree __result = forest_tree__child_subtree(x, idx);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -295,15 +295,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // forest_subtree__child_subtree
-forest::forest_subtree forest_subtree__child_subtree(Rcpp::XPtr<forest::forest_subtree> ptr, forest::util::index idx);
-RcppExport SEXP forest_forest_subtree__child_subtree(SEXP ptrSEXP, SEXP idxSEXP) {
+forest::forest_subtree forest_subtree__child_subtree(Rcpp::RObject x, forest::util::index idx);
+RcppExport SEXP forest_forest_subtree__child_subtree(SEXP xSEXP, SEXP idxSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_subtree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< forest::util::index >::type idx(idxSEXP );
-        forest::forest_subtree __result = forest_subtree__child_subtree(ptr, idx);
+        forest::forest_subtree __result = forest_subtree__child_subtree(x, idx);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -311,43 +311,43 @@ BEGIN_RCPP
 END_RCPP
 }
 // forest_tree__set_child_subtree
-void forest_tree__set_child_subtree(Rcpp::XPtr<forest::forest_tree> ptr, forest::util::index idx, forest::forest_tree value);
-RcppExport SEXP forest_forest_tree__set_child_subtree(SEXP ptrSEXP, SEXP idxSEXP, SEXP valueSEXP) {
+void forest_tree__set_child_subtree(Rcpp::RObject x, forest::util::index idx, forest::forest_tree value);
+RcppExport SEXP forest_forest_tree__set_child_subtree(SEXP xSEXP, SEXP idxSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< forest::util::index >::type idx(idxSEXP );
         Rcpp::traits::input_parameter< forest::forest_tree >::type value(valueSEXP );
-        forest_tree__set_child_subtree(ptr, idx, value);
+        forest_tree__set_child_subtree(x, idx, value);
     }
     return R_NilValue;
 END_RCPP
 }
 // forest_subtree__set_child_subtree
-void forest_subtree__set_child_subtree(Rcpp::XPtr<forest::forest_subtree> ptr, forest::util::index idx, forest::forest_tree value);
-RcppExport SEXP forest_forest_subtree__set_child_subtree(SEXP ptrSEXP, SEXP idxSEXP, SEXP valueSEXP) {
+void forest_subtree__set_child_subtree(Rcpp::RObject x, forest::util::index idx, forest::forest_tree value);
+RcppExport SEXP forest_forest_subtree__set_child_subtree(SEXP xSEXP, SEXP idxSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_subtree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< forest::util::index >::type idx(idxSEXP );
         Rcpp::traits::input_parameter< forest::forest_tree >::type value(valueSEXP );
-        forest_subtree__set_child_subtree(ptr, idx, value);
+        forest_subtree__set_child_subtree(x, idx, value);
     }
     return R_NilValue;
 END_RCPP
 }
 // forest_tree__child_node
-forest::forest_node forest_tree__child_node(Rcpp::XPtr<forest::forest_tree> ptr, forest::util::index idx);
-RcppExport SEXP forest_forest_tree__child_node(SEXP ptrSEXP, SEXP idxSEXP) {
+forest::forest_node forest_tree__child_node(Rcpp::RObject x, forest::util::index idx);
+RcppExport SEXP forest_forest_tree__child_node(SEXP xSEXP, SEXP idxSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< forest::util::index >::type idx(idxSEXP );
-        forest::forest_node __result = forest_tree__child_node(ptr, idx);
+        forest::forest_node __result = forest_tree__child_node(x, idx);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -355,15 +355,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // forest_subtree__child_node
-forest::forest_node forest_subtree__child_node(Rcpp::XPtr<forest::forest_subtree> ptr, forest::util::index idx);
-RcppExport SEXP forest_forest_subtree__child_node(SEXP ptrSEXP, SEXP idxSEXP) {
+forest::forest_node forest_subtree__child_node(Rcpp::RObject x, forest::util::index idx);
+RcppExport SEXP forest_forest_subtree__child_node(SEXP xSEXP, SEXP idxSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_subtree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< forest::util::index >::type idx(idxSEXP );
-        forest::forest_node __result = forest_subtree__child_node(ptr, idx);
+        forest::forest_node __result = forest_subtree__child_node(x, idx);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -371,43 +371,43 @@ BEGIN_RCPP
 END_RCPP
 }
 // forest_tree__set_child_node
-void forest_tree__set_child_node(Rcpp::XPtr<forest::forest_tree> ptr, forest::util::index idx, forest::forest_node value);
-RcppExport SEXP forest_forest_tree__set_child_node(SEXP ptrSEXP, SEXP idxSEXP, SEXP valueSEXP) {
+void forest_tree__set_child_node(Rcpp::RObject x, forest::util::index idx, forest::forest_node value);
+RcppExport SEXP forest_forest_tree__set_child_node(SEXP xSEXP, SEXP idxSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< forest::util::index >::type idx(idxSEXP );
         Rcpp::traits::input_parameter< forest::forest_node >::type value(valueSEXP );
-        forest_tree__set_child_node(ptr, idx, value);
+        forest_tree__set_child_node(x, idx, value);
     }
     return R_NilValue;
 END_RCPP
 }
 // forest_subtree__set_child_node
-void forest_subtree__set_child_node(Rcpp::XPtr<forest::forest_subtree> ptr, forest::util::index idx, forest::forest_node value);
-RcppExport SEXP forest_forest_subtree__set_child_node(SEXP ptrSEXP, SEXP idxSEXP, SEXP valueSEXP) {
+void forest_subtree__set_child_node(Rcpp::RObject x, forest::util::index idx, forest::forest_node value);
+RcppExport SEXP forest_forest_subtree__set_child_node(SEXP xSEXP, SEXP idxSEXP, SEXP valueSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_subtree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< forest::util::index >::type idx(idxSEXP );
         Rcpp::traits::input_parameter< forest::forest_node >::type value(valueSEXP );
-        forest_subtree__set_child_node(ptr, idx, value);
+        forest_subtree__set_child_node(x, idx, value);
     }
     return R_NilValue;
 END_RCPP
 }
 // forest_tree__subtree
-forest::forest_subtree forest_tree__subtree(Rcpp::XPtr<forest::forest_tree> ptr, std::string label);
-RcppExport SEXP forest_forest_tree__subtree(SEXP ptrSEXP, SEXP labelSEXP) {
+forest::forest_subtree forest_tree__subtree(Rcpp::RObject x, std::string label);
+RcppExport SEXP forest_forest_tree__subtree(SEXP xSEXP, SEXP labelSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< std::string >::type label(labelSEXP );
-        forest::forest_subtree __result = forest_tree__subtree(ptr, label);
+        forest::forest_subtree __result = forest_tree__subtree(x, label);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -415,15 +415,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // forest_subtree__subtree
-forest::forest_subtree forest_subtree__subtree(Rcpp::XPtr<forest::forest_subtree> ptr, std::string label);
-RcppExport SEXP forest_forest_subtree__subtree(SEXP ptrSEXP, SEXP labelSEXP) {
+forest::forest_subtree forest_subtree__subtree(Rcpp::RObject x, std::string label);
+RcppExport SEXP forest_forest_subtree__subtree(SEXP xSEXP, SEXP labelSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_subtree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< std::string >::type label(labelSEXP );
-        forest::forest_subtree __result = forest_subtree__subtree(ptr, label);
+        forest::forest_subtree __result = forest_subtree__subtree(x, label);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -532,6 +532,18 @@ BEGIN_RCPP
     }
     UNPROTECT(1);
     return __sexp_result;
+END_RCPP
+}
+// forest_tree__clear
+void forest_tree__clear(Rcpp::RObject x);
+RcppExport SEXP forest_forest_tree__clear(SEXP xSEXP) {
+BEGIN_RCPP
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
+        forest_tree__clear(x);
+    }
+    return R_NilValue;
 END_RCPP
 }
 // forest_tree__count_tips
@@ -671,64 +683,64 @@ BEGIN_RCPP
 END_RCPP
 }
 // forest_tree__update_heights
-void forest_tree__update_heights(Rcpp::XPtr<forest::forest_tree> ptr);
-RcppExport SEXP forest_forest_tree__update_heights(SEXP ptrSEXP) {
+void forest_tree__update_heights(Rcpp::RObject x);
+RcppExport SEXP forest_forest_tree__update_heights(SEXP xSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
-        forest_tree__update_heights(ptr);
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
+        forest_tree__update_heights(x);
     }
     return R_NilValue;
 END_RCPP
 }
 // forest_tree__collapse_singles
-void forest_tree__collapse_singles(Rcpp::XPtr<forest::forest_tree> ptr);
-RcppExport SEXP forest_forest_tree__collapse_singles(SEXP ptrSEXP) {
+void forest_tree__collapse_singles(Rcpp::RObject x);
+RcppExport SEXP forest_forest_tree__collapse_singles(SEXP xSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
-        forest_tree__collapse_singles(ptr);
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
+        forest_tree__collapse_singles(x);
     }
     return R_NilValue;
 END_RCPP
 }
 // forest_tree__ladderise
-void forest_tree__ladderise(Rcpp::XPtr<forest::forest_tree> ptr, bool right);
-RcppExport SEXP forest_forest_tree__ladderise(SEXP ptrSEXP, SEXP rightSEXP) {
+void forest_tree__ladderise(Rcpp::RObject x, bool right);
+RcppExport SEXP forest_forest_tree__ladderise(SEXP xSEXP, SEXP rightSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< bool >::type right(rightSEXP );
-        forest_tree__ladderise(ptr, right);
+        forest_tree__ladderise(x, right);
     }
     return R_NilValue;
 END_RCPP
 }
 // forest_tree__drop_tips_by_label
-void forest_tree__drop_tips_by_label(Rcpp::XPtr<forest::forest_tree> ptr, const std::vector<std::string>& labels);
-RcppExport SEXP forest_forest_tree__drop_tips_by_label(SEXP ptrSEXP, SEXP labelsSEXP) {
+void forest_tree__drop_tips_by_label(Rcpp::RObject x, const std::vector<std::string>& labels);
+RcppExport SEXP forest_forest_tree__drop_tips_by_label(SEXP xSEXP, SEXP labelsSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< const std::vector<std::string>& >::type labels(labelsSEXP );
-        forest_tree__drop_tips_by_label(ptr, labels);
+        forest_tree__drop_tips_by_label(x, labels);
     }
     return R_NilValue;
 END_RCPP
 }
 // forest_tree__rotate
-void forest_tree__rotate(Rcpp::XPtr<forest::forest_tree> ptr, std::string label);
-RcppExport SEXP forest_forest_tree__rotate(SEXP ptrSEXP, SEXP labelSEXP) {
+void forest_tree__rotate(Rcpp::RObject x, std::string label);
+RcppExport SEXP forest_forest_tree__rotate(SEXP xSEXP, SEXP labelSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< std::string >::type label(labelSEXP );
-        forest_tree__rotate(ptr, label);
+        forest_tree__rotate(x, label);
     }
     return R_NilValue;
 END_RCPP
@@ -752,16 +764,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // forest_tree__associate_data
-void forest_tree__associate_data(Rcpp::XPtr<forest::forest_tree> ptr, SEXP data, bool tip, bool node);
-RcppExport SEXP forest_forest_tree__associate_data(SEXP ptrSEXP, SEXP dataSEXP, SEXP tipSEXP, SEXP nodeSEXP) {
+void forest_tree__associate_data(Rcpp::RObject x, SEXP data, bool tip, bool node);
+RcppExport SEXP forest_forest_tree__associate_data(SEXP xSEXP, SEXP dataSEXP, SEXP tipSEXP, SEXP nodeSEXP) {
 BEGIN_RCPP
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
+        Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP );
         Rcpp::traits::input_parameter< SEXP >::type data(dataSEXP );
         Rcpp::traits::input_parameter< bool >::type tip(tipSEXP );
         Rcpp::traits::input_parameter< bool >::type node(nodeSEXP );
-        forest_tree__associate_data(ptr, data, tip, node);
+        forest_tree__associate_data(x, data, tip, node);
     }
     return R_NilValue;
 END_RCPP
@@ -781,18 +793,6 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
-// forest_tree__clear
-void forest_tree__clear(Rcpp::XPtr<forest::forest_tree> ptr);
-RcppExport SEXP forest_forest_tree__clear(SEXP ptrSEXP) {
-BEGIN_RCPP
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< Rcpp::XPtr<forest::forest_tree> >::type ptr(ptrSEXP );
-        forest_tree__clear(ptr);
-    }
-    return R_NilValue;
-END_RCPP
-}
 // forest_tree__copy
 forest::forest_tree forest_tree__copy(const forest::forest_tree& tr);
 RcppExport SEXP forest_forest_tree__copy(SEXP trSEXP) {
@@ -802,21 +802,6 @@ BEGIN_RCPP
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< const forest::forest_tree& >::type tr(trSEXP );
         forest::forest_tree __result = forest_tree__copy(tr);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// forest_subtree__copy
-forest::forest_subtree forest_subtree__copy(const forest::forest_subtree& tr);
-RcppExport SEXP forest_forest_subtree__copy(SEXP trSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const forest::forest_subtree& >::type tr(trSEXP );
-        forest::forest_subtree __result = forest_subtree__copy(tr);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
@@ -958,15 +943,15 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
-// forest_subtree__to_tree
-forest::forest_tree forest_subtree__to_tree(const forest::forest_subtree& tr);
-RcppExport SEXP forest_forest_subtree__to_tree(SEXP trSEXP) {
+// forest_subtree__subtree_to_tree
+forest::forest_tree forest_subtree__subtree_to_tree(const forest::forest_subtree& tr);
+RcppExport SEXP forest_forest_subtree__subtree_to_tree(SEXP trSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< const forest::forest_subtree& >::type tr(trSEXP );
-        forest::forest_tree __result = forest_subtree__to_tree(tr);
+        forest::forest_tree __result = forest_subtree__subtree_to_tree(tr);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

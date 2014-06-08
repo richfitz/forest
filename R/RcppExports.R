@@ -41,76 +41,76 @@ forest_node__ctor <- function(label, length, data) {
     .Call('forest_forest_node__ctor', PACKAGE = 'forest', label, length, data)
 }
 
-forest_tree__root_subtree <- function(ptr) {
-    .Call('forest_forest_tree__root_subtree', PACKAGE = 'forest', ptr)
+forest_tree__root_subtree <- function(x) {
+    .Call('forest_forest_tree__root_subtree', PACKAGE = 'forest', x)
 }
 
-forest_subtree__root_subtree <- function(ptr) {
-    .Call('forest_forest_subtree__root_subtree', PACKAGE = 'forest', ptr)
+forest_subtree__root_subtree <- function(x) {
+    .Call('forest_forest_subtree__root_subtree', PACKAGE = 'forest', x)
 }
 
-forest_tree__set_root_subtree <- function(ptr, value) {
-    invisible(.Call('forest_forest_tree__set_root_subtree', PACKAGE = 'forest', ptr, value))
+forest_tree__set_root_subtree <- function(x, value) {
+    invisible(.Call('forest_forest_tree__set_root_subtree', PACKAGE = 'forest', x, value))
 }
 
-forest_subtree__set_root_subtree <- function(ptr, value) {
-    invisible(.Call('forest_forest_subtree__set_root_subtree', PACKAGE = 'forest', ptr, value))
+forest_subtree__set_root_subtree <- function(x, value) {
+    invisible(.Call('forest_forest_subtree__set_root_subtree', PACKAGE = 'forest', x, value))
 }
 
-forest_tree__root_node <- function(ptr) {
-    .Call('forest_forest_tree__root_node', PACKAGE = 'forest', ptr)
+forest_tree__root_node <- function(x) {
+    .Call('forest_forest_tree__root_node', PACKAGE = 'forest', x)
 }
 
-forest_subtree__root_node <- function(ptr) {
-    .Call('forest_forest_subtree__root_node', PACKAGE = 'forest', ptr)
+forest_subtree__root_node <- function(x) {
+    .Call('forest_forest_subtree__root_node', PACKAGE = 'forest', x)
 }
 
-forest_tree__set_root_node <- function(ptr, value) {
-    invisible(.Call('forest_forest_tree__set_root_node', PACKAGE = 'forest', ptr, value))
+forest_tree__set_root_node <- function(x, value) {
+    invisible(.Call('forest_forest_tree__set_root_node', PACKAGE = 'forest', x, value))
 }
 
-forest_subtree__set_root_node <- function(ptr, value) {
-    invisible(.Call('forest_forest_subtree__set_root_node', PACKAGE = 'forest', ptr, value))
+forest_subtree__set_root_node <- function(x, value) {
+    invisible(.Call('forest_forest_subtree__set_root_node', PACKAGE = 'forest', x, value))
 }
 
-forest_tree__child_subtree <- function(ptr, idx) {
-    .Call('forest_forest_tree__child_subtree', PACKAGE = 'forest', ptr, idx)
+forest_tree__child_subtree <- function(x, idx) {
+    .Call('forest_forest_tree__child_subtree', PACKAGE = 'forest', x, idx)
 }
 
-forest_subtree__child_subtree <- function(ptr, idx) {
-    .Call('forest_forest_subtree__child_subtree', PACKAGE = 'forest', ptr, idx)
+forest_subtree__child_subtree <- function(x, idx) {
+    .Call('forest_forest_subtree__child_subtree', PACKAGE = 'forest', x, idx)
 }
 
-forest_tree__set_child_subtree <- function(ptr, idx, value) {
-    invisible(.Call('forest_forest_tree__set_child_subtree', PACKAGE = 'forest', ptr, idx, value))
+forest_tree__set_child_subtree <- function(x, idx, value) {
+    invisible(.Call('forest_forest_tree__set_child_subtree', PACKAGE = 'forest', x, idx, value))
 }
 
-forest_subtree__set_child_subtree <- function(ptr, idx, value) {
-    invisible(.Call('forest_forest_subtree__set_child_subtree', PACKAGE = 'forest', ptr, idx, value))
+forest_subtree__set_child_subtree <- function(x, idx, value) {
+    invisible(.Call('forest_forest_subtree__set_child_subtree', PACKAGE = 'forest', x, idx, value))
 }
 
-forest_tree__child_node <- function(ptr, idx) {
-    .Call('forest_forest_tree__child_node', PACKAGE = 'forest', ptr, idx)
+forest_tree__child_node <- function(x, idx) {
+    .Call('forest_forest_tree__child_node', PACKAGE = 'forest', x, idx)
 }
 
-forest_subtree__child_node <- function(ptr, idx) {
-    .Call('forest_forest_subtree__child_node', PACKAGE = 'forest', ptr, idx)
+forest_subtree__child_node <- function(x, idx) {
+    .Call('forest_forest_subtree__child_node', PACKAGE = 'forest', x, idx)
 }
 
-forest_tree__set_child_node <- function(ptr, idx, value) {
-    invisible(.Call('forest_forest_tree__set_child_node', PACKAGE = 'forest', ptr, idx, value))
+forest_tree__set_child_node <- function(x, idx, value) {
+    invisible(.Call('forest_forest_tree__set_child_node', PACKAGE = 'forest', x, idx, value))
 }
 
-forest_subtree__set_child_node <- function(ptr, idx, value) {
-    invisible(.Call('forest_forest_subtree__set_child_node', PACKAGE = 'forest', ptr, idx, value))
+forest_subtree__set_child_node <- function(x, idx, value) {
+    invisible(.Call('forest_forest_subtree__set_child_node', PACKAGE = 'forest', x, idx, value))
 }
 
-forest_tree__subtree <- function(ptr, label) {
-    .Call('forest_forest_tree__subtree', PACKAGE = 'forest', ptr, label)
+forest_tree__subtree <- function(x, label) {
+    .Call('forest_forest_tree__subtree', PACKAGE = 'forest', x, label)
 }
 
-forest_subtree__subtree <- function(ptr, label) {
-    .Call('forest_forest_subtree__subtree', PACKAGE = 'forest', ptr, label)
+forest_subtree__subtree <- function(x, label) {
+    .Call('forest_forest_subtree__subtree', PACKAGE = 'forest', x, label)
 }
 
 forest_tree__ctor_empty <- function() {
@@ -139,6 +139,10 @@ forest_tree__childless <- function(tr) {
 
 forest_tree__representation <- function(tr) {
     .Call('forest_forest_tree__representation', PACKAGE = 'forest', tr)
+}
+
+forest_tree__clear <- function(x) {
+    invisible(.Call('forest_forest_tree__clear', PACKAGE = 'forest', x))
 }
 
 forest_tree__count_tips <- function(tr) {
@@ -177,48 +181,40 @@ forest_tree__is_ultrametric <- function(tr, eps) {
     .Call('forest_forest_tree__is_ultrametric', PACKAGE = 'forest', tr, eps)
 }
 
-forest_tree__update_heights <- function(ptr) {
-    invisible(.Call('forest_forest_tree__update_heights', PACKAGE = 'forest', ptr))
+forest_tree__update_heights <- function(x) {
+    invisible(.Call('forest_forest_tree__update_heights', PACKAGE = 'forest', x))
 }
 
-forest_tree__collapse_singles <- function(ptr) {
-    invisible(.Call('forest_forest_tree__collapse_singles', PACKAGE = 'forest', ptr))
+forest_tree__collapse_singles <- function(x) {
+    invisible(.Call('forest_forest_tree__collapse_singles', PACKAGE = 'forest', x))
 }
 
-forest_tree__ladderise <- function(ptr, right) {
-    invisible(.Call('forest_forest_tree__ladderise', PACKAGE = 'forest', ptr, right))
+forest_tree__ladderise <- function(x, right) {
+    invisible(.Call('forest_forest_tree__ladderise', PACKAGE = 'forest', x, right))
 }
 
-forest_tree__drop_tips_by_label <- function(ptr, labels) {
-    invisible(.Call('forest_forest_tree__drop_tips_by_label', PACKAGE = 'forest', ptr, labels))
+forest_tree__drop_tips_by_label <- function(x, labels) {
+    invisible(.Call('forest_forest_tree__drop_tips_by_label', PACKAGE = 'forest', x, labels))
 }
 
-forest_tree__rotate <- function(ptr, label) {
-    invisible(.Call('forest_forest_tree__rotate', PACKAGE = 'forest', ptr, label))
+forest_tree__rotate <- function(x, label) {
+    invisible(.Call('forest_forest_tree__rotate', PACKAGE = 'forest', x, label))
 }
 
 forest_tree__check_names <- function(tr, labels, tip, node) {
     .Call('forest_forest_tree__check_names', PACKAGE = 'forest', tr, labels, tip, node)
 }
 
-forest_tree__associate_data <- function(ptr, data, tip, node) {
-    invisible(.Call('forest_forest_tree__associate_data', PACKAGE = 'forest', ptr, data, tip, node))
+forest_tree__associate_data <- function(x, data, tip, node) {
+    invisible(.Call('forest_forest_tree__associate_data', PACKAGE = 'forest', x, data, tip, node))
 }
 
 forest_tree__copy_structure <- function(tr) {
     .Call('forest_forest_tree__copy_structure', PACKAGE = 'forest', tr)
 }
 
-forest_tree__clear <- function(ptr) {
-    invisible(.Call('forest_forest_tree__clear', PACKAGE = 'forest', ptr))
-}
-
 forest_tree__copy <- function(tr) {
     .Call('forest_forest_tree__copy', PACKAGE = 'forest', tr)
-}
-
-forest_subtree__copy <- function(tr) {
-    .Call('forest_forest_subtree__copy', PACKAGE = 'forest', tr)
 }
 
 forest_subtree__empty <- function(tr) {
@@ -257,7 +253,7 @@ forest_subtree__node_labels <- function(tr) {
     .Call('forest_forest_subtree__node_labels', PACKAGE = 'forest', tr)
 }
 
-forest_subtree__to_tree <- function(tr) {
-    .Call('forest_forest_subtree__to_tree', PACKAGE = 'forest', tr)
+forest_subtree__subtree_to_tree <- function(tr) {
+    .Call('forest_forest_subtree__subtree_to_tree', PACKAGE = 'forest', tr)
 }
 

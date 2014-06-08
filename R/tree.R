@@ -180,7 +180,7 @@ forest_subtree$methods(initialize=function(x=NULL) {
 
 forest_subtree$methods(
   # copy               = function() forest_subtree__copy(ptr),
-  to_tree            = function() forest_subtree__to_tree(ptr),
+  to_tree            = function() forest_subtree__subtree_to_tree(ptr),
   is_empty           = function() forest_subtree__empty(ptr),
   size               = function() forest_subtree__size(ptr),
   arity              = function() forest_subtree__arity(ptr),

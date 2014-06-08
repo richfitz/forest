@@ -98,7 +98,7 @@ node<T> node_from_R(Rcpp::RObject x) {
 // something) this will not work and we'll have to use some other
 // magic.
 template <typename T>
-Rcpp::XPtr<treetree::tree<T> > tree_ptr_from_R(Rcpp::RObject x) {
+Rcpp::XPtr<treetree::tree<T> > ptr_tree_from_R(Rcpp::RObject x) {
   typedef Rcpp::XPtr<treetree::tree<T> > ptr;
   if (x.hasAttribute("class") &&
       Rcpp::as<std::string>(x.attr("class")) == "forest_tree") {
@@ -114,7 +114,7 @@ Rcpp::XPtr<treetree::tree<T> > tree_ptr_from_R(Rcpp::RObject x) {
 }
 
 template <typename T>
-Rcpp::XPtr<treetree::subtree<T> > subtree_ptr_from_R(Rcpp::RObject x) {
+Rcpp::XPtr<treetree::subtree<T> > ptr_subtree_from_R(Rcpp::RObject x) {
   typedef Rcpp::XPtr<treetree::subtree<T> > ptr;
   if (x.hasAttribute("class") &&
       Rcpp::as<std::string>(x.attr("class")) == "forest_subtree") {
@@ -131,12 +131,12 @@ Rcpp::XPtr<treetree::subtree<T> > subtree_ptr_from_R(Rcpp::RObject x) {
 
 template <typename T>
 treetree::tree<T>& tree_from_R(Rcpp::RObject x) {
-  return *tree_ptr_from_R<T>(x);
+  return *ptr_tree_from_R <T>(x);
 }
 
 template <typename T>
 treetree::subtree<T>& subtree_from_R(Rcpp::RObject x) {
-  return *subtree_ptr_from_R<T>(x);
+  return *ptr_subtree_from_R<T>(x);
 }
 
 }

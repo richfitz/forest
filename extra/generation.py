@@ -8,11 +8,12 @@ def header():
     cog.outl('// *** Generated section: do not edit until the end marker')
 
 def definition(args):
-    return ', '.join(' '.join(i) for i in args)
+    return ', '.join(' '.join(i[:2]) for i in args)
 
 # We take the *last* element of the tuple/list here so that argument
 # names can be rewritten if they are modified within the body of a
-# function.  It's a hack for sure.
+# function.  So the tuples/lists here really should be 2 or 3 elements
+# long.
 def call(args):
     return ', '.join([i[-1] for i in args])
 
@@ -33,102 +34,67 @@ def call(args):
 ## Call a nonconst method of a class.
 ##   - Need to take a pointer
 ##   - Never returns a value
+##
+## Call a function that changes the tree
+##   - Need to take a pointer
+##   - Never returns a value
 
-def export_const_method(class_name, method, return_type, args=[]):
-    template = """// [[Rcpp::export]]
-${return_type} ${class_name}__${method}(${definition}) {
-  return tr.${method}(${call});
-}
-"""
-    args = [('const forest::%s&' % class_name, 'tr')] + args
-    d = {'class_name': class_name, 'method': method,
+## Still need to implement nonconst class method
+
+def build_dict(class_name, function, return_type, args, pointer, method=False):
+    if pointer:
+        arg1 = [('Rcpp::RObject', 'x', 'ptr')]
+    else:
+        arg1 = [('const forest::%s&' % class_name, 'tr')]
+    args = arg1 + args
+    call_args = args[1:] if method else args
+    d = {'class_name': class_name,
+         'function': function,
+         'tree_type': 'tree' if class_name == "forest_tree" else "subtree",
+         'definition': definition(args),
          'return_type': return_type,
-         'definition': definition(args),
-         'call': call(args[1:])}
-    cog.out(tp(template, d))
+         'return_statement': '' if return_type == 'void' else 'return ',
+         'call': ('*' if pointer and not method else '') + call(call_args)}
+    return d
 
-def export_const_function(class_name, function, return_type, args=[]):
-    template = """// [[Rcpp::export]]
-${return_type} ${class_name}__${function}(${definition}) {
-  return forest::${function}(${call});
-}
-"""
-    args = [('const forest::%s&' % class_name, 'tr')] + args
-    d = {'class_name': class_name, 'function': function,
-         'return_type': return_type,
-         'definition': definition(args),
-         'call': call(args)}
-    cog.out(tp(template, d))
-
-def export_nonconst(class_name, function, args=[]):
-    template = """// [[Rcpp::export]]
-void ${class_name}__${function}(${definition}) {
-  forest::util::check_ptr_valid(ptr);
-  forest::${function}(${call});
-}
-"""
-    args = [('Rcpp::XPtr<forest::%s>' % class_name, 'ptr')] + args
-    d = {'class_name': class_name, 'function': function,
-         'definition': definition(args),
-         'call': '*' + call(args)}
-    cog.out(tp(template, d))
-
-## There is a general form in here somewhere that the other functions
-## could use.  A similar version can be written for const_ref
 def export_ptr(class_name, function, return_type='void', args=[]):
     template = """// [[Rcpp::export]]
 ${return_type} ${class_name}__${function}(${definition}) {
-  forest::util::check_ptr_valid(ptr);
+  Rcpp::XPtr<forest::${class_name}> ptr =
+    forest::exporters::ptr_${tree_type}_from_R<forest::forest_node>(x);
   ${return_statement}forest::${function}(${call});
 }
 """
-    args = [('Rcpp::XPtr<forest::%s>' % class_name, 'ptr')] + args
-    d = {'class_name': class_name, 'function': function,
-         'definition': definition(args),
-         'return_type': return_type,
-         'return_statement': '' if return_type == 'void' else 'return ',
-         'call': '*' + call(args)}
+    d = build_dict(class_name, function, return_type, args, True)
     cog.out(tp(template, d))
 
-# Untested but looks about right.
-# def export_cr(class_name, function, return_type='void', args=[]):
-#     template = """// [[Rcpp::export]]
-# ${return_type} ${class_name}__${function}(${definition}) {
-#   ${return_statement}forest::${function}(${call});
-# }
-# """
-#     args = [('const forest::%s&' % class_name, 'tr')] + args
-#     d = {'class_name': class_name, 'function': function,
-#          'definition': definition(args),
-#          'return_type': return_type,
-#          'return_statement': '' if return_type == 'void' else 'return ',
-#          'call': '*' + call(args)}
-#     cog.out(tp(template, d))
-
-# This is really annoying - we need to both check and sanitise the
-# index.  Another way of doing this would be to declare a type
-# "Index", which we could range check automatically on the way in.
-# Still will need an extra line though.  That also means that we
-# change the *name* of the index argument and this ends up as a
-# complete mess.
-def export_child(class_name, value_type, get):
+## Note that using this with 'void' is probably stupid.  I should
+## probably give a warning here.
+def export_cr(class_name, function, return_type='void', args=[]):
     template = """// [[Rcpp::export]]
 ${return_type} ${class_name}__${function}(${definition}) {
-  forest::util::check_ptr_valid(ptr);
-  size_t i = forest::util::safe_index_from_r(idx, ptr->arity());
   ${return_statement}forest::${function}(${call});
 }
 """
-    return_type = 'forest::forest_' + value_type if get else 'void'
-    function = 'child_' + value_type
-    args = [('Rcpp::XPtr<forest::%s>' % class_name, 'ptr'),
-            ('int', 'idx', 'i')]
-    if not get:
-        args += [(value_type, 'value')]
-        function = 'set_' + function
-    d = {'class_name': class_name, 'function': function,
-         'definition': definition(args),
-         'return_type': return_type,
-         'return_statement': '' if return_type == 'void' else 'return ',
-         'call': '*' + call(args)}
+    d = build_dict(class_name, function, return_type, args, False)
+    cog.out(tp(template, d))
+
+def export_ptr_method(class_name, function, return_type='void', args=[]):
+    template = """// [[Rcpp::export]]
+${return_type} ${class_name}__${function}(${definition}) {
+  Rcpp::XPtr<forest::${class_name}> ptr =
+    forest::exporters::ptr_${tree_type}_from_R<forest::forest_node>(x);
+  ${return_statement}ptr->${function}(${call});
+}
+"""
+    d = build_dict(class_name, function, return_type, args, True, True)
+    cog.out(tp(template, d))
+
+def export_cr_method(class_name, function, return_type, args=[]):
+    template = """// [[Rcpp::export]]
+${return_type} ${class_name}__${function}(${definition}) {
+  ${return_statement}tr.${function}(${call});
+}
+"""
+    d = build_dict(class_name, function, return_type, args, False, True)
     cog.out(tp(template, d))

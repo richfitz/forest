@@ -30,38 +30,39 @@ forest::forest_tree forest_tree__ctor_node(forest::forest_node nd) {
 from generation import *
 header()
 # Basic information:
-export_const_method('forest_tree', 'empty', 'bool')
-export_const_method('forest_tree', 'size', 'size_t')
-export_const_method('forest_tree', 'arity', 'size_t')
-export_const_method('forest_tree', 'childless', 'bool')
-export_const_function('forest_tree', 'representation', 'std::string')
+export_cr_method('forest_tree', 'empty', 'bool')
+export_cr_method('forest_tree', 'size', 'size_t')
+export_cr_method('forest_tree', 'arity', 'size_t')
+export_cr_method('forest_tree', 'childless', 'bool')
+export_cr('forest_tree', 'representation', 'std::string')
 
-export_const_function('forest_tree', 'count_tips', 'size_t')
-export_const_function('forest_tree', 'count_nodes', 'size_t')
-export_const_function('forest_tree', 'tip_labels', 'std::vector<std::string>')
-export_const_function('forest_tree', 'node_labels', 'std::vector<std::string>')
-export_const_function('forest_tree', 'heights', 'std::vector<double>')
-export_const_function('forest_tree', 'depths', 'std::vector<double>')
-export_const_function('forest_tree', 'is_binary',          'bool')
-export_const_function('forest_tree', 'has_branch_lengths', 'bool')
-export_const_function('forest_tree', 'is_ultrametric',     'bool',
-                      [('double', 'eps')])
+export_ptr_method('forest_tree', 'clear', 'void')
 
-export_nonconst('forest_tree', 'update_heights')
-export_nonconst('forest_tree', 'collapse_singles')
-export_nonconst('forest_tree', 'ladderise', [('bool', 'right')])
-export_nonconst('forest_tree', 'drop_tips_by_label',
-                [('const std::vector<std::string>&', 'labels')])
-export_nonconst('forest_tree', 'rotate', [('std::string', 'label')])
+export_cr('forest_tree', 'count_tips', 'size_t')
+export_cr('forest_tree', 'count_nodes', 'size_t')
+export_cr('forest_tree', 'tip_labels', 'std::vector<std::string>')
+export_cr('forest_tree', 'node_labels', 'std::vector<std::string>')
+export_cr('forest_tree', 'heights', 'std::vector<double>')
+export_cr('forest_tree', 'depths', 'std::vector<double>')
+export_cr('forest_tree', 'is_binary',          'bool')
+export_cr('forest_tree', 'has_branch_lengths', 'bool')
+export_cr('forest_tree', 'is_ultrametric',     'bool', [('double', 'eps')])
 
-export_const_function('forest_tree', 'check_names', 'bool',
-                      [('const std::vector<std::string>&', 'labels'),
-                       ('bool', 'tip'), ('bool', 'node')])
+export_ptr('forest_tree', 'update_heights')
+export_ptr('forest_tree', 'collapse_singles')
+export_ptr('forest_tree', 'ladderise',
+           args=[('bool', 'right')])
+export_ptr('forest_tree', 'drop_tips_by_label',
+           args=[('const std::vector<std::string>&', 'labels')])
+export_ptr('forest_tree', 'rotate', args=[('std::string', 'label')])
 
-export_nonconst('forest_tree', 'associate_data',
-                [('SEXP', 'data'), ('bool', 'tip'), ('bool', 'node')])
+export_cr('forest_tree', 'check_names', 'bool',
+          [('const std::vector<std::string>&', 'labels'),
+           ('bool', 'tip'), ('bool', 'node')])
 
-# TODO: copy
+export_ptr('forest_tree', 'associate_data',
+           args=[('SEXP', 'data'), ('bool', 'tip'), ('bool', 'node')])
+
 # TODO: equals(?)
 
 ]]]*/
@@ -85,6 +86,12 @@ bool forest_tree__childless(const forest::forest_tree& tr) {
 // [[Rcpp::export]]
 std::string forest_tree__representation(const forest::forest_tree& tr) {
   return forest::representation(tr);
+}
+// [[Rcpp::export]]
+void forest_tree__clear(Rcpp::RObject x) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
+  ptr->clear();
 }
 // [[Rcpp::export]]
 size_t forest_tree__count_tips(const forest::forest_tree& tr) {
@@ -123,28 +130,33 @@ bool forest_tree__is_ultrametric(const forest::forest_tree& tr, double eps) {
   return forest::is_ultrametric(tr, eps);
 }
 // [[Rcpp::export]]
-void forest_tree__update_heights(Rcpp::XPtr<forest::forest_tree> ptr) {
-  forest::util::check_ptr_valid(ptr);
+void forest_tree__update_heights(Rcpp::RObject x) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   forest::update_heights(*ptr);
 }
 // [[Rcpp::export]]
-void forest_tree__collapse_singles(Rcpp::XPtr<forest::forest_tree> ptr) {
-  forest::util::check_ptr_valid(ptr);
+void forest_tree__collapse_singles(Rcpp::RObject x) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   forest::collapse_singles(*ptr);
 }
 // [[Rcpp::export]]
-void forest_tree__ladderise(Rcpp::XPtr<forest::forest_tree> ptr, bool right) {
-  forest::util::check_ptr_valid(ptr);
+void forest_tree__ladderise(Rcpp::RObject x, bool right) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   forest::ladderise(*ptr, right);
 }
 // [[Rcpp::export]]
-void forest_tree__drop_tips_by_label(Rcpp::XPtr<forest::forest_tree> ptr, const std::vector<std::string>& labels) {
-  forest::util::check_ptr_valid(ptr);
+void forest_tree__drop_tips_by_label(Rcpp::RObject x, const std::vector<std::string>& labels) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   forest::drop_tips_by_label(*ptr, labels);
 }
 // [[Rcpp::export]]
-void forest_tree__rotate(Rcpp::XPtr<forest::forest_tree> ptr, std::string label) {
-  forest::util::check_ptr_valid(ptr);
+void forest_tree__rotate(Rcpp::RObject x, std::string label) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   forest::rotate(*ptr, label);
 }
 // [[Rcpp::export]]
@@ -152,8 +164,9 @@ bool forest_tree__check_names(const forest::forest_tree& tr, const std::vector<s
   return forest::check_names(tr, labels, tip, node);
 }
 // [[Rcpp::export]]
-void forest_tree__associate_data(Rcpp::XPtr<forest::forest_tree> ptr, SEXP data, bool tip, bool node) {
-  forest::util::check_ptr_valid(ptr);
+void forest_tree__associate_data(Rcpp::RObject x, SEXP data, bool tip, bool node) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   forest::associate_data(*ptr, data, tip, node);
 }
 //[[[end]]]
@@ -170,76 +183,6 @@ forest_tree__copy_structure(const forest::forest_tree& tr) {
   return forest::copy_structure<T>(treetree::const_subtree<T>(tr));
 }
 
-// This one also takes a pointer and returns non-void.  It's important
-// to take the pointer because we need to keep the link to the tree,
-// *I think* (TODO: check this)
-// //
-// // [[Rcpp::export]]
-// forest::forest_subtree
-// forest_tree__child_subtree(Rcpp::XPtr<forest::forest_tree> ptr, int idx) {
-//   forest::util::check_ptr_valid(ptr);
-//   size_t i = forest::util::safe_index_from_r(idx, ptr->arity());
-//   return forest::child_subtree(*ptr, i);
-// }
-
-// // [[Rcpp::export]]
-// forest::forest_node
-// forest_tree__child_node(Rcpp::XPtr<forest::forest_tree> ptr, int idx) {
-//   forest::util::check_ptr_valid(ptr);
-//   size_t i = forest::util::safe_index_from_r(idx, ptr->arity());
-//   return forest::child_node(*ptr, i);
-// }
-
-// // These could be done with export_nonconst()
-
-// // [[Rcpp::export]]
-// void
-// forest_tree__replace_child_subtree(Rcpp::XPtr<forest::forest_tree> ptr,
-//                                    size_t idx,
-//                                    const forest::forest_subtree& value) {
-//   forest::util::check_ptr_valid(ptr);
-//   size_t i = forest::util::safe_index_from_r(idx, ptr->arity());
-//   forest::replace_child_subtree(*ptr, i, value);
-// }
-
-// // [[Rcpp::export]]
-// void
-// forest_tree__replace_child_node(Rcpp::XPtr<forest::forest_tree> ptr,
-//                                 size_t idx,
-//                                 const forest::forest_node& value) {
-//   forest::util::check_ptr_valid(ptr);
-//   size_t i = forest::util::safe_index_from_r(idx, ptr->arity());
-//   forest::replace_child_node(*ptr, i, value);
-// }
-
-// // [[Rcpp::export]]
-// void
-// forest_subtree__replace_child_subtree(Rcpp::XPtr<forest::forest_subtree> ptr,
-//                                       size_t idx,
-//                                       const forest::forest_subtree& value) {
-//   forest::util::check_ptr_valid(ptr);
-//   size_t i = forest::util::safe_index_from_r(idx, ptr->arity());
-//   forest::replace_child_subtree(*ptr, i, value);
-// }
-
-// // [[Rcpp::export]]
-// void
-// forest_subtree__replace_child_node(Rcpp::XPtr<forest::forest_subtree> ptr,
-//                                    size_t idx,
-//                                    const forest::forest_node& value) {
-//   forest::util::check_ptr_valid(ptr);
-//   size_t i = forest::util::safe_index_from_r(idx, ptr->arity());
-//   forest::replace_child_node(*ptr, i, value);
-// }
-
-// This one is odd because it takes a pointer but runs a member
-// function
-// [[Rcpp::export]]
-void forest_tree__clear(Rcpp::XPtr<forest::forest_tree> ptr) {
-  forest::util::check_ptr_valid(ptr);
-  ptr->clear();
-}
-
 // This one is odd.
 // [[Rcpp::export]]
 forest::forest_tree forest_tree__copy(const forest::forest_tree& tr) {
@@ -254,30 +197,23 @@ forest::forest_tree forest_tree__copy(const forest::forest_tree& tr) {
 // the same place.  That's a bit of work to set up though, and has
 // potentially odd semantics.
 
-// TODO: implement to_tree -- see old wrapper
-
-// [[Rcpp::export]]
-forest::forest_subtree forest_subtree__copy(const forest::forest_subtree& tr) {
-  forest::forest_subtree tr2(tr); // may not actually be needed.
-  return tr2;
-}
-
 // Subtrees
 
 /*[[[cog
 from generation import *
 header()
 # Basic information:
-export_const_method('forest_subtree', 'empty', 'bool')
-export_const_method('forest_subtree', 'size', 'size_t')
-export_const_method('forest_subtree', 'arity', 'size_t')
-export_const_method('forest_subtree', 'childless', 'bool')
-export_const_function('forest_subtree', 'representation', 'std::string')
+export_cr_method('forest_subtree', 'empty', 'bool')
+export_cr_method('forest_subtree', 'size', 'size_t')
+export_cr_method('forest_subtree', 'arity', 'size_t')
+export_cr_method('forest_subtree', 'childless', 'bool')
+export_cr('forest_subtree', 'representation', 'std::string')
 
-export_const_function('forest_subtree', 'count_tips', 'size_t')
-export_const_function('forest_subtree', 'count_nodes', 'size_t')
-export_const_function('forest_subtree', 'tip_labels', 'std::vector<std::string>')
-export_const_function('forest_subtree', 'node_labels', 'std::vector<std::string>')
+export_cr('forest_subtree', 'count_tips', 'size_t')
+export_cr('forest_subtree', 'count_nodes', 'size_t')
+export_cr('forest_subtree', 'tip_labels', 'std::vector<std::string>')
+export_cr('forest_subtree', 'node_labels', 'std::vector<std::string>')
+export_cr('forest_subtree', 'subtree_to_tree', 'forest::forest_tree')
 ]]]*/
 // *** Generated section: do not edit until the end marker
 // [[Rcpp::export]]
@@ -316,12 +252,8 @@ std::vector<std::string> forest_subtree__tip_labels(const forest::forest_subtree
 std::vector<std::string> forest_subtree__node_labels(const forest::forest_subtree& tr) {
   return forest::node_labels(tr);
 }
-//[[[end]]]
-
-// Should be fine with code generation:
-
 // [[Rcpp::export]]
-forest::forest_tree
-forest_subtree__to_tree(const forest::forest_subtree& tr) {
-  return subtree_to_tree(tr);
+forest::forest_tree forest_subtree__subtree_to_tree(const forest::forest_subtree& tr) {
+  return forest::subtree_to_tree(tr);
 }
+//[[[end]]]

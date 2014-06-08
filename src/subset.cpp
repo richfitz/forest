@@ -60,93 +60,111 @@ export_ptr('forest_subtree', 'subtree', 'forest::forest_subtree',
 ]]]*/
 // *** Generated section: do not edit until the end marker
 // [[Rcpp::export]]
-forest::forest_subtree forest_tree__root_subtree(Rcpp::XPtr<forest::forest_tree> ptr) {
-  forest::util::check_ptr_valid(ptr);
+forest::forest_subtree forest_tree__root_subtree(Rcpp::RObject x) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   return forest::root_subtree(*ptr);
 }
 // [[Rcpp::export]]
-forest::forest_subtree forest_subtree__root_subtree(Rcpp::XPtr<forest::forest_subtree> ptr) {
-  forest::util::check_ptr_valid(ptr);
+forest::forest_subtree forest_subtree__root_subtree(Rcpp::RObject x) {
+  Rcpp::XPtr<forest::forest_subtree> ptr =
+    forest::exporters::ptr_subtree_from_R<forest::forest_node>(x);
   return forest::root_subtree(*ptr);
 }
 // [[Rcpp::export]]
-void forest_tree__set_root_subtree(Rcpp::XPtr<forest::forest_tree> ptr, forest::forest_tree value) {
-  forest::util::check_ptr_valid(ptr);
+void forest_tree__set_root_subtree(Rcpp::RObject x, forest::forest_tree value) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   forest::set_root_subtree(*ptr, value);
 }
 // [[Rcpp::export]]
-void forest_subtree__set_root_subtree(Rcpp::XPtr<forest::forest_subtree> ptr, forest::forest_tree value) {
-  forest::util::check_ptr_valid(ptr);
+void forest_subtree__set_root_subtree(Rcpp::RObject x, forest::forest_tree value) {
+  Rcpp::XPtr<forest::forest_subtree> ptr =
+    forest::exporters::ptr_subtree_from_R<forest::forest_node>(x);
   forest::set_root_subtree(*ptr, value);
 }
 // [[Rcpp::export]]
-forest::forest_node forest_tree__root_node(Rcpp::XPtr<forest::forest_tree> ptr) {
-  forest::util::check_ptr_valid(ptr);
+forest::forest_node forest_tree__root_node(Rcpp::RObject x) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   return forest::root_node(*ptr);
 }
 // [[Rcpp::export]]
-forest::forest_node forest_subtree__root_node(Rcpp::XPtr<forest::forest_subtree> ptr) {
-  forest::util::check_ptr_valid(ptr);
+forest::forest_node forest_subtree__root_node(Rcpp::RObject x) {
+  Rcpp::XPtr<forest::forest_subtree> ptr =
+    forest::exporters::ptr_subtree_from_R<forest::forest_node>(x);
   return forest::root_node(*ptr);
 }
 // [[Rcpp::export]]
-void forest_tree__set_root_node(Rcpp::XPtr<forest::forest_tree> ptr, forest::forest_node value) {
-  forest::util::check_ptr_valid(ptr);
+void forest_tree__set_root_node(Rcpp::RObject x, forest::forest_node value) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   forest::set_root_node(*ptr, value);
 }
 // [[Rcpp::export]]
-void forest_subtree__set_root_node(Rcpp::XPtr<forest::forest_subtree> ptr, forest::forest_node value) {
-  forest::util::check_ptr_valid(ptr);
+void forest_subtree__set_root_node(Rcpp::RObject x, forest::forest_node value) {
+  Rcpp::XPtr<forest::forest_subtree> ptr =
+    forest::exporters::ptr_subtree_from_R<forest::forest_node>(x);
   forest::set_root_node(*ptr, value);
 }
 // [[Rcpp::export]]
-forest::forest_subtree forest_tree__child_subtree(Rcpp::XPtr<forest::forest_tree> ptr, forest::util::index idx) {
-  forest::util::check_ptr_valid(ptr);
+forest::forest_subtree forest_tree__child_subtree(Rcpp::RObject x, forest::util::index idx) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   return forest::child_subtree(*ptr, idx);
 }
 // [[Rcpp::export]]
-forest::forest_subtree forest_subtree__child_subtree(Rcpp::XPtr<forest::forest_subtree> ptr, forest::util::index idx) {
-  forest::util::check_ptr_valid(ptr);
+forest::forest_subtree forest_subtree__child_subtree(Rcpp::RObject x, forest::util::index idx) {
+  Rcpp::XPtr<forest::forest_subtree> ptr =
+    forest::exporters::ptr_subtree_from_R<forest::forest_node>(x);
   return forest::child_subtree(*ptr, idx);
 }
 // [[Rcpp::export]]
-void forest_tree__set_child_subtree(Rcpp::XPtr<forest::forest_tree> ptr, forest::util::index idx, forest::forest_tree value) {
-  forest::util::check_ptr_valid(ptr);
+void forest_tree__set_child_subtree(Rcpp::RObject x, forest::util::index idx, forest::forest_tree value) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   forest::set_child_subtree(*ptr, idx, value);
 }
 // [[Rcpp::export]]
-void forest_subtree__set_child_subtree(Rcpp::XPtr<forest::forest_subtree> ptr, forest::util::index idx, forest::forest_tree value) {
-  forest::util::check_ptr_valid(ptr);
+void forest_subtree__set_child_subtree(Rcpp::RObject x, forest::util::index idx, forest::forest_tree value) {
+  Rcpp::XPtr<forest::forest_subtree> ptr =
+    forest::exporters::ptr_subtree_from_R<forest::forest_node>(x);
   forest::set_child_subtree(*ptr, idx, value);
 }
 // [[Rcpp::export]]
-forest::forest_node forest_tree__child_node(Rcpp::XPtr<forest::forest_tree> ptr, forest::util::index idx) {
-  forest::util::check_ptr_valid(ptr);
+forest::forest_node forest_tree__child_node(Rcpp::RObject x, forest::util::index idx) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   return forest::child_node(*ptr, idx);
 }
 // [[Rcpp::export]]
-forest::forest_node forest_subtree__child_node(Rcpp::XPtr<forest::forest_subtree> ptr, forest::util::index idx) {
-  forest::util::check_ptr_valid(ptr);
+forest::forest_node forest_subtree__child_node(Rcpp::RObject x, forest::util::index idx) {
+  Rcpp::XPtr<forest::forest_subtree> ptr =
+    forest::exporters::ptr_subtree_from_R<forest::forest_node>(x);
   return forest::child_node(*ptr, idx);
 }
 // [[Rcpp::export]]
-void forest_tree__set_child_node(Rcpp::XPtr<forest::forest_tree> ptr, forest::util::index idx, forest::forest_node value) {
-  forest::util::check_ptr_valid(ptr);
+void forest_tree__set_child_node(Rcpp::RObject x, forest::util::index idx, forest::forest_node value) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   forest::set_child_node(*ptr, idx, value);
 }
 // [[Rcpp::export]]
-void forest_subtree__set_child_node(Rcpp::XPtr<forest::forest_subtree> ptr, forest::util::index idx, forest::forest_node value) {
-  forest::util::check_ptr_valid(ptr);
+void forest_subtree__set_child_node(Rcpp::RObject x, forest::util::index idx, forest::forest_node value) {
+  Rcpp::XPtr<forest::forest_subtree> ptr =
+    forest::exporters::ptr_subtree_from_R<forest::forest_node>(x);
   forest::set_child_node(*ptr, idx, value);
 }
 // [[Rcpp::export]]
-forest::forest_subtree forest_tree__subtree(Rcpp::XPtr<forest::forest_tree> ptr, std::string label) {
-  forest::util::check_ptr_valid(ptr);
+forest::forest_subtree forest_tree__subtree(Rcpp::RObject x, std::string label) {
+  Rcpp::XPtr<forest::forest_tree> ptr =
+    forest::exporters::ptr_tree_from_R<forest::forest_node>(x);
   return forest::subtree(*ptr, label);
 }
 // [[Rcpp::export]]
-forest::forest_subtree forest_subtree__subtree(Rcpp::XPtr<forest::forest_subtree> ptr, std::string label) {
-  forest::util::check_ptr_valid(ptr);
+forest::forest_subtree forest_subtree__subtree(Rcpp::RObject x, std::string label) {
+  Rcpp::XPtr<forest::forest_subtree> ptr =
+    forest::exporters::ptr_subtree_from_R<forest::forest_node>(x);
   return forest::subtree(*ptr, label);
 }
 //[[[end]]]
