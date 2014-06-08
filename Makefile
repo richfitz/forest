@@ -17,7 +17,7 @@ uncog:
 	cog.py -Iextra -r -x @extra/generation_list.txt
 
 test:
-	make -C inst/tests test
+	make -C tests/testthat
 
 DEVTOOLS_DOCUMENT='library(methods); options(warn=1); devtools::document()'
 document: all

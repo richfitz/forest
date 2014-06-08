@@ -1,2 +1,2 @@
-inst/tests/valgrind.supp
-inst/tests/harmon-2010-trees
+tests/testthat/valgrind.supp
+tests/testthat/harmon-2010-trees
